@@ -41,6 +41,10 @@
         <assertj-vavr.version>0.4.0</assertj-vavr.version>
         <archunit.version>0.16.0</archunit.version>
         <mock-server.version>5.11.2</mock-server.version>
+
+        <sonar.projectKey>Bad-Pop_JCoinbase</sonar.projectKey>
+        <sonar.organization>jcoinbase</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencyManagement>
