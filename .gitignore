@@ -1,0 +1,12 @@
+.idea
+*.iml
+*.iws
+out/
+.idea_modules/
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+target/
+dependency-reduced-pom.xml
