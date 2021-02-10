@@ -1,0 +1,32 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: JCoinbase Java CI with Maven
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup JDK 15
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - name: Build
+        run: mvn clean install -DskipTests=true -B
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup JDK 15
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+      - name: Test
+        run: mvn clean package install -B
