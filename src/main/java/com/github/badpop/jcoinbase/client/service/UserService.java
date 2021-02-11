@@ -9,5 +9,5 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
     private final JCoinbaseClient client;
-    private final CoinbaseUserService userService;
+    private final CoinbaseUserService service;
 }

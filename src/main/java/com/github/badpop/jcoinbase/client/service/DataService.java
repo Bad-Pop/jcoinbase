@@ -16,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 public class DataService {
 
   private final JCoinbaseClient client;
-  private final CoinbaseDataService dataService;
+  private final CoinbaseDataService service;
 
   public Time getTime() {
-    return dataService
+    return service
         .getTime(client)
         .onSuccess(time -> log.info("Successfully fetch Time resource : {}", time))
         .onFailure(
@@ -36,7 +36,7 @@ public class DataService {
   }
 
   public List<Currency> getCurrencies() {
-    return dataService
+    return service
         .getCurrencies(client)
         .onSuccess(currencies -> log.info("Successfully fetch Currencies resources"))
         .onFailure(
@@ -49,7 +49,7 @@ public class DataService {
   }
 
   public ExchangeRates getExchangeRates(final String currency) {
-    return dataService
+    return service
         .getExchangeRates(client, currency)
         .onSuccess(
             exchangeRates ->
@@ -67,7 +67,7 @@ public class DataService {
   public Price getPrice(
       final PriceType priceType, final String baseCurrency, final String targetCurrency) {
 
-    return dataService
+    return service
         .getPriceByType(client, priceType, baseCurrency, targetCurrency)
         .onSuccess(
             res ->
