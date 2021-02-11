@@ -153,7 +153,8 @@ class DataTest {
 
     var exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
 
-    when(coinbaseDataService.getExchangeRates(client, currency)).thenReturn(Try.success(exchangeRates));
+    when(coinbaseDataService.getExchangeRates(client, currency))
+        .thenReturn(Try.success(exchangeRates));
 
     var actual = dataService.getExchangeRates(currency);
 
@@ -254,8 +255,8 @@ class DataTest {
         .thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-            .isThrownBy(() -> dataService.getPrice(priceType, baseCurrency, targetCurrency))
-            .withMessage("java.lang.Exception: " + throwable.getMessage());
+        .isThrownBy(() -> dataService.getPrice(priceType, baseCurrency, targetCurrency))
+        .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
     verify(coinbaseDataService).getPriceByType(client, priceType, baseCurrency, targetCurrency);

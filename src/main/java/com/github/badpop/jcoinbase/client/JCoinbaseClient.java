@@ -8,7 +8,6 @@ import com.github.badpop.jcoinbase.client.service.UserService;
 import com.github.badpop.jcoinbase.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.properties.JCoinbasePropertiesFactory;
 import io.vavr.jackson.datatype.VavrModule;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +28,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Slf4j
 @FieldDefaults(level = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PROTECTED)
 public class JCoinbaseClient {
 
   @Getter HttpClient client;

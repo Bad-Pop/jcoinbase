@@ -12,7 +12,7 @@ public class ExchangeRates {
   String currency;
   Map<String, BigDecimal> rates;
 
-  public java.util.Map<String, BigDecimal> getRatesAsJavaMap(){
+  public java.util.Map<String, BigDecimal> getRatesAsJavaMap() {
     return rates.toJavaMap();
   }
 }

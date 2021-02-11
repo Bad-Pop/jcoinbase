@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Value
 @Builder
 public class Currency {
-    String id;
-    String name;
-    BigDecimal minSize;
+  String id;
+  String name;
+  BigDecimal minSize;
 }

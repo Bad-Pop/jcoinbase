@@ -22,8 +22,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 @AllArgsConstructor
-public
-class CoinbaseDataService {
+public class CoinbaseDataService {
 
   private static final String ACCEPT_HEADER = "Accept";
   private static final String ACCEPT_HEADER_VALUE = "application/json";
