@@ -8,6 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class UserService {
 
-    private final JCoinbaseClient client;
-    private final CoinbaseUserService service;
+  private final JCoinbaseClient client;
+  private final CoinbaseUserService service;
 }

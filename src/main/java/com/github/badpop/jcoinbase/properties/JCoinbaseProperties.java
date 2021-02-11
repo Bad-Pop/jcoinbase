@@ -3,7 +3,8 @@ package com.github.badpop.jcoinbase.properties;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,11 +15,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Slf4j
 @Getter
-@Builder
-@ToString
 @FieldDefaults(level = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PROTECTED)
 public class JCoinbaseProperties {
 
   final Properties properties = new Properties();

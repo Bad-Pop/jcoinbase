@@ -53,10 +53,10 @@ class JCoinbaseClientTest {
     assertThat(actual.getJsonDeserializer()).isNotNull().isInstanceOf(ObjectMapper.class);
     assertThat(
             actual.getJsonDeserializer().isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
-            .isFalse();
+        .isFalse();
     assertThat(actual.getJsonDeserializer().getRegisteredModuleIds())
-            .isNotEmpty()
-            .doesNotContainNull();
+        .isNotEmpty()
+        .doesNotContainNull();
     assertThat(actual.getJsonDeserializer().getRegisteredModuleIds().size()).isEqualTo(2);
 
     assertThat(actual.getProperties()).isNotNull();
