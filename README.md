@@ -3,8 +3,7 @@
 
 **This project is still under development**
 
-JCoinbase is an open source client for the Coinbase exchange platform API written in Java 15, but a Java 8 version is  
-being considered. It allows you to make queries to the Coinbase API in a quick and easy way.
+JCoinbase is an open source client for the Coinbase exchange platform API written in Java 15, but a Java 8 version is being considered. It allows you to make queries to the Coinbase API in a quick and easy way.
 
 ## Available features
 
@@ -23,8 +22,7 @@ being considered. It allows you to make queries to the Coinbase API in a quick a
 
 ## Getting started
 
-To make requests to Coinbase API using JCoinbase, simply instantiate a new `JcoinbaseClient` via  
-the `JCoinbaseClientFactory`
+To make requests to Coinbase API using JCoinbase, simply instantiate a new `JcoinbaseClient` via the `JCoinbaseClientFactory`
 
 ```java  
 JCoinbaseClient client = JCoinbaseClientFactory.build(yourApiKey, yourSecret, desiredTimoutInSecond, followRedirects);  
