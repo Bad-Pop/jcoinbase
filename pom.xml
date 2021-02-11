@@ -29,8 +29,6 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 
-        <jcoinbase.version>1.0.0-SNAPSHOT</jcoinbase.version>
-
         <lombok.version>1.18.18</lombok.version>
         <vavr.version>0.10.3</vavr.version>
         <jackson.version>2.12.1</jackson.version>
@@ -262,7 +260,6 @@
                     <encoding>${encoding}</encoding>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -324,6 +321,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+            </plugin>
+
         </plugins>
     </build>
 
