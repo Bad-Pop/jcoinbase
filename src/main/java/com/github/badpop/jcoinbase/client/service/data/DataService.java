@@ -2,11 +2,11 @@ package com.github.badpop.jcoinbase.client.service.data;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
-import com.github.badpop.jcoinbase.model.Currency;
-import com.github.badpop.jcoinbase.model.ExchangeRates;
-import com.github.badpop.jcoinbase.model.Price;
-import com.github.badpop.jcoinbase.model.Price.PriceType;
-import com.github.badpop.jcoinbase.model.Time;
+import com.github.badpop.jcoinbase.model.data.Currency;
+import com.github.badpop.jcoinbase.model.data.ExchangeRates;
+import com.github.badpop.jcoinbase.model.data.Price;
+import com.github.badpop.jcoinbase.model.data.Price.PriceType;
+import com.github.badpop.jcoinbase.model.data.Time;
 import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

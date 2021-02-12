@@ -65,4 +65,4 @@ For further information on Vavr, please take a look at : [https://www.vavr.io/](
 
 ## Usefull links
 
-**SonarQube** : [https://sonarcloud.io/dashboard?id=Bad-Pop_JCoinbase](https://sonarcloud.io/dashboard?id=Bad-Pop_JCoinbase)
+**SonarQube** : [https://sonarcloud.io/dashboard?id=JCoinbase](https://sonarcloud.io/dashboard?id=JCoinbase)
