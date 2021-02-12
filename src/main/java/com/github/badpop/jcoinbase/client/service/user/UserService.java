@@ -1,4 +1,4 @@
-package com.github.badpop.jcoinbase.client.service;
+package com.github.badpop.jcoinbase.client.service.user;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import lombok.AllArgsConstructor;
