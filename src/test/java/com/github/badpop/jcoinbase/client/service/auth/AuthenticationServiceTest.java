@@ -19,20 +19,21 @@ class AuthenticationServiceTest {
     var httpBody = "{\"currency\" : \"BTC\"}";
 
     var actual =
-            authenticationService.getAuthenticationHeaders(
-                    apiKey, secret, timestamp, httpMethod, httpPath, httpBody);
+        authenticationService.getAuthenticationHeaders(
+            apiKey, secret, timestamp, httpMethod, httpPath, httpBody);
 
-    assertThat(actual).isNotEmpty().isInstanceOf(String[].class);
     assertThat(actual)
-            .containsExactly(
-                    "CB-ACCESS-SIGN",
-                    "f537a3320e2d33e209e2de9165a3ffcb7bac95fea1c2dc7cc45a76fa20dd528c",
-                    "CB-ACCESS-TIMESTAMP",
-                    "1613126414",
-                    "CB-ACCESS-KEY",
-                    "loremIpsum",
-                    "Accept",
-                    "application/json");
+        .isNotEmpty()
+        .isInstanceOf(String[].class)
+        .containsExactly(
+            "CB-ACCESS-SIGN",
+            "f537a3320e2d33e209e2de9165a3ffcb7bac95fea1c2dc7cc45a76fa20dd528c",
+            "CB-ACCESS-TIMESTAMP",
+            "1613126414",
+            "CB-ACCESS-KEY",
+            "loremIpsum",
+            "Accept",
+            "application/json");
   }
 
   @Test
@@ -49,8 +50,9 @@ class AuthenticationServiceTest {
         authenticationService.getAuthenticationHeaders(
             apiKey, secret, timestamp, httpMethod, httpPath, httpBody);
 
-    assertThat(actual).isNotEmpty().isInstanceOf(String[].class);
     assertThat(actual)
+        .isNotEmpty()
+        .isInstanceOf(String[].class)
         .containsExactly(
             "CB-ACCESS-SIGN",
             "d80c4ebb1a2a8c85024b795b7a6bdbfec3e9198b429e7bf31a843affc2d0f9f2",
