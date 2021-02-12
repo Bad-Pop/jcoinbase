@@ -1,10 +1,10 @@
 package com.github.badpop.jcoinbase.model;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
-import com.github.badpop.jcoinbase.model.Price.PriceType;
+import com.github.badpop.jcoinbase.model.data.Price.PriceType;
 import org.junit.jupiter.api.Test;
 
-import static com.github.badpop.jcoinbase.model.Price.PriceType.*;
+import static com.github.badpop.jcoinbase.model.data.Price.PriceType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
