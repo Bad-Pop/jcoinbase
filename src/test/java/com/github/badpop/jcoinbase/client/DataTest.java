@@ -1,7 +1,7 @@
 package com.github.badpop.jcoinbase.client;
 
-import com.github.badpop.jcoinbase.client.service.CoinbaseDataService;
-import com.github.badpop.jcoinbase.client.service.DataService;
+import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
+import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.Currency;
 import com.github.badpop.jcoinbase.model.ExchangeRates;

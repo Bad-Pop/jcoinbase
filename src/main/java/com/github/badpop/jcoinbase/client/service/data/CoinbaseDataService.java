@@ -1,4 +1,4 @@
-package com.github.badpop.jcoinbase.client.service;
+package com.github.badpop.jcoinbase.client.service.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
