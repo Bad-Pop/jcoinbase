@@ -1,7 +1,7 @@
 package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.badpop.jcoinbase.client.service.CoinbaseDataService;
+import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
 import com.github.badpop.jcoinbase.model.Currency;
 import com.github.badpop.jcoinbase.model.ExchangeRates;
 import com.github.badpop.jcoinbase.model.Price;

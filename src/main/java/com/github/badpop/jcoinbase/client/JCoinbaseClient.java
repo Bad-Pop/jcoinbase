@@ -2,9 +2,9 @@ package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.badpop.jcoinbase.client.service.CoinbaseDataService;
-import com.github.badpop.jcoinbase.client.service.DataService;
-import com.github.badpop.jcoinbase.client.service.UserService;
+import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
+import com.github.badpop.jcoinbase.client.service.data.DataService;
+import com.github.badpop.jcoinbase.client.service.user.UserService;
 import com.github.badpop.jcoinbase.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.properties.JCoinbasePropertiesFactory;
 import io.vavr.jackson.datatype.VavrModule;
