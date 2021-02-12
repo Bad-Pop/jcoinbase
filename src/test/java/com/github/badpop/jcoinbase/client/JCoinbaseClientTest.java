@@ -1,13 +1,13 @@
 package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.github.badpop.jcoinbase.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.net.http.HttpClient.Redirect.NEVER;
 import static java.net.http.HttpClient.Redirect.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,9 +26,7 @@ class JCoinbaseClientTest {
     assertThat(actual.getClient().followRedirects()).isEqualTo(NEVER);
 
     assertThat(actual.getJsonDeserializer()).isNotNull().isInstanceOf(ObjectMapper.class);
-    assertThat(
-            actual.getJsonDeserializer().isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
-        .isFalse();
+    assertThat(actual.getJsonDeserializer().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
     assertThat(actual.getJsonDeserializer().getRegisteredModuleIds())
         .isNotEmpty()
         .doesNotContainNull();
@@ -51,9 +49,7 @@ class JCoinbaseClientTest {
     assertThat(actual.getClient().followRedirects()).isEqualTo(NORMAL);
 
     assertThat(actual.getJsonDeserializer()).isNotNull().isInstanceOf(ObjectMapper.class);
-    assertThat(
-            actual.getJsonDeserializer().isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
-        .isFalse();
+    assertThat(actual.getJsonDeserializer().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
     assertThat(actual.getJsonDeserializer().getRegisteredModuleIds())
         .isNotEmpty()
         .doesNotContainNull();
