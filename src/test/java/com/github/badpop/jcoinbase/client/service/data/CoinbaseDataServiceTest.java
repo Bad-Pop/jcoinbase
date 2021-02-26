@@ -67,7 +67,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getTime(client);
+    var actual = service.fetchTime(client);
 
     assertThat(actual).isSuccess().containsInstanceOf(Time.class);
     Assertions.assertThat(actual.get())
@@ -96,7 +96,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getTime(client);
+    var actual = service.fetchTime(client);
 
     assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
   }
@@ -120,7 +120,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getCurrencies(client);
+    var actual = service.fetchCurrencies(client);
     var actualList = actual.get();
 
     assertThat(actual).isSuccess().containsInstanceOf(List(Currency.builder().build()).getClass());
@@ -151,7 +151,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getCurrencies(client);
+    var actual = service.fetchCurrencies(client);
 
     assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
   }
@@ -179,7 +179,7 @@ class CoinbaseDataServiceTest {
                            }
                           """));
 
-    var actual = service.getExchangeRates(client, "BTC");
+    var actual = service.fetchExchangeRates(client, "BTC");
 
     assertThat(actual).isSuccess().containsInstanceOf(ExchangeRates.class);
     Assertions.assertThat(actual.get()).isEqualTo(
@@ -212,7 +212,7 @@ class CoinbaseDataServiceTest {
                            }
                           """));
 
-    var actual = service.getExchangeRates(client, "invalidCurrency");
+    var actual = service.fetchExchangeRates(client, "invalidCurrency");
 
     assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
   }
@@ -237,7 +237,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getPriceByType(client, BUY, "BTC", "EUR");
+    var actual = service.fetchPriceByType(client, BUY, "BTC", "EUR");
 
     assertThat(actual).isSuccess().containsInstanceOf(Price.class);
     Assertions.assertThat(actual.get()).isEqualTo(
@@ -269,7 +269,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getPriceByType(client, SELL, "BTC", "EUR");
+    var actual = service.fetchPriceByType(client, SELL, "BTC", "EUR");
 
     assertThat(actual).isSuccess().containsInstanceOf(Price.class);
     Assertions.assertThat(actual.get()).isEqualTo(
@@ -301,7 +301,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getPriceByType(client, SPOT, "BTC", "EUR");
+    var actual = service.fetchPriceByType(client, SPOT, "BTC", "EUR");
 
     assertThat(actual).isSuccess().containsInstanceOf(Price.class);
     Assertions.assertThat(actual.get()).isEqualTo(
@@ -332,7 +332,7 @@ class CoinbaseDataServiceTest {
                           }
                           """));
 
-    var actual = service.getPriceByType(client, SPOT, "BTC", "invalidCurrency");
+    var actual = service.fetchPriceByType(client, SPOT, "BTC", "invalidCurrency");
 
     assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
   }

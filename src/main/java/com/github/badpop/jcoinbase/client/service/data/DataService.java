@@ -11,6 +11,8 @@ import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.github.badpop.jcoinbase.exception.ErrorService.*;
+
 @Slf4j
 @AllArgsConstructor
 public class DataService {
@@ -18,9 +20,9 @@ public class DataService {
   private final JCoinbaseClient client;
   private final CoinbaseDataService service;
 
-  public Time getTime() {
+  public Time fetchTime() {
     return service
-        .getTime(client)
+        .fetchTime(client)
         .onSuccess(time -> log.info("Successfully fetch Time resource : {}", time))
         .onFailure(
             throwable ->
@@ -31,13 +33,13 @@ public class DataService {
         .get();
   }
 
-  public java.util.List<Currency> getCurrenciesAsJavaList() {
-    return getCurrencies().toJavaList();
+  public java.util.List<Currency> fetchCurrenciesAsJavaList() {
+    return fetchCurrencies().toJavaList();
   }
 
-  public List<Currency> getCurrencies() {
+  public List<Currency> fetchCurrencies() {
     return service
-        .getCurrencies(client)
+        .fetchCurrencies(client)
         .onSuccess(currencies -> log.info("Successfully fetch Currencies resources"))
         .onFailure(
             throwable ->
@@ -48,9 +50,9 @@ public class DataService {
         .get();
   }
 
-  public ExchangeRates getExchangeRates(final String currency) {
+  public ExchangeRates fetchExchangeRates(final String currency) {
     return service
-        .getExchangeRates(client, currency)
+        .fetchExchangeRates(client, currency)
         .onSuccess(
             exchangeRates ->
                 log.info("Successfully fetch Exchange rates for currency {}", currency))
@@ -64,11 +66,11 @@ public class DataService {
         .get();
   }
 
-  public Price getPrice(
+  public Price fetchPrice(
       final PriceType priceType, final String baseCurrency, final String targetCurrency) {
 
     return service
-        .getPriceByType(client, priceType, baseCurrency, targetCurrency)
+        .fetchPriceByType(client, priceType, baseCurrency, targetCurrency)
         .onSuccess(
             res ->
                 log.info(
@@ -86,14 +88,5 @@ public class DataService {
                     baseCurrency,
                     targetCurrency))
         .get();
-  }
-
-  private void manageOnFailure(
-      final JCoinbaseException jcex,
-      final String message,
-      final Throwable throwable,
-      final Object... logParams) {
-    log.error(message, logParams, throwable);
-    throw jcex;
   }
 }

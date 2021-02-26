@@ -3,10 +3,12 @@ package com.github.badpop.jcoinbase.client.service.user.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
+import com.github.badpop.jcoinbase.model.user.User;
 
 import java.time.Instant;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
 
   private final String id;
@@ -57,5 +59,25 @@ public class UserDto {
     this.country = country;
     this.createdAt = createdAt;
     this.email = email;
+  }
+
+  public User toUser() {
+    return User.builder()
+        .id(id)
+        .name(name)
+        .userName(userName)
+        .profileLocation(profileLocation)
+        .profileBio(profileBio)
+        .profileUrl(profileUrl)
+        .avatarUrl(avatarUrl)
+        .resource(resource)
+        .resourcePath(resourcePath)
+        .timeZone(timeZone)
+        .nativeCurrency(nativeCurrency)
+        .bitcoinUnits(bitcoinUnits)
+        .country(country.toCountry())
+        .createdAt(DateAndTimeUtils.fromInstant(createdAt))
+        .email(email)
+        .build();
   }
 }

@@ -29,6 +29,7 @@ public class JCoinbaseProperties {
   String currentUserPath;
   String currentUserAuthorizationsPath;
   String userPath;
+  String usersPath;
   String accountPath;
   String paymentMethodPath;
 
@@ -89,6 +90,7 @@ public class JCoinbaseProperties {
     this.currentUserAuthorizationsPath =
         properties.getProperty("coinbase.api.path.resource.currentUserAuthorizations");
     this.userPath = properties.getProperty("coinbase.api.path.resource.user");
+    this.usersPath = properties.getProperty("coinbase.api.path.resource.users");
     this.accountPath = properties.getProperty("coinbase.api.path.resource.account");
     this.paymentMethodPath = properties.getProperty("coinbase.api.path.resource.paymentMethods");
 

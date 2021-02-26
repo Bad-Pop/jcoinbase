@@ -2,11 +2,11 @@ package com.github.badpop.jcoinbase.client.service.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.client.service.DataDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.CurrencyDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.PriceDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
-import com.github.badpop.jcoinbase.client.service.DataDto;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
@@ -27,7 +27,7 @@ public class CoinbaseDataService {
   private static final String ACCEPT_HEADER = "Accept";
   private static final String ACCEPT_HEADER_VALUE = "application/json";
 
-  public Try<Time> getTime(final JCoinbaseClient client) {
+  public Try<Time> fetchTime(final JCoinbaseClient client) {
     var request =
         HttpRequest.newBuilder()
             .GET()
@@ -47,7 +47,7 @@ public class CoinbaseDataService {
                     .toTime());
   }
 
-  public Try<List<Currency>> getCurrencies(final JCoinbaseClient client) {
+  public Try<List<Currency>> fetchCurrencies(final JCoinbaseClient client) {
 
     var request =
         HttpRequest.newBuilder()
@@ -71,7 +71,8 @@ public class CoinbaseDataService {
                     .map(CurrencyDto::toCurrency));
   }
 
-  public Try<ExchangeRates> getExchangeRates(final JCoinbaseClient client, final String currency) {
+  public Try<ExchangeRates> fetchExchangeRates(
+      final JCoinbaseClient client, final String currency) {
 
     var request =
         HttpRequest.newBuilder()
@@ -96,7 +97,7 @@ public class CoinbaseDataService {
                     .toExchangeRates());
   }
 
-  public Try<Price> getPriceByType(
+  public Try<Price> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
     var request =
         HttpRequest.newBuilder()
@@ -121,13 +122,11 @@ public class CoinbaseDataService {
       final String baseCurrency,
       final String targetCurrency) {
     return URI.create(
-        properties.getApiUrl()
-            + properties.getPricesPath()
-            + "/"
-            + baseCurrency
-            + "-"
-            + targetCurrency
-            + "/"
-            + priceType.getType());
+        String.format(
+            "%s%s/%s/%s",
+            properties.getApiUrl(),
+            properties.getPricesPath(),
+            baseCurrency + "-" + targetCurrency,
+            priceType.getType()));
   }
 }

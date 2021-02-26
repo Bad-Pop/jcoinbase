@@ -2,11 +2,14 @@ package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
 import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
+import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.jackson.datatype.VavrModule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +22,7 @@ import java.time.ZoneId;
 import java.util.TimeZone;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 import static java.net.http.HttpClient.Redirect.NEVER;
 import static java.net.http.HttpClient.Redirect.NORMAL;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -33,14 +37,23 @@ public class JCoinbaseClient {
   @Getter HttpClient client;
   @Getter ObjectMapper jsonDeserializer;
   @Getter JCoinbaseProperties properties;
+  AuthenticationService authService;
   DataService dataService;
   UserService userService;
 
+  //TODO TEST
   public DataService data() {
     return dataService;
   }
 
+  //TODO TEST
   public UserService user() {
+    var allowed = authService.allow(this);
+
+    if (allowed.isLeft()) {
+      manageNotAllowed(allowed.getLeft());
+    }
+
     return userService;
   }
 
@@ -58,7 +71,10 @@ public class JCoinbaseClient {
 
     this.properties = JCoinbasePropertiesFactory.getProperties(apiKey, secret);
 
+    authService = new AuthenticationService();
+
     this.dataService = new DataService(this, new CoinbaseDataService());
+    this.userService = new UserService(this, new CoinbaseUserService(), authService);
 
     if (followRedirects) {
       this.client =
@@ -76,5 +92,12 @@ public class JCoinbaseClient {
     log.info("JCoinbase client successfully built !");
 
     return this;
+  }
+
+  private void manageNotAllowed(final Throwable throwable) {
+    manageOnFailure(
+        new JCoinbaseException(throwable),
+        "Unable to allow this request. Please make sure you correctly build your JCoinbaseClient with API KEY and SECRET",
+        throwable);
   }
 }

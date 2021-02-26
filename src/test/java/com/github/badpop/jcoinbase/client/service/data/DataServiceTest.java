@@ -26,14 +26,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DataTest {
+class DataServiceTest {
 
   @InjectMocks private DataService dataService;
   @Mock private JCoinbaseClient client;
   @Mock private CoinbaseDataService coinbaseDataService;
 
   @Test
-  void getTime_should_return_time() {
+  void should_return_time() {
 
     var localDT = LocalDateTime.of(2021, 2, 7, 15, 30);
     var time =
@@ -42,14 +42,14 @@ class DataTest {
             .epoch(localDT.toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDT)))
             .build();
 
-    when(coinbaseDataService.getTime(client)).thenReturn(Try.success(time));
+    when(coinbaseDataService.fetchTime(client)).thenReturn(Try.success(time));
 
-    var actual = dataService.getTime();
+    var actual = dataService.fetchTime();
 
     assertThat(actual).isEqualTo(time);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getTime(client);
+    verify(coinbaseDataService).fetchTime(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -58,14 +58,14 @@ class DataTest {
 
     var throwable = new Exception("Error message");
 
-    when(coinbaseDataService.getTime(client)).thenReturn(Try.failure(throwable));
+    when(coinbaseDataService.fetchTime(client)).thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.getTime())
+        .isThrownBy(() -> dataService.fetchTime())
         .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getTime(client);
+    verify(coinbaseDataService).fetchTime(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -80,28 +80,28 @@ class DataTest {
             .minSize(BigDecimal.valueOf(0.01))
             .build();
 
-    when(coinbaseDataService.getCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
 
-    var actual = dataService.getCurrenciesAsJavaList();
+    var actual = dataService.fetchCurrenciesAsJavaList();
 
     assertThat(actual).containsExactly(eur, usd);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getCurrencies(client);
+    verify(coinbaseDataService).fetchCurrencies(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
   @Test
   void getCurrenciesAsJavaList_should_throw_JCoinbaseException() {
     var throwable = new Exception("Error message");
-    when(coinbaseDataService.getCurrencies(client)).thenReturn(Try.failure(throwable));
+    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.getCurrenciesAsJavaList())
+        .isThrownBy(() -> dataService.fetchCurrenciesAsJavaList())
         .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getCurrencies(client);
+    verify(coinbaseDataService).fetchCurrencies(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -116,28 +116,28 @@ class DataTest {
             .minSize(BigDecimal.valueOf(0.01))
             .build();
 
-    when(coinbaseDataService.getCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
 
-    var actual = dataService.getCurrencies();
+    var actual = dataService.fetchCurrencies();
 
     VavrAssertions.assertThat(actual).containsExactly(eur, usd);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getCurrencies(client);
+    verify(coinbaseDataService).fetchCurrencies(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
   @Test
   void getCurrencies_should_throw_JCoinbaseException() {
     var throwable = new Exception("Error message");
-    when(coinbaseDataService.getCurrencies(client)).thenReturn(Try.failure(throwable));
+    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.getCurrencies())
+        .isThrownBy(() -> dataService.fetchCurrencies())
         .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getCurrencies(client);
+    verify(coinbaseDataService).fetchCurrencies(client);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -152,17 +152,17 @@ class DataTest {
 
     var exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
 
-    when(coinbaseDataService.getExchangeRates(client, currency))
+    when(coinbaseDataService.fetchExchangeRates(client, currency))
         .thenReturn(Try.success(exchangeRates));
 
-    var actual = dataService.getExchangeRates(currency);
+    var actual = dataService.fetchExchangeRates(currency);
 
     assertThat(actual).isEqualTo(exchangeRates);
     assertThat(actual.getRates()).containsExactlyElementsOf(rates);
     assertThat(actual.getRatesAsJavaMap()).containsExactlyEntriesOf(rates.toJavaMap());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getExchangeRates(client, currency);
+    verify(coinbaseDataService).fetchExchangeRates(client, currency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -170,14 +170,15 @@ class DataTest {
   void getExchangeRates_should_throw_JCoinbaseException() {
     var currency = "BTC";
     var throwable = new Exception("Error message");
-    when(coinbaseDataService.getExchangeRates(client, currency)).thenReturn(Try.failure(throwable));
+    when(coinbaseDataService.fetchExchangeRates(client, currency))
+        .thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.getExchangeRates(currency))
+        .isThrownBy(() -> dataService.fetchExchangeRates(currency))
         .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getExchangeRates(client, currency);
+    verify(coinbaseDataService).fetchExchangeRates(client, currency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -190,15 +191,15 @@ class DataTest {
 
     var price = Price.builder().build();
 
-    when(coinbaseDataService.getPriceByType(client, priceType, baseCurrency, targetCurrency))
+    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
+    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getPriceByType(client, priceType, baseCurrency, targetCurrency);
+    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -210,15 +211,15 @@ class DataTest {
 
     var price = Price.builder().build();
 
-    when(coinbaseDataService.getPriceByType(client, priceType, baseCurrency, targetCurrency))
+    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
+    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getPriceByType(client, priceType, baseCurrency, targetCurrency);
+    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -230,15 +231,15 @@ class DataTest {
 
     var price = Price.builder().build();
 
-    when(coinbaseDataService.getPriceByType(client, priceType, baseCurrency, targetCurrency))
+    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
+    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getPriceByType(client, priceType, baseCurrency, targetCurrency);
+    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 
@@ -250,15 +251,15 @@ class DataTest {
     var baseCurrency = "BTC";
     var targetCurrency = "EUR";
 
-    when(coinbaseDataService.getPriceByType(client, priceType, baseCurrency, targetCurrency))
+    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.getPrice(priceType, baseCurrency, targetCurrency))
+        .isThrownBy(() -> dataService.fetchPrice(priceType, baseCurrency, targetCurrency))
         .withMessage("java.lang.Exception: " + throwable.getMessage());
 
     verifyNoInteractions(client);
-    verify(coinbaseDataService).getPriceByType(client, priceType, baseCurrency, targetCurrency);
+    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
     verifyNoMoreInteractions(coinbaseDataService);
   }
 }
