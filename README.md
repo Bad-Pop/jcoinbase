@@ -1,3 +1,8 @@
+**This project is abandoned. Indeed, after some research a similar library much more powerful and already established exists.**
+
+If you are interested you can have a look at : [XChange](https://github.com/knowm/XChange)
+
+
 # JCoinbase ![Made with love](https://img.shields.io/badge/Made%20with-%3C3-red)
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Bad-Pop/JCoinbase/JCoinbase%20CI?style=plastic)
