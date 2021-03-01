@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.service.DataDto;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
-import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
 import com.github.badpop.jcoinbase.client.service.user.dto.UserDto;
 import com.github.badpop.jcoinbase.model.user.User;
 import io.vavr.control.Try;

@@ -3,8 +3,14 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Bad-Pop/JCoinbase/JCoinbase%20CI?style=plastic)
 ![Sonar Coverage](https://img.shields.io/sonar/coverage/JCoinbase?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/JCoinbase?server=https%3A%2F%2Fsonarcloud.io)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Bad-Pop/JCoinbase)
+![Sonar Tests](https://img.shields.io/sonar/tests/JCoinbase?compact_message&failed_label=failed&passed_label=passed&server=https%3A%2F%2Fsonarcloud.io&skipped_label=skipped)
+![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/JCoinbase?server=https%3A%2F%2Fsonarcloud.Io)
+![Sonar Violations (long format)](https://img.shields.io/sonar/violations/JCoinbase?format=long&server=https%3A%2F%2Fsonarcloud.io)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Bad-Pop/JCoinbase)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Bad-Pop/JCoinbase?color=green)
+![GitHub repo size](https://img.shields.io/github/repo-size/Bad-Pop/JCoinbase)
+![GitHub](https://img.shields.io/github/license/Bad-Pop/JCoinbase)
+![GitHub contributors](https://img.shields.io/github/contributors/Bad-Pop/JCoinbase)
 ___
 
 **This project is still under development**
@@ -51,9 +57,13 @@ For further information on Vavr, please take a look at : [https://www.vavr.io/](
 - Access Coinbase public data
 
 
+## In development features
+
+- Access Users resources
+
+
 ## Next features
 
-- Users
 - Account
 - Addresses
 - Transactions
@@ -63,6 +73,19 @@ For further information on Vavr, please take a look at : [https://www.vavr.io/](
 - Payment methods
 
 
+## Build this project locally
+If you don't have maven installed, you can use the maven wrapper presents inside the project :
+```shell
+./mvnw clean install
+```
+If you are on windows you can use the `mvnw.cmd` which also wrap maven on windows.
+Else, if you have Maven installed you can run :
+```shell
+mvn clean install
+```
+
 ## Usefull links
 
 **SonarQube** : [https://sonarcloud.io/dashboard?id=JCoinbase](https://sonarcloud.io/dashboard?id=JCoinbase)
+
+**Vavr <3** : [https://www.vavr.io/](https://www.vavr.io/)
