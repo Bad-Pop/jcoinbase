@@ -40,7 +40,7 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 
-        <sonar.projectKey>Bad-Pop_JCoinbase</sonar.projectKey>
+        <sonar.projectKey>JCoinbase</sonar.projectKey>
         <sonar.organization>jcoinbase</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
