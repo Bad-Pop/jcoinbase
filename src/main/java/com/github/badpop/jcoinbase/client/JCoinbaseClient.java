@@ -35,7 +35,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class JCoinbaseClient {
 
   @Getter HttpClient client;
-  @Getter ObjectMapper jsonDeserializer;
+  @Getter ObjectMapper jsonSerDes;
   @Getter JCoinbaseProperties properties;
   AuthenticationService authService;
   DataService dataService;
@@ -61,12 +61,12 @@ public class JCoinbaseClient {
       final String apiKey, final String secret, final long timeout, final boolean followRedirects) {
     log.info("Start building new JCoinbase client !");
 
-    jsonDeserializer =
+    jsonSerDes =
         new ObjectMapper()
             .findAndRegisterModules()
             .registerModule(new VavrModule())
             .registerModule(new JavaTimeModule())
-            .setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC+01:00"))) // PARIS ZONE ID
+            .setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC+01:00"))) // TODO MAKE CONFIGURABLE PARIS ZONE ID
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
 
     this.properties = JCoinbasePropertiesFactory.getProperties(apiKey, secret);

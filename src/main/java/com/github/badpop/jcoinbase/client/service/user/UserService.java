@@ -7,7 +7,7 @@ import com.github.badpop.jcoinbase.model.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.github.badpop.jcoinbase.exception.ErrorService.manageOnFailure;
+import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 
 @Slf4j
 @RequiredArgsConstructor

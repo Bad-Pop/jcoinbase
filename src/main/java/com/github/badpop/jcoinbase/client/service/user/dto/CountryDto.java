@@ -8,11 +8,13 @@ public class CountryDto {
 
   private final String code;
   private final String name;
+  private final boolean isInEurope;
 
   @JsonCreator
-  public CountryDto(@JsonProperty("code") String code, @JsonProperty("name") String name) {
+  public CountryDto(@JsonProperty("code") String code, @JsonProperty("name") String name, @JsonProperty("is_in_europe") boolean isInEurope) {
     this.code = code;
     this.name = name;
+    this.isInEurope = isInEurope;
   }
 
   public Country toCountry() {

@@ -1,7 +1,10 @@
 package com.github.badpop.jcoinbase.client.service.user;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.client.service.DataDto;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
+import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
 import com.github.badpop.jcoinbase.client.service.user.dto.UserDto;
 import com.github.badpop.jcoinbase.model.user.User;
 import io.vavr.control.Try;
@@ -12,7 +15,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 public class CoinbaseUserService {
 
-  //TODO TEST
+  // TODO TEST
   public Try<User> fetchCurrentUser(
       final JCoinbaseClient client, final AuthenticationService authentication) {
 
@@ -33,8 +36,9 @@ public class CoinbaseUserService {
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
-                    .readValue(stringHttpResponse.body(), UserDto.class)
+                    .getJsonSerDes()
+                    .readValue(stringHttpResponse.body(), new TypeReference<DataDto<UserDto>>() {})
+                    .getData()
                     .toUser());
   }
 }

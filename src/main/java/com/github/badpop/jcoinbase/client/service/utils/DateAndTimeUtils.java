@@ -6,7 +6,9 @@ import java.time.ZoneId;
 
 public interface DateAndTimeUtils {
 
+  // TODO MAKE IT NULL SAFE USING OPTION
   static LocalDateTime fromInstant(final Instant instant) {
-    return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    if (instant != null) return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    else return null;
   }
 }

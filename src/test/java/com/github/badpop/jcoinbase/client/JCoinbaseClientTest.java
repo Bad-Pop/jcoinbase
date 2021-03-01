@@ -25,12 +25,12 @@ class JCoinbaseClientTest {
     assertThat(actual.getClient().connectTimeout()).contains(Duration.ofSeconds(3));
     assertThat(actual.getClient().followRedirects()).isEqualTo(NEVER);
 
-    assertThat(actual.getJsonDeserializer()).isNotNull().isInstanceOf(ObjectMapper.class);
-    assertThat(actual.getJsonDeserializer().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
-    assertThat(actual.getJsonDeserializer().getRegisteredModuleIds())
+    assertThat(actual.getJsonSerDes()).isNotNull().isInstanceOf(ObjectMapper.class);
+    assertThat(actual.getJsonSerDes().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
+    assertThat(actual.getJsonSerDes().getRegisteredModuleIds())
         .isNotEmpty()
         .doesNotContainNull();
-    assertThat(actual.getJsonDeserializer().getRegisteredModuleIds().size()).isEqualTo(2);
+    assertThat(actual.getJsonSerDes().getRegisteredModuleIds().size()).isEqualTo(2);
 
     assertThat(actual.getProperties()).isNotNull();
     assertThat(actual.getProperties()).isInstanceOf(JCoinbaseProperties.class);
@@ -48,12 +48,12 @@ class JCoinbaseClientTest {
     assertThat(actual.getClient().connectTimeout()).contains(Duration.ofSeconds(3));
     assertThat(actual.getClient().followRedirects()).isEqualTo(NORMAL);
 
-    assertThat(actual.getJsonDeserializer()).isNotNull().isInstanceOf(ObjectMapper.class);
-    assertThat(actual.getJsonDeserializer().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
-    assertThat(actual.getJsonDeserializer().getRegisteredModuleIds())
+    assertThat(actual.getJsonSerDes()).isNotNull().isInstanceOf(ObjectMapper.class);
+    assertThat(actual.getJsonSerDes().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
+    assertThat(actual.getJsonSerDes().getRegisteredModuleIds())
         .isNotEmpty()
         .doesNotContainNull();
-    assertThat(actual.getJsonDeserializer().getRegisteredModuleIds().size()).isEqualTo(2);
+    assertThat(actual.getJsonSerDes().getRegisteredModuleIds().size()).isEqualTo(2);
 
     assertThat(actual.getProperties()).isNotNull();
     assertThat(actual.getProperties()).isInstanceOf(JCoinbaseProperties.class);

@@ -41,7 +41,7 @@ public class CoinbaseDataService {
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(stringHttpResponse.body(), new TypeReference<DataDto<TimeDto>>() {})
                     .getData()
                     .toTime());
@@ -63,7 +63,7 @@ public class CoinbaseDataService {
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(
                         stringHttpResponse.body(),
                         new TypeReference<DataDto<List<CurrencyDto>>>() {})
@@ -89,7 +89,7 @@ public class CoinbaseDataService {
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(
                         stringHttpResponse.body(),
                         new TypeReference<DataDto<ExchangeRatesDto>>() {})
@@ -110,7 +110,7 @@ public class CoinbaseDataService {
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(stringHttpResponse.body(), new TypeReference<DataDto<PriceDto>>() {})
                     .getData()
                     .toPrice(priceType));

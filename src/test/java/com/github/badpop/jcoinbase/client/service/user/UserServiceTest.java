@@ -54,7 +54,7 @@ class UserServiceTest {
   void main() {
 
     var client =
-        JCoinbaseClientFactory.build("aGwLIl91byroXTiZ", "Ja0bTOXen0OozOnF8AlBeAYrwADFNxCO");
+        JCoinbaseClientFactory.build("W4QSrWYqgm8cCIPO", "GEpjPp44AoO7HKlgK6MDJcG0Pawn1FOC");
 
     var result = client.user().fetchCurrentUser();
 

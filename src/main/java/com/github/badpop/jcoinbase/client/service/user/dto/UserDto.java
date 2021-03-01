@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
 import com.github.badpop.jcoinbase.model.user.User;
+import lombok.Builder;
 
 import java.time.Instant;
 
 //@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class UserDto {
 
   private final String id;

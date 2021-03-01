@@ -9,7 +9,9 @@ import io.vavr.control.Option;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import static com.github.badpop.jcoinbase.exception.ErrorService.manageOnFailure;
+import java.time.Instant;
+
+import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
@@ -49,7 +51,8 @@ public class AuthenticationService {
               "You must specify an Api key and a secret to access this resource."));
     }
 
-    var message = timestamp + httpMethod + httpPath + httpBody;
+    var message =
+        timestamp + httpMethod + ("/v2" + httpPath) + ((httpBody == null) ? "" : httpBody);
     var signature = new HmacUtils(HMAC_SHA_256, secret.getBytes()).hmacHex(message);
 
     return new String[] {
@@ -65,6 +68,7 @@ public class AuthenticationService {
   }
 
   private long getCurrentTime() {
+    var toto = Instant.now().getEpochSecond();
     return System.currentTimeMillis() / 1000L;
   }
 
