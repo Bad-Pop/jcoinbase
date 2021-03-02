@@ -9,7 +9,7 @@ import io.vavr.control.Option;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import static com.github.badpop.jcoinbase.exception.ErrorService.*;
+import static com.github.badpop.jcoinbase.exception.ErrorService.manageOnFailure;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
@@ -48,9 +48,7 @@ public class AuthenticationService {
       manageOnFailure(jcex, jcex.getMessage(), jcex);
     }
 
-    // TODO REFACTOR /V2 USAGE TO INTEGRATE IT INTO PROPERTIES INSTEAD
-    var message =
-        timestamp + httpMethod + ("/v2" + httpPath) + ((httpBody == null) ? "" : httpBody);
+    var message = timestamp + httpMethod + httpPath + ((httpBody == null) ? "" : httpBody);
     var signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);
 
     return new String[] {

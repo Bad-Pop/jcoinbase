@@ -44,7 +44,7 @@ class AuthenticationServiceTest {
           .isInstanceOf(String[].class)
           .containsExactly(
               "CB-ACCESS-SIGN",
-              "eceea3f528e7ceeb21aee8b9f5773b2c846d84f4d0c2379140cb7fb036d80a96",
+              "f537a3320e2d33e209e2de9165a3ffcb7bac95fea1c2dc7cc45a76fa20dd528c",
               "CB-ACCESS-TIMESTAMP",
               "1613126414",
               "CB-ACCESS-KEY",
@@ -95,7 +95,7 @@ class AuthenticationServiceTest {
           .isInstanceOf(String[].class)
           .containsExactly(
               "CB-ACCESS-SIGN",
-              "5610cb5d35b50d65e3b66a82ca561f901508383b529abcb84e83a2abc5c8f0c2",
+              "d80c4ebb1a2a8c85024b795b7a6bdbfec3e9198b429e7bf31a843affc2d0f9f2",
               "CB-ACCESS-TIMESTAMP",
               "1613126414",
               "CB-ACCESS-KEY",

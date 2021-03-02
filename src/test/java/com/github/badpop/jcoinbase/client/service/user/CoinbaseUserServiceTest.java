@@ -50,7 +50,7 @@ class CoinbaseUserServiceTest {
     @Test
     void should_return_User() throws IOException {
       mockServer
-          .when(request().withMethod("GET").withPath("/user"))
+          .when(request().withMethod("GET").withPath("/v2/user"))
           .respond(
               response()
                   .withHeader("Content-Type", "application/json")
@@ -109,7 +109,7 @@ class CoinbaseUserServiceTest {
     @Test
     void should_return_failure() throws IOException {
       mockServer
-          .when(request().withMethod("GET").withPath("/user"))
+          .when(request().withMethod("GET").withPath("/v2/user"))
           .respond(
               response()
                   .withHeader("Content-Type", "application/json")

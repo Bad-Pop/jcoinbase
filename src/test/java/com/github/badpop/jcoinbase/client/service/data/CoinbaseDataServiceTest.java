@@ -56,7 +56,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_time() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/time"))
+              .when(request().withMethod("GET").withPath("/v2/time"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -78,7 +78,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_failure() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/time"))
+              .when(request().withMethod("GET").withPath("/v2/time"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -95,7 +95,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_Currencies() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/currencies"))
+              .when(request().withMethod("GET").withPath("/v2/currencies"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -118,7 +118,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_failure() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/currencies"))
+              .when(request().withMethod("GET").withPath("/v2/currencies"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -138,7 +138,7 @@ class CoinbaseDataServiceTest {
               .when(
                       request()
                               .withMethod("GET")
-                              .withPath("/exchange-rates")
+                              .withPath("/v2/exchange-rates")
                               .withQueryStringParameter("currency", "BTC"))
               .respond(
                       response()
@@ -165,7 +165,7 @@ class CoinbaseDataServiceTest {
               .when(
                       request()
                               .withMethod("GET")
-                              .withPath("/exchange-rates")
+                              .withPath("/v2/exchange-rates")
                               .withQueryStringParameter("currency", "invalidCurrency"))
               .respond(
                       response()
@@ -183,7 +183,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_BUY_Price() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/prices/BTC-EUR/buy"))
+              .when(request().withMethod("GET").withPath("/v2/prices/BTC-EUR/buy"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -205,7 +205,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_SELL_Price() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/prices/BTC-EUR/sell"))
+              .when(request().withMethod("GET").withPath("/v2/prices/BTC-EUR/sell"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -227,7 +227,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_SPOT_Price() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/prices/BTC-EUR/spot"))
+              .when(request().withMethod("GET").withPath("/v2/prices/BTC-EUR/spot"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
@@ -249,7 +249,7 @@ class CoinbaseDataServiceTest {
     @Test
     void should_return_failure() throws IOException {
       mockServer
-              .when(request().withMethod("GET").withPath("/prices/BTC-invalidCurrency/spot"))
+              .when(request().withMethod("GET").withPath("/v2/prices/BTC-invalidCurrency/spot"))
               .respond(
                       response()
                               .withHeader("Content-Type", "application/json")
