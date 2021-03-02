@@ -17,7 +17,7 @@ import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
 @NoArgsConstructor
 public class AuthenticationService {
 
-  private static Void VOID;
+  private static Void aVoid;
 
   public String[] getAuthenticationHeaders(
       final JCoinbaseProperties properties,
@@ -42,10 +42,10 @@ public class AuthenticationService {
       final String httpBody) {
 
     if (!isAllowed(apiKey, secret)) {
-      var jcex = new JCoinbaseException(
+      var jcex =
+          new JCoinbaseException(
               "You must specify an Api key and a secret to access this resource.");
       manageOnFailure(jcex, jcex.getMessage(), jcex);
-
     }
 
     // TODO REFACTOR /V2 USAGE TO INTEGRATE IT INTO PROPERTIES INSTEAD
@@ -71,16 +71,12 @@ public class AuthenticationService {
 
   public Either<JCoinbaseException, Void> allow(final JCoinbaseClient client) {
     if (isAllowed(client.getProperties().getApiKey(), client.getProperties().getSecret())) {
-      return Right(VOID);
+      return Right(aVoid);
     } else {
       return Left(
           new JCoinbaseException(
               "You must specify an Api key and a secret to access this resource."));
     }
-  }
-
-  private void manageNotAllowed(final JCoinbaseException e) {
-    manageOnFailure(e, e.getMessage(), e);
   }
 
   private boolean isAllowed(final Option<String> apiKey, final Option<String> secret) {

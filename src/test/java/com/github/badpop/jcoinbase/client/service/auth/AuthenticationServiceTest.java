@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.client.service.auth;
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import io.vavr.control.Option;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -127,21 +128,21 @@ class AuthenticationServiceTest {
       var httpPath = "/path";
       var httpBody = "";
 
+      var properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null);
+      Option<String> maybeParam = Option(null);
+
       assertThatExceptionOfType(JCoinbaseException.class)
           .isThrownBy(
               () ->
                   authenticationService.getAuthenticationHeaders(
-                      JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null),
-                      httpMethod,
-                      httpPath,
-                      httpBody))
+                      properties, httpMethod, httpPath, httpBody))
           .withMessage("You must specify an Api key and a secret to access this resource.");
 
       assertThatExceptionOfType(JCoinbaseException.class)
           .isThrownBy(
               () ->
                   authenticationService.getAuthenticationHeaders(
-                      Option(null), Option(null), timestamp, httpMethod, httpPath, httpBody))
+                      maybeParam, maybeParam, timestamp, httpMethod, httpPath, httpBody))
           .withMessage("You must specify an Api key and a secret to access this resource.");
     }
   }
