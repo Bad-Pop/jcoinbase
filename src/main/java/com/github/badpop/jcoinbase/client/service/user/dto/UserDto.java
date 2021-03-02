@@ -1,85 +1,85 @@
 package com.github.badpop.jcoinbase.client.service.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
+import com.github.badpop.jcoinbase.model.user.ResourceType;
 import com.github.badpop.jcoinbase.model.user.User;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.Instant;
 
-//@JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
-public class UserDto {
+import static com.github.badpop.jcoinbase.model.user.ResourceType.UNKNOWN;
+import static io.vavr.API.Option;
 
+@Getter
+@AllArgsConstructor
+public class UserDto {
   private final String id;
   private final String name;
-  private final String userName;
+  private final String username; // Optional
   private final String profileLocation; // Optional
   private final String profileBio; // Optional
-  private final String profileUrl;
+  private final String profileUrl; // Optional
   private final String avatarUrl;
   private final String resource;
   private final String resourcePath;
+  private final String email;
+  private final String legacyId;
   private final String timeZone;
   private final String nativeCurrency;
-  private final String bitcoinUnits;
+  private final String bitcoinUnit;
+  private final String state; // Optional
   private final CountryDto country;
+  private final NationalityDto nationality;
+  private final boolean regionSupportsFiatTransfers;
+  private final boolean regionSupportsCryptoToCryptoTransfers;
   private final Instant createdAt;
-  private final String email;
+  private final boolean supportsRewards;
+  private final TiersDto tiers;
+  private final ReferralMoneyDto referralMoney;
+  private final boolean hasBlockingBuyRestrictions;
+  private final boolean hasBuyDepositPaymentMethods;
+  private final boolean hasUnverifiedBuyDepositPaymentMethods;
+  private final boolean needsKycRemediation;
+  private final boolean showInstantAchUx;
+  private final String userType;
 
-  @JsonCreator
-  public UserDto(
-      @JsonProperty("id") String id,
-      @JsonProperty("name") String name,
-      @JsonProperty("username") String userName,
-      @JsonProperty("profile_location") String profileLocation,
-      @JsonProperty("profile_bio") String profileBio,
-      @JsonProperty("profile_url") String profileUrl,
-      @JsonProperty("avatar_url") String avatarUrl,
-      @JsonProperty("resource") String resource,
-      @JsonProperty("resource_path") String resourcePath,
-      @JsonProperty("time_zone") String timeZone,
-      @JsonProperty("native_currency") String nativeCurrency,
-      @JsonProperty("bitcoin_unit") String bitcoinUnit,
-      @JsonProperty("country") CountryDto country,
-      @JsonProperty("created_at") Instant createdAt,
-      @JsonProperty("email") String email) {
-    this.id = id;
-    this.name = name;
-    this.userName = userName;
-    this.profileLocation = profileLocation;
-    this.profileBio = profileBio;
-    this.profileUrl = profileUrl;
-    this.avatarUrl = avatarUrl;
-    this.resource = resource;
-    this.resourcePath = resourcePath;
-    this.timeZone = timeZone;
-    this.nativeCurrency = nativeCurrency;
-    this.bitcoinUnits = bitcoinUnit;
-    this.country = country;
-    this.createdAt = createdAt;
-    this.email = email;
-  }
+  @JsonProperty("has_made_a_purchase")
+  private final boolean hasMadeAPurchase;
 
   public User toUser() {
     return User.builder()
         .id(id)
         .name(name)
-        .userName(userName)
-        .profileLocation(profileLocation)
-        .profileBio(profileBio)
-        .profileUrl(profileUrl)
         .avatarUrl(avatarUrl)
-        .resource(resource)
+        .resourceType(ResourceType.fromString(resource).getOrElse(UNKNOWN))
         .resourcePath(resourcePath)
+        .email(email)
+        .legacyId(legacyId)
         .timeZone(timeZone)
         .nativeCurrency(nativeCurrency)
-        .bitcoinUnits(bitcoinUnits)
+        .bitcoinUnit(bitcoinUnit)
+        .username(Option(username))
+        .profileLocation(Option(profileLocation))
+        .profileBio(Option(profileBio))
+        .profileUrl(Option(profileUrl))
+        .userType(Option(userType))
+        .state(Option(state))
+        .regionSupportsFiatTransfers(regionSupportsFiatTransfers)
+        .regionSupportsCryptoToCryptoTransfers(regionSupportsCryptoToCryptoTransfers)
+        .supportsRewards(supportsRewards)
+        .hasBlockingBuyRestrictions(hasBlockingBuyRestrictions)
+        .hasUnverifiedBuyDepositPaymentMethods(hasUnverifiedBuyDepositPaymentMethods)
+        .hasMadeAPurchase(hasMadeAPurchase)
+        .hasBuyDepositPaymentMethods(hasBuyDepositPaymentMethods)
+        .needsKycRemediation(needsKycRemediation)
+        .showInstantAchUx(showInstantAchUx)
+        .createdAt(DateAndTimeUtils.fromInstant(createdAt).getOrNull())
         .country(country.toCountry())
-        .createdAt(DateAndTimeUtils.fromInstant(createdAt))
-        .email(email)
+        .nationality(nationality.toNationality())
+        .tiers(tiers.toTiers())
+        .referralMoney(referralMoney.toReferralMoney())
         .build();
   }
 }

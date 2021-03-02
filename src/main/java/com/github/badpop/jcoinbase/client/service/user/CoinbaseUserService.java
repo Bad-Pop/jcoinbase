@@ -14,7 +14,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 public class CoinbaseUserService {
 
-  // TODO TEST
   public Try<User> fetchCurrentUser(
       final JCoinbaseClient client, final AuthenticationService authentication) {
 
@@ -31,7 +30,7 @@ public class CoinbaseUserService {
             .headers(requestHeaders)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client

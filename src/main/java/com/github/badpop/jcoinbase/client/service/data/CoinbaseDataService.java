@@ -37,7 +37,7 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
@@ -59,7 +59,7 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
@@ -85,7 +85,7 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
@@ -106,7 +106,7 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client

@@ -9,8 +9,6 @@ import io.vavr.control.Option;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import java.time.Instant;
-
 import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
@@ -21,39 +19,39 @@ public class AuthenticationService {
 
   private static Void VOID;
 
-  // TODO TEST
   public String[] getAuthenticationHeaders(
       final JCoinbaseProperties properties,
       final String httpMethod,
       final String httpPath,
       final String httpBody) {
     return getAuthenticationHeaders(
-        properties.getApiKey().getOrNull(),
-        properties.getSecret().getOrNull(),
+        properties.getApiKey(),
+        properties.getSecret(),
         getCurrentTime(),
         httpMethod,
         httpPath,
         httpBody);
   }
 
-  // TODO TEST
   public String[] getAuthenticationHeaders(
-      final String apiKey,
-      final String secret,
+      final Option<String> apiKey,
+      final Option<String> secret,
       final long timestamp,
       final String httpMethod,
       final String httpPath,
       final String httpBody) {
 
-    if (StringUtils.isBlank(apiKey) || StringUtils.isBlank(secret)) {
-      manageNotAllowed(
-          new JCoinbaseException(
-              "You must specify an Api key and a secret to access this resource."));
+    if (!isAllowed(apiKey, secret)) {
+      var jcex = new JCoinbaseException(
+              "You must specify an Api key and a secret to access this resource.");
+      manageOnFailure(jcex, jcex.getMessage(), jcex);
+
     }
 
+    // TODO REFACTOR /V2 USAGE TO INTEGRATE IT INTO PROPERTIES INSTEAD
     var message =
         timestamp + httpMethod + ("/v2" + httpPath) + ((httpBody == null) ? "" : httpBody);
-    var signature = new HmacUtils(HMAC_SHA_256, secret.getBytes()).hmacHex(message);
+    var signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);
 
     return new String[] {
       "CB-ACCESS-SIGN",
@@ -61,18 +59,16 @@ public class AuthenticationService {
       "CB-ACCESS-TIMESTAMP",
       String.valueOf(timestamp),
       "CB-ACCESS-KEY",
-      apiKey,
+      apiKey.get(),
       "Accept",
       "application/json"
     };
   }
 
   private long getCurrentTime() {
-    var toto = Instant.now().getEpochSecond();
     return System.currentTimeMillis() / 1000L;
   }
 
-  // TODO TEST
   public Either<JCoinbaseException, Void> allow(final JCoinbaseClient client) {
     if (isAllowed(client.getProperties().getApiKey(), client.getProperties().getSecret())) {
       return Right(VOID);
@@ -83,8 +79,7 @@ public class AuthenticationService {
     }
   }
 
-  // TODO TEST
-  public void manageNotAllowed(final JCoinbaseException e) {
+  private void manageNotAllowed(final JCoinbaseException e) {
     manageOnFailure(e, e.getMessage(), e);
   }
 

@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
@@ -34,19 +35,17 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class JCoinbaseClient {
 
-  @Getter HttpClient client;
+  @Getter HttpClient httpClient;
   @Getter ObjectMapper jsonSerDes;
   @Getter JCoinbaseProperties properties;
-  AuthenticationService authService;
+  @Getter AuthenticationService authService;
   DataService dataService;
   UserService userService;
 
-  //TODO TEST
   public DataService data() {
     return dataService;
   }
 
-  //TODO TEST
   public UserService user() {
     var allowed = authService.allow(this);
 
@@ -58,40 +57,71 @@ public class JCoinbaseClient {
   }
 
   protected JCoinbaseClient build(
-      final String apiKey, final String secret, final long timeout, final boolean followRedirects) {
+      final String apiKey,
+      final String secret,
+      final long timeout,
+      final boolean followRedirects,
+      final boolean threadSafe) {
     log.info("Start building new JCoinbase client !");
 
-    jsonSerDes =
+    buildJsonSerDes();
+    buildProperties(apiKey, secret, threadSafe);
+    buildAuthService();
+    buildDataService();
+    buildUserService();
+    buildHttpClient(followRedirects, timeout);
+
+    log.info("JCoinbase client successfully built !");
+
+    return this;
+  }
+
+  private void buildJsonSerDes() {
+    this.jsonSerDes =
         new ObjectMapper()
             .findAndRegisterModules()
             .registerModule(new VavrModule())
             .registerModule(new JavaTimeModule())
-            .setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC+01:00"))) // TODO MAKE CONFIGURABLE PARIS ZONE ID
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .setTimeZone(
+                TimeZone.getTimeZone(
+                    ZoneId.of("UTC+01:00"))) // TODO MAKE CONFIGURABLE PARIS ZONE ID
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
+  }
 
-    this.properties = JCoinbasePropertiesFactory.getProperties(apiKey, secret);
+  private void buildProperties(final String apiKey, final String secret, final boolean threadSafe) {
+    this.properties =
+        threadSafe
+            ? JCoinbasePropertiesFactory.buildThreadSafeSingleton(apiKey, secret)
+            : JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret);
+  }
 
-    authService = new AuthenticationService();
+  private void buildAuthService() {
+    this.authService = new AuthenticationService();
+  }
 
+  private void buildDataService() {
     this.dataService = new DataService(this, new CoinbaseDataService());
-    this.userService = new UserService(this, new CoinbaseUserService(), authService);
+  }
 
+  private void buildUserService() {
+    this.userService = new UserService(this, new CoinbaseUserService(), authService);
+  }
+
+  private void buildHttpClient(final boolean followRedirects, final long timeout) {
     if (followRedirects) {
-      this.client =
+      this.httpClient =
           HttpClient.newBuilder()
               .connectTimeout(Duration.of(timeout, SECONDS))
               .followRedirects(NORMAL)
               .build();
     } else {
-      this.client =
+      this.httpClient =
           HttpClient.newBuilder()
               .connectTimeout(Duration.of(timeout, SECONDS))
               .followRedirects(NEVER)
               .build();
     }
-    log.info("JCoinbase client successfully built !");
-
-    return this;
   }
 
   private void manageNotAllowed(final Throwable throwable) {

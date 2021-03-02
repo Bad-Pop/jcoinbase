@@ -5,8 +5,6 @@ import lombok.Value;
 
 @Value
 @Builder
-public class Country {
-  String code;
-  String name;
-  boolean inEurope;
+public class Tiers {
+  String completedDescription;
 }

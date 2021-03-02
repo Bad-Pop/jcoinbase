@@ -19,6 +19,6 @@ public class TimeDto {
   }
 
   public Time toTime() {
-    return Time.builder().iso(DateAndTimeUtils.fromInstant(iso)).epoch(epoch).build();
+    return Time.builder().iso(DateAndTimeUtils.fromInstant(iso).getOrNull()).epoch(epoch).build();
   }
 }
