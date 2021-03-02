@@ -16,6 +16,7 @@ import org.mockserver.socket.PortFactory;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
 
 import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
@@ -35,7 +36,9 @@ class CoinbaseUserServiceTest {
   static void init() {
     port = PortFactory.findFreePort();
     mockServer = ClientAndServer.startClientAndServer(port);
-    client = JCoinbaseClientFactory.build("loremIpsum", "dolorSitAmet", 3, false, false);
+    client =
+        JCoinbaseClientFactory.build(
+            "loremIpsum", "dolorSitAmet", 3, false, false, ZoneId.of("UTC+01:00"));
   }
 
   @BeforeEach

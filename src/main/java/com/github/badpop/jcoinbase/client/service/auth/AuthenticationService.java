@@ -3,13 +3,13 @@ package com.github.badpop.jcoinbase.client.service.auth;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
+import com.github.badpop.jcoinbase.exception.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import static com.github.badpop.jcoinbase.exception.ErrorService.manageOnFailure;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
@@ -45,7 +45,7 @@ public class AuthenticationService {
       var jcex =
           new JCoinbaseException(
               "You must specify an Api key and a secret to access this resource.");
-      manageOnFailure(jcex, jcex.getMessage(), jcex);
+      ErrorManagerService.manageOnFailure(jcex, jcex.getMessage(), jcex);
     }
 
     var message = timestamp + httpMethod + httpPath + ((httpBody == null) ? "" : httpBody);

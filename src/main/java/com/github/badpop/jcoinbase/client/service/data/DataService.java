@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client.service.data;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.exception.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
@@ -10,8 +11,6 @@ import com.github.badpop.jcoinbase.model.data.Time;
 import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 
 @Slf4j
 @AllArgsConstructor
@@ -26,7 +25,7 @@ public class DataService {
         .onSuccess(time -> log.info("Successfully fetch Time resource : {}", time))
         .onFailure(
             throwable ->
-                manageOnFailure(
+                ErrorManagerService.manageOnFailure(
                     new JCoinbaseException(throwable),
                     "An error occurred while fetching coinbase Time resource",
                     throwable))
@@ -43,7 +42,7 @@ public class DataService {
         .onSuccess(currencies -> log.info("Successfully fetch Currencies resources"))
         .onFailure(
             throwable ->
-                manageOnFailure(
+                ErrorManagerService.manageOnFailure(
                     new JCoinbaseException(throwable),
                     "An error occurred while fetching coinbase Currencies resources",
                     throwable))
@@ -58,7 +57,7 @@ public class DataService {
                 log.info("Successfully fetch Exchange rates for currency {}", currency))
         .onFailure(
             throwable ->
-                manageOnFailure(
+                ErrorManagerService.manageOnFailure(
                     new JCoinbaseException(throwable),
                     "An error occurred while fetching coinbase Exchange rates for currency : {}",
                     throwable,
@@ -80,7 +79,7 @@ public class DataService {
                     priceType))
         .onFailure(
             throwable ->
-                manageOnFailure(
+                ErrorManagerService.manageOnFailure(
                     new JCoinbaseException(throwable),
                     "An error occurred while fetching coinbase price for PriceType={}, currency{} and targetCurrency={}",
                     throwable,

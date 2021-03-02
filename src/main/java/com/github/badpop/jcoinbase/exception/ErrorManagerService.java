@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @UtilityClass
-public class ErrorService {
+public class ErrorManagerService {
   public void manageOnFailure(
       final JCoinbaseException jcex,
       final String message,

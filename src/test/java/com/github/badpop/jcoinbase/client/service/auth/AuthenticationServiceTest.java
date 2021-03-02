@@ -8,6 +8,8 @@ import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+
 import static io.vavr.API.Option;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -154,14 +156,17 @@ class AuthenticationServiceTest {
 
     @Test
     void should_be_allowed() {
-      var client = JCoinbaseClientFactory.build("loremIpsumd", "dolorSitAmet", 3, false, false);
+      var client =
+          JCoinbaseClientFactory.build(
+              "loremIpsumd", "dolorSitAmet", 3, false, false, ZoneId.of("UTC+01:00"));
       var actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsOnRight(VOID);
     }
 
     @Test
     void should_not_be_allowed() {
-      var client = JCoinbaseClientFactory.build(null, null, 3, false, false);
+      var client =
+          JCoinbaseClientFactory.build(null, null, 3, false, false, ZoneId.of("UTC+01:00"));
       var actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsLeftInstanceOf(JCoinbaseException.class);
     }

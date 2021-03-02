@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+
 @Slf4j
 @Disabled("For development purpose only")
 @DisplayName("Test class for development purpose only")
@@ -17,7 +19,12 @@ public class FeatureDevelopmentTest {
 
     var client =
         JCoinbaseClientFactory.build(
-            "B4FyyXIxMbtAlAfe", "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ", 3, false, false);
+            "B4FyyXIxMbtAlAfe",
+            "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ",
+            3,
+            false,
+            false,
+            ZoneId.of("UTC+01:00"));
 
     var data = client.user().fetchCurrentUser();
 

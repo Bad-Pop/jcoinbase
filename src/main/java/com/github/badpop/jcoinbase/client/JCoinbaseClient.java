@@ -10,6 +10,7 @@ import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
+import com.github.badpop.jcoinbase.exception.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.jackson.datatype.VavrModule;
 import lombok.Getter;
@@ -23,7 +24,6 @@ import java.time.ZoneId;
 import java.util.TimeZone;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static com.github.badpop.jcoinbase.exception.ErrorService.*;
 import static java.net.http.HttpClient.Redirect.NEVER;
 import static java.net.http.HttpClient.Redirect.NORMAL;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -61,10 +61,11 @@ public class JCoinbaseClient {
       final String secret,
       final long timeout,
       final boolean followRedirects,
+      final ZoneId zoneId,
       final boolean threadSafe) {
     log.info("Start building new JCoinbase client !");
 
-    buildJsonSerDes();
+    buildJsonSerDes(zoneId);
     buildProperties(apiKey, secret, threadSafe);
     buildAuthService();
     buildDataService();
@@ -76,16 +77,14 @@ public class JCoinbaseClient {
     return this;
   }
 
-  private void buildJsonSerDes() {
+  private void buildJsonSerDes(final ZoneId zoneId) {
     this.jsonSerDes =
         new ObjectMapper()
             .findAndRegisterModules()
             .registerModule(new VavrModule())
             .registerModule(new JavaTimeModule())
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-            .setTimeZone(
-                TimeZone.getTimeZone(
-                    ZoneId.of("UTC+01:00"))) // TODO MAKE CONFIGURABLE PARIS ZONE ID
+            .setTimeZone(TimeZone.getTimeZone(zoneId))
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
   }
 
@@ -125,7 +124,7 @@ public class JCoinbaseClient {
   }
 
   private void manageNotAllowed(final Throwable throwable) {
-    manageOnFailure(
+    ErrorManagerService.manageOnFailure(
         new JCoinbaseException(throwable),
         "Unable to allow this request. Please make sure you correctly build your JCoinbaseClient with API KEY and SECRET",
         throwable);
