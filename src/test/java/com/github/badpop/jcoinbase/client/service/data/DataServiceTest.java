@@ -1,14 +1,17 @@
 package com.github.badpop.jcoinbase.client.service.data;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
 import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Time;
+import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
 import io.vavr.control.Try;
 import lombok.val;
 import org.assertj.vavr.api.VavrAssertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import static com.github.badpop.jcoinbase.model.data.Price.PriceType.*;
-import static io.vavr.API.List;
-import static io.vavr.API.Map;
+import static io.vavr.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
@@ -33,234 +35,282 @@ class DataServiceTest {
   @Mock private JCoinbaseClient client;
   @Mock private CoinbaseDataService coinbaseDataService;
 
-  @Test
-  void should_return_time() {
+  @Nested
+  class GetTime {
 
-    val localDT = LocalDateTime.of(2021, 2, 7, 15, 30);
-    val time =
-        Time.builder()
-            .iso(localDT)
-            .epoch(localDT.toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDT)))
-            .build();
+    @Test
+    void should_return_time() {
+      val localDT = LocalDateTime.of(2021, 2, 7, 15, 30);
+      val time =
+          Time.builder()
+              .iso(localDT)
+              .epoch(
+                  localDT.toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDT)))
+              .build();
 
-    when(coinbaseDataService.fetchTime(client)).thenReturn(Try.success(time));
+      when(coinbaseDataService.fetchTime(client)).thenReturn(Try.success(CallResult.success(time)));
 
-    val actual = dataService.fetchTime();
+      val actual = dataService.getTime();
 
-    assertThat(actual).isEqualTo(time);
+      assertThat(actual).isNotEmpty().isInstanceOf(CallResult.class);
+      assertThat(actual.get()).isEqualTo(time);
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchTime(client);
-    verifyNoMoreInteractions(coinbaseDataService);
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchTime(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_failure() {
+      when(coinbaseDataService.fetchTime(client))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getTime();
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchTime(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_failure_as_java() {
+      when(coinbaseDataService.fetchTime(client))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getTimeAsJava();
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure())
+          .isInstanceOf(java.util.List.class)
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchTime(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void getTime_should_throw_JCoinbaseException() {
+
+      val throwable = new Exception("Error message");
+
+      when(coinbaseDataService.fetchTime(client)).thenReturn(Try.failure(throwable));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> dataService.getTime())
+          .withMessage("java.lang.Exception: " + throwable.getMessage());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchTime(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
   }
 
-  @Test
-  void getTime_should_throw_JCoinbaseException() {
+  @Nested
+  class GetCurrencies {
+    @Test
+    void getCurrenciesAsJavaList_should_return_currencies_as_java_list() {
 
-    val throwable = new Exception("Error message");
+      val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
+      val usd =
+          Currency.builder()
+              .id("USD")
+              .name("United States Dollar")
+              .minSize(BigDecimal.valueOf(0.01))
+              .build();
 
-    when(coinbaseDataService.fetchTime(client)).thenReturn(Try.failure(throwable));
+      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
 
-    assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.fetchTime())
-        .withMessage("java.lang.Exception: " + throwable.getMessage());
+      val actual = dataService.getCurrenciesAsJava();
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchTime(client);
-    verifyNoMoreInteractions(coinbaseDataService);
+      assertThat(actual).containsExactly(eur, usd);
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void getCurrenciesAsJavaList_should_throw_JCoinbaseException() {
+      val throwable = new Exception("Error message");
+      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> dataService.getCurrenciesAsJava())
+          .withMessage("java.lang.Exception: " + throwable.getMessage());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void getCurrencies_should_return_currencies_as_vavr_list() {
+
+      val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
+      val usd =
+          Currency.builder()
+              .id("USD")
+              .name("United States Dollar")
+              .minSize(BigDecimal.valueOf(0.01))
+              .build();
+
+      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+
+      val actual = dataService.getCurrencies();
+
+      VavrAssertions.assertThat(actual).containsExactly(eur, usd);
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void getCurrencies_should_throw_JCoinbaseException() {
+      val throwable = new Exception("Error message");
+      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> dataService.getCurrencies())
+          .withMessage("java.lang.Exception: " + throwable.getMessage());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
   }
 
-  @Test
-  void getCurrenciesAsJavaList_should_return_currencies_as_java_list() {
+  @Nested
+  class GetEchangeRates {
+    @Test
+    void getExchangeRates_should_return_ExchangeRates() {
 
-    val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
-    val usd =
-        Currency.builder()
-            .id("USD")
-            .name("United States Dollar")
-            .minSize(BigDecimal.valueOf(0.01))
-            .build();
+      val currency = "BTC";
+      val rates =
+          Map(
+              "EUR", BigDecimal.valueOf(32000.47),
+              "USD", BigDecimal.valueOf(39000.09));
 
-    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+      val exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
 
-    val actual = dataService.fetchCurrenciesAsJavaList();
+      when(coinbaseDataService.fetchExchangeRates(client, currency))
+          .thenReturn(Try.success(exchangeRates));
 
-    assertThat(actual).containsExactly(eur, usd);
+      val actual = dataService.getExchangeRates(currency);
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchCurrencies(client);
-    verifyNoMoreInteractions(coinbaseDataService);
+      assertThat(actual).isEqualTo(exchangeRates);
+      assertThat(actual.getRates()).containsExactlyElementsOf(rates);
+      assertThat(actual.getRatesAsJavaMap()).containsExactlyEntriesOf(rates.toJavaMap());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchExchangeRates(client, currency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void getExchangeRates_should_throw_JCoinbaseException() {
+      val currency = "BTC";
+      val throwable = new Exception("Error message");
+      when(coinbaseDataService.fetchExchangeRates(client, currency))
+          .thenReturn(Try.failure(throwable));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> dataService.getExchangeRates(currency))
+          .withMessage("java.lang.Exception: " + throwable.getMessage());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchExchangeRates(client, currency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
   }
 
-  @Test
-  void getCurrenciesAsJavaList_should_throw_JCoinbaseException() {
-    val throwable = new Exception("Error message");
-    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
+  @Nested
+  class GetPrices {
+    @Test
+    void getPrice_should_return_currency_BUY_PRICE() {
 
-    assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.fetchCurrenciesAsJavaList())
-        .withMessage("java.lang.Exception: " + throwable.getMessage());
+      val priceType = BUY;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchCurrencies(client);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
+      val price = Price.builder().build();
 
-  @Test
-  void getCurrencies_should_return_currencies_as_vavr_list() {
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(Try.success(price));
 
-    val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
-    val usd =
-        Currency.builder()
-            .id("USD")
-            .name("United States Dollar")
-            .minSize(BigDecimal.valueOf(0.01))
-            .build();
+      val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+      assertThat(actual).isNotNull().isEqualTo(price);
 
-    val actual = dataService.fetchCurrencies();
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
 
-    VavrAssertions.assertThat(actual).containsExactly(eur, usd);
+    @Test
+    void getPrice_should_return_currency_SELL_PRICE() {
+      val priceType = SELL;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchCurrencies(client);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
+      val price = Price.builder().build();
 
-  @Test
-  void getCurrencies_should_throw_JCoinbaseException() {
-    val throwable = new Exception("Error message");
-    when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(Try.success(price));
 
-    assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.fetchCurrencies())
-        .withMessage("java.lang.Exception: " + throwable.getMessage());
+      val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchCurrencies(client);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
+      assertThat(actual).isNotNull().isEqualTo(price);
 
-  @Test
-  void getExchangeRates_should_return_ExchangeRates() {
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
 
-    val currency = "BTC";
-    val rates =
-        Map(
-            "EUR", BigDecimal.valueOf(32000.47),
-            "USD", BigDecimal.valueOf(39000.09));
+    @Test
+    void getPrice_should_return_currency_SPOT_PRICE() {
+      val priceType = SPOT;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
 
-    val exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
+      val price = Price.builder().build();
 
-    when(coinbaseDataService.fetchExchangeRates(client, currency))
-        .thenReturn(Try.success(exchangeRates));
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(Try.success(price));
 
-    val actual = dataService.fetchExchangeRates(currency);
+      val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-    assertThat(actual).isEqualTo(exchangeRates);
-    assertThat(actual.getRates()).containsExactlyElementsOf(rates);
-    assertThat(actual.getRatesAsJavaMap()).containsExactlyEntriesOf(rates.toJavaMap());
+      assertThat(actual).isNotNull().isEqualTo(price);
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchExchangeRates(client, currency);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
 
-  @Test
-  void getExchangeRates_should_throw_JCoinbaseException() {
-    val currency = "BTC";
-    val throwable = new Exception("Error message");
-    when(coinbaseDataService.fetchExchangeRates(client, currency))
-        .thenReturn(Try.failure(throwable));
+    @Test
+    void getPrice_should_throw_JCoinbaseException() {
 
-    assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.fetchExchangeRates(currency))
-        .withMessage("java.lang.Exception: " + throwable.getMessage());
+      val throwable = new Exception("Error message");
+      val priceType = SPOT;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
 
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchExchangeRates(client, currency);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(Try.failure(throwable));
 
-  @Test
-  void getPrice_should_return_currency_BUY_PRICE() {
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> dataService.getPrice(priceType, baseCurrency, targetCurrency))
+          .withMessage("java.lang.Exception: " + throwable.getMessage());
 
-    val priceType = BUY;
-    val baseCurrency = "BTC";
-    val targetCurrency = "EUR";
-
-    val price = Price.builder().build();
-
-    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-        .thenReturn(Try.success(price));
-
-    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
-
-    assertThat(actual).isNotNull().isEqualTo(price);
-
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
-
-  @Test
-  void getPrice_should_return_currency_SELL_PRICE() {
-    val priceType = SELL;
-    val baseCurrency = "BTC";
-    val targetCurrency = "EUR";
-
-    val price = Price.builder().build();
-
-    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-        .thenReturn(Try.success(price));
-
-    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
-
-    assertThat(actual).isNotNull().isEqualTo(price);
-
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
-
-  @Test
-  void getPrice_should_return_currency_SPOT_PRICE() {
-    val priceType = SPOT;
-    val baseCurrency = "BTC";
-    val targetCurrency = "EUR";
-
-    val price = Price.builder().build();
-
-    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-        .thenReturn(Try.success(price));
-
-    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
-
-    assertThat(actual).isNotNull().isEqualTo(price);
-
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
-    verifyNoMoreInteractions(coinbaseDataService);
-  }
-
-  @Test
-  void getPrice_should_throw_JCoinbaseException() {
-
-    val throwable = new Exception("Error message");
-    val priceType = SPOT;
-    val baseCurrency = "BTC";
-    val targetCurrency = "EUR";
-
-    when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-        .thenReturn(Try.failure(throwable));
-
-    assertThatExceptionOfType(JCoinbaseException.class)
-        .isThrownBy(() -> dataService.fetchPrice(priceType, baseCurrency, targetCurrency))
-        .withMessage("java.lang.Exception: " + throwable.getMessage());
-
-    verifyNoInteractions(client);
-    verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
-    verifyNoMoreInteractions(coinbaseDataService);
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
   }
 }

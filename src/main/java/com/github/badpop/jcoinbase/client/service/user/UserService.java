@@ -29,7 +29,7 @@ public class UserService {
         .onSuccess(user -> log.info("Successfully fetch current user."))
         .onFailure(
             throwable ->
-                ErrorManagerService.manageOnFailure(
+                ErrorManagerService.manageOnError(
                     new JCoinbaseException(throwable),
                     "An error occurred while fetching current user",
                     throwable))

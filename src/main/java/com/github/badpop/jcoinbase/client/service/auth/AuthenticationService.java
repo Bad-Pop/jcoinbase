@@ -45,7 +45,7 @@ public class AuthenticationService {
       var jcex =
           new JCoinbaseException(
               "You must specify an Api key and a secret to access this resource.");
-      ErrorManagerService.manageOnFailure(jcex, jcex.getMessage(), jcex);
+      ErrorManagerService.manageOnError(jcex, jcex.getMessage(), jcex);
     }
 
     var message = timestamp + httpMethod + httpPath + ((httpBody == null) ? "" : httpBody);

@@ -3,10 +3,12 @@ package com.github.badpop.jcoinbase.client.service.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
+import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
 import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Time;
+import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
 import com.github.badpop.jcoinbase.testutils.JsonUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,9 +43,7 @@ class CoinbaseDataServiceTest {
   static void init() {
     port = PortFactory.findFreePort();
     mockServer = ClientAndServer.startClientAndServer(port);
-    client =
-        JCoinbaseClientFactory.build(
-            "loremIpsum", "dolorSitAmet", 3, false);
+    client = JCoinbaseClientFactory.build("loremIpsum", "dolorSitAmet", 3, false);
   }
 
   @BeforeEach
@@ -66,8 +66,9 @@ class CoinbaseDataServiceTest {
 
       var actual = service.fetchTime(client);
 
-      assertThat(actual).isSuccess().containsInstanceOf(Time.class);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      Assertions.assertThat(actual.get().get())
           .isEqualTo(
               Time.builder()
                   .iso(
@@ -75,6 +76,24 @@ class CoinbaseDataServiceTest {
                           Instant.ofEpochSecond(1435082571L), ZoneId.systemDefault()))
                   .epoch(1435082571L)
                   .build());
+    }
+
+    @Test
+    void should_return_callresult_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/time"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      var actual = service.fetchTime(client);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isEmpty();
+      assertThat(actual.get().getFailure())
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
     }
 
     @Test
