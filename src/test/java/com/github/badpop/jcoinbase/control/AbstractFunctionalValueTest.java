@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.control;
 
 import io.vavr.control.Option;
+import lombok.val;
 import org.assertj.core.api.*;
 import org.junit.jupiter.api.Test;
 
@@ -8,9 +9,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public abstract class AbstractFunctionalValueTest {
+abstract class AbstractFunctionalValueTest {
 
   protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
     return new IterableAssert<T>(actual) {};
@@ -56,85 +57,86 @@ public abstract class AbstractFunctionalValueTest {
   protected abstract int getPeekNonNilPerformingAnAction();
 
   @Test
-  public void shouldGetEmpty() {
-    assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> empty().get());
+  void shouldGetEmpty() {
+    val empty = empty();
+    assertThrows(NoSuchElementException.class, empty::get);
   }
 
   @Test
-  public void shouldGetNonEmpty() {
+  void shouldGetNonEmpty() {
     assertThat(of(1).get()).isEqualTo(1);
   }
 
   @Test
-  public void shouldCalculateGetOrElseWithNull() {
+  void shouldCalculateGetOrElseWithNull() {
     assertThat(this.<Integer>empty().getOrElse((Integer) null)).isEqualTo(null);
     assertThat(of(1).getOrElse((Integer) null)).isEqualTo(1);
   }
 
   @Test
-  public void shouldCalculateGetOrElseWithNonNull() {
+  void shouldCalculateGetOrElseWithNonNull() {
     assertThat(empty().getOrElse(1)).isEqualTo(1);
     assertThat(of(1).getOrElse(2)).isEqualTo(1);
   }
 
   @Test
-  public void shouldThrowOnGetOrElseWithNullSupplier() {
+  void shouldThrowOnGetOrElseWithNullSupplier() {
     final Supplier<?> supplier = null;
-    assertThatExceptionOfType(NullPointerException.class)
-        .isThrownBy(() -> empty().getOrElse(supplier));
+    val empty = empty();
+    assertThrows(NullPointerException.class, () -> empty.getOrElse(supplier));
   }
 
   @Test
-  public void shouldCalculateGetOrElseWithSupplier() {
+  void shouldCalculateGetOrElseWithSupplier() {
     assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
     assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
   }
 
   @Test
-  public void shouldThrowOnGetOrElseThrowIfEmpty() {
-    assertThatExceptionOfType(ArithmeticException.class)
-        .isThrownBy(() -> empty().getOrElseThrow(ArithmeticException::new));
+  void shouldThrowOnGetOrElseThrowIfEmpty() {
+    val empty = empty();
+    assertThrows(ArithmeticException.class, () -> empty.getOrElseThrow(ArithmeticException::new));
   }
 
   @Test
-  public void shouldNotThrowOnGetOrElseThrowIfNonEmpty() {
+  void shouldNotThrowOnGetOrElseThrowIfNonEmpty() {
     assertThat(of(1).getOrElseThrow(ArithmeticException::new)).isEqualTo(1);
   }
 
   @Test
-  public void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
+  void shouldReturnUnderlyingValueWhenCallingGetOrElseTryOnNonEmptyValue() {
     assertThat(of(1).getOrElseTry(() -> 2)).isEqualTo(1);
   }
 
   @Test
-  public void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
+  void shouldReturnAlternateValueWhenCallingGetOrElseTryOnEmptyValue() {
     assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
   }
 
   @Test
-  public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
-    assertThatExceptionOfType(Error.class)
-        .isThrownBy(
-            () ->
-                empty()
-                    .getOrElseTry(
-                        () -> {
-                          throw new Error();
-                        }));
+  void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
+    val empty = empty();
+    assertThrows(
+        Error.class,
+        () ->
+            empty.getOrElseTry(
+                () -> {
+                  throw new Error();
+                }));
   }
 
   @Test
-  public void shouldReturnNullWhenGetOrNullOfEmpty() {
+  void shouldReturnNullWhenGetOrNullOfEmpty() {
     assertThat(empty().getOrNull()).isEqualTo(null);
   }
 
   @Test
-  public void shouldReturnValueWhenGetOrNullOfNonEmpty() {
+  void shouldReturnValueWhenGetOrNullOfNonEmpty() {
     assertThat(of(1).getOrNull()).isEqualTo(1);
   }
 
   @Test
-  public void shouldPerformsActionOnEachElement() {
+  void shouldPerformsActionOnEachElement() {
     final int[] consumer = new int[1];
     final FunctionalValue<Integer> value = of(1, 2, 3);
     value.forEach(i -> consumer[0] += i);
@@ -142,23 +144,23 @@ public abstract class AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldCalculateIsEmpty() {
+  void shouldCalculateIsEmpty() {
     assertThat(empty().isEmpty()).isTrue();
     assertThat(of(1).isEmpty()).isFalse();
   }
 
   @Test
-  public void shouldPeekNil() {
+  void shouldPeekNil() {
     assertThat(empty().peek(t -> {})).isEqualTo(empty());
   }
 
   @Test
-  public void shouldPeekNonNilPerformingNoAction() {
+  void shouldPeekNonNilPerformingNoAction() {
     assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
   }
 
   @Test
-  public void shouldPeekSingleValuePerformingAnAction() {
+  void shouldPeekSingleValuePerformingAnAction() {
     final int[] effect = {0};
     final FunctionalValue<Integer> actual = of(1).peek(i -> effect[0] = i);
     assertThat(actual).isEqualTo(of(1));
@@ -166,7 +168,7 @@ public abstract class AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldPeekNonNilPerformingAnAction() {
+  void shouldPeekNonNilPerformingAnAction() {
     final int[] effect = {0};
     final FunctionalValue<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
     assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
@@ -174,25 +176,25 @@ public abstract class AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldConvertToOption() {
+  void shouldConvertToOption() {
     assertThat(empty().toOption()).isSameAs(Option.none());
     assertThat(of(1).toOption()).isEqualTo(Option.of(1));
   }
 
   @Test
-  public void shouldConvertToCallResult() {
+  void shouldConvertToCallResult() {
     assertThat(empty().toCallResult("test")).isEqualTo(CallResult.failure("test"));
     assertThat(empty().toCallResult(() -> "test")).isEqualTo(CallResult.failure("test"));
     assertThat(of(1).toCallResult("test")).isEqualTo(CallResult.success(1));
   }
 
   @Test
-  public void shouldConvertToJavaOptional() {
+  void shouldConvertToJavaOptional() {
     assertThat(of(1, 2, 3).toJavaOptional()).isEqualTo(Optional.of(1));
   }
 
   @Test
-  public void shouldBeAwareOfExistingElement() {
+  void shouldBeAwareOfExistingElement() {
     final FunctionalValue<Integer> value = of(1, 2);
     if (value.isSingleValued()) {
       assertThat(value.exists(i -> i == 1)).isTrue();
@@ -202,22 +204,22 @@ public abstract class AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldBeAwareOfNonExistingElement() {
+  void shouldBeAwareOfNonExistingElement() {
     assertThat(this.<Integer>empty().exists(i -> i == 1)).isFalse();
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatHoldsForAll() {
+  void shouldBeAwareOfPropertyThatHoldsForAll() {
     assertThat(of(2, 4).forAll(i -> i % 2 == 0)).isTrue();
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatNotHoldsForAll() {
+  void shouldBeAwareOfPropertyThatNotHoldsForAll() {
     assertThat(of(1, 2).forAll(i -> i % 2 == 0)).isFalse();
   }
 
   @Test
-  public void shouldHaveAReasonableToString() {
+  void shouldHaveAReasonableToString() {
     final FunctionalValue<Integer> value = of(1, 2);
     final String actual = value.toString();
 
@@ -229,21 +231,21 @@ public abstract class AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldRecognizeSameObject() {
+  void shouldRecognizeSameObject() {
     final FunctionalValue<Integer> v = of(1);
     //noinspection EqualsWithItself
     assertThat(v.equals(v)).isTrue();
   }
 
   @Test
-  public void shouldRecognizeEqualObjects() {
+  void shouldRecognizeEqualObjects() {
     final FunctionalValue<Integer> v1 = of(1);
     final FunctionalValue<Integer> v2 = of(1);
     assertThat(v1.equals(v2)).isTrue();
   }
 
   @Test
-  public void shouldRecognizeUnequalObjects() {
+  void shouldRecognizeUnequalObjects() {
     final FunctionalValue<Integer> v1 = of(1);
     final FunctionalValue<Integer> v2 = of(2);
     assertThat(v1.equals(v2)).isFalse();

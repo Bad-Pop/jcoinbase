@@ -11,7 +11,7 @@ import static io.vavr.API.Option;
 @UtilityClass
 public class WarningManagerService {
 
-  public <DTO> void alertIfCoinbaseHasReturnedWarnings(final DataDto<DTO> data) {
+  public <T> void alertIfCoinbaseHasReturnedWarnings(final DataDto<T> data) {
     Option(data.getWarnings())
         .map(Seq::asJava)
         .peek(warnings -> log.warn("Coinbase api return response with warning(s) : {}", warnings));

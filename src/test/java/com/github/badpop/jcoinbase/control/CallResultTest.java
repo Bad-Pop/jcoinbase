@@ -4,6 +4,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Option;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -11,10 +12,9 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Function;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
-public class CallResultTest extends AbstractFunctionalValueTest {
+class CallResultTest extends AbstractFunctionalValueTest {
 
   @Override
   protected <T> CallResult<?, T> empty() {
@@ -43,7 +43,7 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldBimapLeft() {
+  void shouldBimapLeft() {
     final CallResult<Integer, String> actual =
         CallResult.<Integer, String>failure(1).bimap(i -> i + 1, s -> s + "1");
     final CallResult<Integer, String> expected = CallResult.failure(2);
@@ -51,7 +51,7 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldBimapRight() {
+  void shouldBimapRight() {
     final CallResult<Integer, String> actual =
         CallResult.<Integer, String>success("1").bimap(i -> i + 1, s -> s + "1");
     final CallResult<Integer, String> expected = CallResult.success("11");
@@ -59,26 +59,26 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldFoldLeft() {
+  void shouldFoldLeft() {
     final String value = CallResult.failure("L").fold(l -> l + "+", r -> r + "-");
     assertThat(value).isEqualTo("L+");
   }
 
   @Test
-  public void shouldFoldRight() {
+  void shouldFoldRight() {
     final String value = CallResult.success("R").fold(l -> l + "-", r -> r + "+");
     assertThat(value).isEqualTo("R+");
   }
 
   @Test
-  public void shouldThrowWhenSequencingNull() {
+  void shouldThrowWhenSequencingNull() {
     assertThatThrownBy(() -> CallResult.sequence(null))
         .isInstanceOf(NullPointerException.class)
         .hasMessage("callResults is null");
   }
 
   @Test
-  public void shouldSequenceEmptyIterableOfEither() {
+  void shouldSequenceEmptyIterableOfEither() {
     final Iterable<CallResult<Integer, String>> callresults = List.empty();
     final CallResult<Seq<Integer>, Seq<String>> actual = CallResult.sequence(callresults);
     final CallResult<Seq<Integer>, Seq<String>> expected = CallResult.success(Vector.empty());
@@ -86,7 +86,7 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldSequenceNonEmptyIterableOfRight() {
+  void shouldSequenceNonEmptyIterableOfRight() {
     final Iterable<CallResult<Integer, String>> callresults =
         List.of(CallResult.success("a"), CallResult.success("b"), CallResult.success("c"));
     final CallResult<Seq<Integer>, Seq<String>> actual = CallResult.sequence(callresults);
@@ -96,7 +96,7 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldSequenceNonEmptyIterableOfLeft() {
+  void shouldSequenceNonEmptyIterableOfLeft() {
     final Iterable<CallResult<Integer, String>> callResults =
         List.of(CallResult.failure(1), CallResult.failure(2), CallResult.failure(3));
     final CallResult<Seq<Integer>, Seq<String>> actual = CallResult.sequence(callResults);
@@ -105,7 +105,7 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldSequenceNonEmptyIterableOfMixedEither() {
+  void shouldSequenceNonEmptyIterableOfMixedEither() {
     final Iterable<CallResult<Integer, String>> callResults =
         List.of(
             CallResult.success("a"),
@@ -118,13 +118,13 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldThrowExceptionOnNullTransformFunction() {
-    assertThatExceptionOfType(NullPointerException.class)
-        .isThrownBy(() -> CallResult.success(1).transform(null));
+  void shouldThrowExceptionOnNullTransformFunction() {
+    val actual = CallResult.success(1);
+    assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> actual.transform(null));
   }
 
   @Test
-  public void shouldApplyTransformFunctionToRight() {
+  void shouldApplyTransformFunctionToRight() {
     final CallResult<?, Integer> callResult = CallResult.success(1);
     final Function<CallResult<?, Integer>, String> f =
         e -> e.get().toString().concat("-transformed");
@@ -132,13 +132,13 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldHandleTransformOnLeft() {
+  void shouldHandleTransformOnLeft() {
     assertThat(CallResult.failure(0).<String>transform(self -> self.isEmpty() ? "ok" : "failed"))
         .isEqualTo("ok");
   }
 
   @Test
-  public void shouldReturnSameWhenCallingMapOnLeft() {
+  void shouldReturnSameWhenCallingMapOnLeft() {
     final CallResult<Integer, Object> actual = CallResult.failure(1);
     assertThat(
             actual.map(
@@ -149,53 +149,53 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldThrowIfRightGetLeft() {
-    assertThatExceptionOfType(NoSuchElementException.class)
-        .isThrownBy(() -> CallResult.success(1).getFailure());
+  void shouldThrowIfRightGetLeft() {
+    val actual = CallResult.success(1);
+    assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> actual.getFailure());
   }
 
   @Test
-  public void shouldThrowIfLeftGet() {
-    assertThatExceptionOfType(NoSuchElementException.class)
-        .isThrownBy(() -> CallResult.failure(1).get());
+  void shouldThrowIfLeftGet() {
+    val actual = CallResult.failure(1);
+    assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(actual::get);
   }
 
   @Test
-  public void shouldSwapLeft() {
+  void shouldSwapLeft() {
     assertThat(CallResult.failure(1).swap()).isEqualTo(CallResult.success(1));
   }
 
   @Test
-  public void shouldSwapRight() {
+  void shouldSwapRight() {
     assertThat(CallResult.success(1).swap()).isEqualTo(CallResult.failure(1));
   }
 
   @Test
-  public void shouldRecoverWithLeftToRightEither() {
+  void shouldRecoverWithLeftToRightEither() {
     assertThat(CallResult.failure(1).recoverWith(lvalue -> CallResult.success(lvalue + 1)))
         .isEqualTo(CallResult.success(2));
   }
 
   @Test
-  public void shouldRecoverWithLeftToLeftEither() {
+  void shouldRecoverWithLeftToLeftEither() {
     assertThat(CallResult.failure(1).recoverWith(lvalue -> CallResult.failure(lvalue + 1)))
         .isEqualTo(CallResult.failure(2));
   }
 
   @Test
-  public void shouldRecoverWithRight() {
+  void shouldRecoverWithRight() {
     final CallResult<String, String> value =
         CallResult.<String, String>success("R").recoverWith(lvalue -> CallResult.failure("L"));
     assertThat(value).isEqualTo(CallResult.success("R"));
   }
 
   @Test
-  public void shouldRecoverLeft() {
+  void shouldRecoverLeft() {
     assertThat(CallResult.failure(1).recover(lvalue -> "R")).isEqualTo(CallResult.success("R"));
   }
 
   @Test
-  public void shouldRecoverRightWithoutInvokingRecovery() {
+  void shouldRecoverRightWithoutInvokingRecovery() {
     // Recover function should not be invoked, so hardcode it to fail
     Function<Object, String> recoveryFunction =
         $ -> {
@@ -207,78 +207,79 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldNarrowRightEither() {
+  void shouldNarrowRightEither() {
     CallResult<String, Integer> either = CallResult.success(42);
     CallResult<CharSequence, Number> narrow = CallResult.narrow(either);
     assertThat(narrow.get()).isEqualTo(42);
   }
 
   @Test
-  public void shouldNarrowLeftEither() {
+  void shouldNarrowLeftEither() {
     CallResult<String, Integer> either = CallResult.failure("vavr");
     CallResult<CharSequence, Number> narrow = CallResult.narrow(either);
     assertThat(narrow.getFailure()).isEqualTo("vavr");
   }
 
   @Test
-  public void shouldEitherOrElseEither() {
+  void shouldEitherOrElseEither() {
     assertThat(CallResult.success(1).orElse(CallResult.success(2)).get()).isEqualTo(1);
     assertThat(CallResult.failure(1).orElse(CallResult.success(2)).get()).isEqualTo(2);
   }
 
   @Test
-  public void shouldEitherOrElseSupplier() {
+  void shouldEitherOrElseSupplier() {
     assertThat(CallResult.success(1).orElse(() -> CallResult.success(2)).get()).isEqualTo(1);
     assertThat(CallResult.failure(1).orElse(() -> CallResult.success(2)).get()).isEqualTo(2);
   }
 
   @Test
-  public void shouldReturnTrueWhenCallingIsLeftOnLeft() {
+  void shouldReturnTrueWhenCallingIsLeftOnLeft() {
     assertThat(CallResult.failure(1).isFailure()).isTrue();
   }
 
   @Test
-  public void shouldReturnFalseWhenCallingIsRightOnLeft() {
+  void shouldReturnFalseWhenCallingIsRightOnLeft() {
     assertThat(CallResult.failure(1).isSuccess()).isFalse();
   }
 
   @Test
-  public void shouldFilterRight() {
+  void shouldFilterRight() {
     CallResult<String, Integer> either = CallResult.success(42);
     assertThat(either.filter(i -> true).get()).isSameAs(either);
     assertThat(either.filter(i -> false)).isSameAs(Option.none());
   }
 
   @Test
-  public void shouldFilterLeft() {
+  void shouldFilterLeft() {
     CallResult<String, Integer> either = CallResult.failure("vavr");
     assertThat(either.filter(i -> true).get()).isSameAs(either);
     assertThat(either.filter(i -> false).get()).isSameAs(either);
   }
 
   @Test
-  public void shouldFilterNotRight() {
+  void shouldFilterNotRight() {
     CallResult<String, Integer> either = CallResult.success(42);
     assertThat(either.filterNot(i -> false).get()).isSameAs(either);
     assertThat(either.filterNot(i -> true)).isSameAs(Option.none());
   }
 
   @Test
-  public void shouldFilterNotLeft() {
+  void shouldFilterNotLeft() {
     CallResult<String, Integer> either = CallResult.failure("vavr");
     assertThat(either.filterNot(i -> false).get()).isSameAs(either);
     assertThat(either.filterNot(i -> true).get()).isSameAs(either);
   }
 
   @Test
-  public void shouldThrowWhenNullPredicate() {
-    assertThatThrownBy(() -> CallResult.failure(42).filterNot(null))
+  void shouldThrowWhenNullPredicate() {
+    val actual = CallResult.failure(42);
+    assertThatThrownBy(() -> actual.filterNot(null))
         .isInstanceOf(NullPointerException.class)
         .hasMessage("predicate is null");
   }
 
   @Test
-  public void shouldFilterOrElseRight() {
+  void shouldFilterOrElseRight() {
     CallResult<String, Integer> either = CallResult.success(42);
     assertThat(either.filterOrElse(i -> true, Object::toString)).isSameAs(either);
     assertThat(either.filterOrElse(i -> false, Object::toString))
@@ -286,31 +287,31 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldFilterOrElseLeft() {
+  void shouldFilterOrElseLeft() {
     CallResult<String, Integer> either = CallResult.failure("vavr");
     assertThat(either.filterOrElse(i -> true, Object::toString)).isSameAs(either);
     assertThat(either.filterOrElse(i -> false, Object::toString)).isSameAs(either);
   }
 
   @Test
-  public void shouldFlatMapRight() {
+  void shouldFlatMapRight() {
     CallResult<String, Integer> either = CallResult.success(42);
     assertThat(either.flatMap(v -> CallResult.success("ok")).get()).isEqualTo("ok");
   }
 
   @Test
-  public void shouldFlatMapLeft() {
+  void shouldFlatMapLeft() {
     CallResult<String, Integer> either = CallResult.failure("vavr");
     assertThat(either.flatMap(v -> CallResult.success("ok"))).isSameAs(either);
   }
 
   @Test
-  public void shouldPeekLeftNil() {
+  void shouldPeekLeftNil() {
     assertThat(empty().peekFailure(t -> {})).isEqualTo(empty());
   }
 
   @Test
-  public void shouldPeekLeftForLeft() {
+  void shouldPeekLeftForLeft() {
     final int[] effect = {0};
     final CallResult<Integer, ?> actual = CallResult.failure(1).peekFailure(i -> effect[0] = i);
     assertThat(actual).isEqualTo(CallResult.failure(1));
@@ -318,99 +319,102 @@ public class CallResultTest extends AbstractFunctionalValueTest {
   }
 
   @Test
-  public void shouldNotPeekLeftForRight() {
-    CallResult.success(1)
-        .peekFailure(
-            i -> {
-              throw new IllegalStateException();
-            });
+  void shouldNotPeekLeftForRight() {
+    val actual = CallResult.success(1);
+    assertThatNoException()
+        .isThrownBy(
+            () ->
+                actual.peekFailure(
+                    i -> {
+                      throw new IllegalStateException();
+                    }));
   }
 
   @Test
-  public void shouldEqualLeftIfObjectIsSame() {
+  void shouldEqualLeftIfObjectIsSame() {
     final CallResult<Integer, ?> left = CallResult.failure(1);
     assertThat(left.equals(left)).isTrue();
   }
 
   @Test
-  public void shouldNotEqualLeftIfObjectIsNull() {
+  void shouldNotEqualLeftIfObjectIsNull() {
     assertThat(CallResult.failure(1).equals(null)).isFalse();
   }
 
   @Test
-  public void shouldNotEqualLeftIfObjectIsOfDifferentType() {
+  void shouldNotEqualLeftIfObjectIsOfDifferentType() {
     assertThat(CallResult.failure(1).equals(new Object())).isFalse();
   }
 
   @Test
-  public void shouldEqualLeft() {
+  void shouldEqualLeft() {
     assertThat(CallResult.failure(1)).isEqualTo(CallResult.failure(1));
   }
 
   @Test
-  public void shouldHashLeft() {
+  void shouldHashLeft() {
     assertThat(CallResult.failure(1).hashCode()).isEqualTo(Objects.hashCode(1));
   }
 
   @Test
-  public void shouldConvertLeftToString() {
+  void shouldConvertLeftToString() {
     assertThat(CallResult.failure(1).toString()).isEqualTo("CallResult.Failure(value=1)");
   }
 
   @Test
-  public void shouldReturnTrueWhenCallingIsRightOnRight() {
+  void shouldReturnTrueWhenCallingIsRightOnRight() {
     assertThat(CallResult.success(1).isSuccess()).isTrue();
   }
 
   @Test
-  public void shouldReturnFalseWhenCallingIsLeftOnRight() {
+  void shouldReturnFalseWhenCallingIsLeftOnRight() {
     assertThat(CallResult.success(1).isFailure()).isFalse();
   }
 
   @Test
-  public void shouldEqualRightIfObjectIsSame() {
+  void shouldEqualRightIfObjectIsSame() {
     final CallResult<?, ?> right = CallResult.success(1);
     assertThat(right.equals(right)).isTrue();
   }
 
   @Test
-  public void shouldNotEqualRightIfObjectIsNull() {
+  void shouldNotEqualRightIfObjectIsNull() {
     assertThat(CallResult.success(1).equals(null)).isFalse();
   }
 
   @Test
-  public void shouldNotEqualRightIfObjectIsOfDifferentType() {
+  void shouldNotEqualRightIfObjectIsOfDifferentType() {
     assertThat(CallResult.success(1).equals(new Object())).isFalse();
   }
 
   @Test
-  public void shouldEqualRight() {
+  void shouldEqualRight() {
     assertThat(CallResult.success(1)).isEqualTo(CallResult.success(1));
   }
 
   @Test
-  public void shouldHashRight() {
+  void shouldHashRight() {
     assertThat(CallResult.success(1).hashCode()).isEqualTo(Objects.hashCode(1));
   }
 
   @Test
-  public void shouldConvertRightToString() {
+  void shouldConvertRightToString() {
     assertThat(CallResult.success(1).toString()).isEqualTo("CallResult.Success(value=1)");
   }
 
   @Test
-  public void shouldHaveSizedSpliterator() {
+  void shouldHaveSizedSpliterator() {
     assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED))
         .isTrue();
   }
 
   @Test
-  public void shouldHaveOrderedSpliterator() {
+  void shouldHaveOrderedSpliterator() {
     assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
   }
 
   @Test
-  public void shouldReturnSizeWhenSpliterator() {
+  void shouldReturnSizeWhenSpliterator() {
     assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
   }
 }

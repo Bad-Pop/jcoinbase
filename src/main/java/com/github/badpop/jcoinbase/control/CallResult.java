@@ -41,8 +41,8 @@ import java.util.function.Supplier;
  * Call result is a simplified version of the vavr {@link Either} adapted to the JCoinbase needs.
  * For more information, please take a look at the <a href="https://www.vavr.io/">vavr site</a>
  *
- * <p>CallResult represents a value of two possible types. A CallResult is callResult a {@link Failure}
- * or a {@link Success}.
+ * <p>CallResult represents a value of two possible types. A CallResult is callResult a {@link
+ * Failure} or a {@link Success}.
  *
  * <p>If the given CallResult is a Success and projected to a Failure, the Failure operations have
  * no effect on the Success value.<br>
@@ -51,8 +51,8 @@ import java.util.function.Supplier;
  * If a Failure is projected to a Failure or a Success is projected to a Success, the operations
  * have an effect.
  *
- * <p><strong>Example:</strong> A compute() function, which results callResult in an Integer value (in
- * the case of success) or in an error message of type String (in the case of failure). By
+ * <p><strong>Example:</strong> A compute() function, which results callResult in an Integer value
+ * (in the case of success) or in an error message of type String (in the case of failure). By
  * convention the success case is Success and the failure is Failure.
  *
  * <pre>
@@ -68,9 +68,19 @@ import java.util.function.Supplier;
  * @param <R> The type of the Success value of an CallResult.
  */
 @ToString
+@SuppressWarnings({"java:S1948", "java:S1905", "unchecked"})
 public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R>, Serializable {
 
   @Serial private static final long serialVersionUID = 1L;
+
+  private static final String FAILURE_MAPPER_IS_NULL = "failureMapper is null";
+  private static final String FUNCTION_IS_NULL = "function is null";
+  private static final String OTHER_IS_NULL = "function is null";
+  private static final String ACTION_IS_NULL = "function is null";
+  private static final String EXCEPTION_FUNCTION_IS_NULL = "exceptionFunction is null";
+  private static final String MAPPER_IS_NULL = "mapper is null";
+  private static final String PREDICATE_IS_NULL = "predicate is null";
+  private static final String SUPPLIER_IS_NULL = "supplier is null";
 
   // sealed
   private CallResult() {}
@@ -119,7 +129,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * CallResult<?, Number> answer = CallResult.success(42);
    *
    * // RuntimeException is an Exception
-   * CallResult<Exception, ?> failed = CallResult.failure(new RuntimeException("Vogon poetry recital"));
+   * CallResult<Exception, ?> failed = CallResult.failure(new RuntimeException("poetry recital"));
    * }</pre>
    *
    * @param callResult A {@code CallResult}.
@@ -127,7 +137,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @param <R> Type of success value.
    * @return the given {@code callResult} instance as narrowed type {@code CallResult<L, R>}.
    */
-  @SuppressWarnings("unchecked")
   public static <L, R> CallResult<L, R> narrow(CallResult<? extends L, ? extends R> callResult) {
     return (CallResult<L, R>) callResult;
   }
@@ -139,8 +148,8 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * <p>If any of the given {@code CallResult}s is a {@link Failure} then {@code sequence} returns a
    * {@link Failure} containing a non-empty {@link Seq} of all failure values.
    *
-   * <p>If none of the given {@code CallResult}s is a {@link Failure} then {@code sequence} returns a
-   * {@link Success} containing a (possibly empty) {@link Seq} of all success values.
+   * <p>If none of the given {@code CallResult}s is a {@link Failure} then {@code sequence} returns
+   * a {@link Success} containing a (possibly empty) {@link Seq} of all success values.
    *
    * <pre>{@code
    * // = Success(Seq())
@@ -159,7 +168,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @return An {@code CallResult} of a {@link Seq} of failure or success values
    * @throws NullPointerException if {@code callResults} is null
    */
-  @SuppressWarnings("unchecked")
   public static <L, R> CallResult<Seq<L>, Seq<R>> sequence(
       Iterable<? extends CallResult<? extends L, ? extends R>> callResults) {
     Objects.requireNonNull(callResults, "callResults is null");
@@ -219,36 +227,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   public abstract boolean isSuccess();
 
   /**
-   * A right-biased {@code CallResult}'s value is computed synchronously.
-   *
-   * @return false
-   */
-  @Override
-  public final boolean isAsync() {
-    return false;
-  }
-
-  /**
-   * A right-biased {@code CallResult}'s value is computed eagerly.
-   *
-   * @return false
-   */
-  @Override
-  public final boolean isLazy() {
-    return false;
-  }
-
-  /**
-   * A right-biased {@code CallResult} is single-valued.
-   *
-   * @return {@code true}
-   */
-  @Override
-  public final boolean isSingleValued() {
-    return true;
-  }
-
-  /**
    * Returns a FailureProjection of this CallResult.
    *
    * @return a new FailureProjection of this
@@ -290,7 +268,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   public final <X, Y> CallResult<X, Y> bimap(
       Function<? super L, ? extends X> failureMapper,
       Function<? super R, ? extends Y> successMapper) {
-    Objects.requireNonNull(failureMapper, "failureMapper is null");
+    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);
     Objects.requireNonNull(successMapper, "successMapper is null");
     if (isSuccess()) {
       return new Success<>(successMapper.apply(get()));
@@ -322,7 +300,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   public final <U> U fold(
       Function<? super L, ? extends U> failureMapper,
       Function<? super R, ? extends U> successMapper) {
-    Objects.requireNonNull(failureMapper, "failureMapper is null");
+    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);
     Objects.requireNonNull(successMapper, "successMapper is null");
     if (isSuccess()) {
       return successMapper.apply(get());
@@ -335,8 +313,8 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * Transforms this {@code CallResult}.
    *
    * <pre>{@code
-   * // prints "Anwser is 42"
-   * System.out.println(CallResult.success(42).<String> transform(e -> "Anwser is " + e.get()));
+   * // prints "Answer is 42"
+   * System.out.println(CallResult.success(42).<String> transform(e -> "Answer is " + e.get()));
    * }</pre>
    *
    * @param f A transformation
@@ -345,7 +323,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @throws NullPointerException if {@code f} is null
    */
   public final <U> U transform(Function<? super CallResult<L, R>, ? extends U> f) {
-    Objects.requireNonNull(f, "f is null");
+    Objects.requireNonNull(f, FUNCTION_IS_NULL);
     return f.apply(this);
   }
 
@@ -365,7 +343,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    *     Success value provided by {@code other} by applying the Failure value.
    */
   public final R getOrElseGet(Function<? super L, ? extends R> other) {
-    Objects.requireNonNull(other, "other is null");
+    Objects.requireNonNull(other, OTHER_IS_NULL);
     if (isSuccess()) {
       return get();
     } else {
@@ -384,7 +362,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @param action an action which consumes a Failure value
    */
   public final void orElseRun(Consumer<? super L> action) {
-    Objects.requireNonNull(action, "action is null");
+    Objects.requireNonNull(action, ACTION_IS_NULL);
     if (isFailure()) {
       action.accept(getFailure());
     }
@@ -410,7 +388,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    */
   public final <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction)
       throws X {
-    Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
+    Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);
     if (isSuccess()) {
       return get();
     } else {
@@ -457,7 +435,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @return an {@code CallResult<L, R>} instance
    * @throws NullPointerException if the given {@code recoveryFunction} is null
    */
-  @SuppressWarnings("unchecked")
   public final CallResult<L, R> recoverWith(
       Function<? super L, ? extends CallResult<? extends L, ? extends R>> recoveryFunction) {
     Objects.requireNonNull(recoveryFunction, "recoveryFunction is null");
@@ -507,13 +484,13 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    *
    * @param mapper A mapper
    * @param <U> Component type of the mapped success value
-   * @return this as {@code CallResult<L, U>} if this is a Failure, otherwise the success mapping result
+   * @return this as {@code CallResult<L, U>} if this is a Failure, otherwise the success mapping
+   *     result
    * @throws NullPointerException if {@code mapper} is null
    */
-  @SuppressWarnings("unchecked")
   public final <U> CallResult<L, U> flatMap(
       Function<? super R, ? extends CallResult<L, ? extends U>> mapper) {
-    Objects.requireNonNull(mapper, "mapper is null");
+    Objects.requireNonNull(mapper, MAPPER_IS_NULL);
     if (isSuccess()) {
       return (CallResult<L, U>) mapper.apply(get());
     } else {
@@ -538,10 +515,9 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @return a mapped {@code Monad}
    * @throws NullPointerException if {@code mapper} is null
    */
-  @SuppressWarnings("unchecked")
   @Override
   public final <U> CallResult<L, U> map(Function<? super R, ? extends U> mapper) {
-    Objects.requireNonNull(mapper, "mapper is null");
+    Objects.requireNonNull(mapper, MAPPER_IS_NULL);
     if (isSuccess()) {
       return CallResult.success(mapper.apply(get()));
     } else {
@@ -550,7 +526,8 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   /**
-   * Maps the value of this CallResult if it is a Failure, performs no operation if this is a Success.
+   * Maps the value of this CallResult if it is a Failure, performs no operation if this is a
+   * Success.
    *
    * <pre>{@code
    * // = Failure(2)
@@ -561,11 +538,10 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * }</pre>
    *
    * @param leftMapper A mapper
-   * @param <U>        Component type of the mapped right value
+   * @param <U> Component type of the mapped right value
    * @return a mapped {@code Monad}
    * @throws NullPointerException if {@code mapper} is null
    */
-  @SuppressWarnings("unchecked")
   public final <U> CallResult<U, R> mapLeft(Function<? super L, ? extends U> leftMapper) {
     Objects.requireNonNull(leftMapper, "leftMapper is null");
     if (isFailure()) {
@@ -592,9 +568,8 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @return a mapped {@code Monad}
    * @throws NullPointerException if {@code mapper} is null
    */
-  @SuppressWarnings("unchecked")
   public final <U> CallResult<U, R> mapFailure(Function<? super L, ? extends U> failureMapper) {
-    Objects.requireNonNull(failureMapper, "failureMapper is null");
+    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);
     if (isFailure()) {
       return CallResult.failure(failureMapper.apply(getFailure()));
     } else {
@@ -612,7 +587,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @throws NullPointerException if {@code predicate} is null
    */
   public final Option<CallResult<L, R>> filter(Predicate<? super R> predicate) {
-    Objects.requireNonNull(predicate, "predicate is null");
+    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);
     return isFailure() || predicate.test(get()) ? Option.some(this) : Option.none();
   }
 
@@ -624,15 +599,15 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @throws NullPointerException if {@code predicate} is null
    */
   public final Option<CallResult<L, R>> filterNot(Predicate<? super R> predicate) {
-    Objects.requireNonNull(predicate, "predicate is null");
+    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);
     return filter(predicate.negate());
   }
 
   /**
-   * Filters this success-biased {@code CallResult} by testing a predicate. If the {@code CallResult} is a
-   * {@code Success} and the predicate doesn't match, the {@code CallResult} will be turned into a
-   * {@code Failure} with contents computed by applying the zero function to the {@code CallResult}
-   * value.
+   * Filters this success-biased {@code CallResult} by testing a predicate. If the {@code
+   * CallResult} is a {@code Success} and the predicate doesn't match, the {@code CallResult} will
+   * be turned into a {@code Failure} with contents computed by applying the zero function to the
+   * {@code CallResult} value.
    *
    * <pre>{@code
    * // = Failure("bad: a")
@@ -650,7 +625,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    */
   public final CallResult<L, R> filterOrElse(
       Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
-    Objects.requireNonNull(predicate, "predicate is null");
+    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);
     Objects.requireNonNull(zero, "zero is null");
     if (isFailure() || predicate.test(get())) {
       return this;
@@ -659,30 +634,19 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
     }
   }
 
-  /**
-   * Gets the success value if this is a {@code Success} or throws if this is a {@code Failure}.
-   *
-   * @return the success value
-   * @throws NoSuchElementException if this is a {@code Failure}.
-   */
-  @Override
-  public abstract R get();
-
   @Override
   public final boolean isEmpty() {
     return isFailure();
   }
 
-  @SuppressWarnings("unchecked")
   public final CallResult<L, R> orElse(CallResult<? extends L, ? extends R> other) {
-    Objects.requireNonNull(other, "other is null");
+    Objects.requireNonNull(other, OTHER_IS_NULL);
     return isSuccess() ? this : (CallResult<L, R>) other;
   }
 
-  @SuppressWarnings("unchecked")
   public final CallResult<L, R> orElse(
       Supplier<? extends CallResult<? extends L, ? extends R>> supplier) {
-    Objects.requireNonNull(supplier, "supplier is null");
+    Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);
     return isSuccess() ? this : (CallResult<L, R>) supplier.get();
   }
 
@@ -719,7 +683,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
 
   @Override
   public final CallResult<L, R> peek(Consumer<? super R> action) {
-    Objects.requireNonNull(action, "action is null");
+    Objects.requireNonNull(action, ACTION_IS_NULL);
     if (isSuccess()) {
       action.accept(get());
     }
@@ -727,7 +691,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   public final CallResult<L, R> peekFailure(Consumer<? super L> action) {
-    Objects.requireNonNull(action, "action is null");
+    Objects.requireNonNull(action, ACTION_IS_NULL);
     if (isFailure()) {
       action.accept(getFailure());
     }
@@ -755,36 +719,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
     }
 
     /**
-     * A right-biased {@code CallResult}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-      return false;
-    }
-
-    /**
-     * A right-biased {@code CallResult}'s value is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isLazy() {
-      return false;
-    }
-
-    /**
-     * A right-biased {@code CallResult} is single-valued.
-     *
-     * @return {@code true}
-     */
-    @Override
-    public final boolean isSingleValued() {
-      return true;
-    }
-
-    /**
      * Gets the {@code Failure} value or throws.
      *
      * @return the failure value, if the underlying {@code CallResult} is a {@code Failure}
@@ -800,17 +734,15 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
       }
     }
 
-    @SuppressWarnings("unchecked")
     public CallResult.FailureProjection<L, R> orElse(
         CallResult.FailureProjection<? extends L, ? extends R> other) {
-      Objects.requireNonNull(other, "other is null");
+      Objects.requireNonNull(other, OTHER_IS_NULL);
       return callResult.isFailure() ? this : (CallResult.FailureProjection<L, R>) other;
     }
 
-    @SuppressWarnings("unchecked")
     public CallResult.FailureProjection<L, R> orElse(
         Supplier<? extends CallResult.FailureProjection<? extends L, ? extends R>> supplier) {
-      Objects.requireNonNull(supplier, "supplier is null");
+      Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);
       return callResult.isFailure() ? this : (CallResult.FailureProjection<L, R>) supplier.get();
     }
 
@@ -835,7 +767,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      *     Failure value provided by {@code other} by applying the Success value.
      */
     public L getOrElseGet(Function<? super R, ? extends L> other) {
-      Objects.requireNonNull(other, "other is null");
+      Objects.requireNonNull(other, OTHER_IS_NULL);
       if (callResult.isFailure()) {
         return callResult.getFailure();
       } else {
@@ -849,7 +781,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @param action an action which consumes a Success value
      */
     public void orElseRun(Consumer<? super R> action) {
-      Objects.requireNonNull(action, "action is null");
+      Objects.requireNonNull(action, ACTION_IS_NULL);
       if (callResult.isSuccess()) {
         action.accept(callResult.get());
       }
@@ -866,7 +798,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      */
     public <X extends Throwable> L getOrElseThrow(Function<? super R, X> exceptionFunction)
         throws X {
-      Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
+      Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);
       if (callResult.isFailure()) {
         return callResult.getFailure();
       } else {
@@ -883,7 +815,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
       return callResult;
     }
 
-
     /**
      * Returns {@code Some} value of type L if this is a failure projection of a Failure value and
      * the predicate applies to the underlying value.
@@ -892,7 +823,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @return A new Option
      */
     public Option<CallResult.FailureProjection<L, R>> filter(Predicate<? super L> predicate) {
-      Objects.requireNonNull(predicate, "predicate is null");
+      Objects.requireNonNull(predicate, PREDICATE_IS_NULL);
       return callResult.isSuccess() || predicate.test(callResult.getFailure())
           ? Option.some(this)
           : Option.none();
@@ -907,10 +838,9 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      *     mapping result of the failure value.
      * @throws NullPointerException if {@code mapper} is null
      */
-    @SuppressWarnings("unchecked")
     public <U> CallResult.FailureProjection<U, R> flatMap(
         Function<? super L, ? extends CallResult.FailureProjection<? extends U, R>> mapper) {
-      Objects.requireNonNull(mapper, "mapper is null");
+      Objects.requireNonNull(mapper, MAPPER_IS_NULL);
       if (callResult.isFailure()) {
         return (CallResult.FailureProjection<U, R>) mapper.apply(callResult.getFailure());
       } else {
@@ -925,10 +855,9 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @param <U> The new type of a Failure value
      * @return A new FailureProjection
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <U> CallResult.FailureProjection<U, R> map(Function<? super L, ? extends U> mapper) {
-      Objects.requireNonNull(mapper, "mapper is null");
+      Objects.requireNonNull(mapper, MAPPER_IS_NULL);
       if (callResult.isFailure()) {
         return callResult.mapFailure((Function<L, U>) mapper).failure();
       } else {
@@ -937,15 +866,15 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
     }
 
     /**
-     * Applies the given action to the value if the projected callResult is a Failure. Otherwise nothing
-     * happens.
+     * Applies the given action to the value if the projected callResult is a Failure. Otherwise
+     * nothing happens.
      *
      * @param action An action which takes a failure value
      * @return this FailureProjection
      */
     @Override
     public CallResult.FailureProjection<L, R> peek(Consumer<? super L> action) {
-      Objects.requireNonNull(action, "action is null");
+      Objects.requireNonNull(action, ACTION_IS_NULL);
       if (callResult.isFailure()) {
         action.accept(callResult.getFailure());
       }
@@ -961,7 +890,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super CallResult.FailureProjection<L, R>, ? extends U> f) {
-      Objects.requireNonNull(f, "f is null");
+      Objects.requireNonNull(f, FUNCTION_IS_NULL);
       return f.apply(this);
     }
 
@@ -1008,36 +937,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
     }
 
     /**
-     * A right-biased {@code CallResult}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-      return false;
-    }
-
-    /**
-     * A right-biased {@code CallResult}'s value is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isLazy() {
-      return false;
-    }
-
-    /**
-     * A right-biased {@code CallResult} is single-valued.
-     *
-     * @return {@code true}
-     */
-    @Override
-    public final boolean isSingleValued() {
-      return true;
-    }
-
-    /**
      * Gets the {@code Success} value or throws.
      *
      * @return the success value, if the underlying {@code CallResult} is a {@code Success}
@@ -1053,17 +952,15 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
       }
     }
 
-    @SuppressWarnings("unchecked")
     public CallResult.SuccessProjection<L, R> orElse(
         CallResult.SuccessProjection<? extends L, ? extends R> other) {
-      Objects.requireNonNull(other, "other is null");
+      Objects.requireNonNull(other, OTHER_IS_NULL);
       return callResult.isSuccess() ? this : (CallResult.SuccessProjection<L, R>) other;
     }
 
-    @SuppressWarnings("unchecked")
     public CallResult.SuccessProjection<L, R> orElse(
         Supplier<? extends CallResult.SuccessProjection<? extends L, ? extends R>> supplier) {
-      Objects.requireNonNull(supplier, "supplier is null");
+      Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);
       return callResult.isSuccess() ? this : (CallResult.SuccessProjection<L, R>) supplier.get();
     }
 
@@ -1095,7 +992,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      *     Success value provided by {@code other} by applying the Failure value.
      */
     public R getOrElseGet(Function<? super L, ? extends R> other) {
-      Objects.requireNonNull(other, "other is null");
+      Objects.requireNonNull(other, OTHER_IS_NULL);
       return callResult.getOrElseGet(other);
     }
 
@@ -1113,7 +1010,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @param action an action which consumes a Failure value
      */
     public void orElseRun(Consumer<? super L> action) {
-      Objects.requireNonNull(action, "action is null");
+      Objects.requireNonNull(action, ACTION_IS_NULL);
       callResult.orElseRun(action);
     }
 
@@ -1136,7 +1033,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      */
     public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction)
         throws X {
-      Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
+      Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);
       return callResult.getOrElseThrow(exceptionFunction);
     }
 
@@ -1157,8 +1054,10 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @return A new Option
      */
     public Option<CallResult.SuccessProjection<L, R>> filter(Predicate<? super R> predicate) {
-      Objects.requireNonNull(predicate, "predicate is null");
-      return callResult.isFailure() || predicate.test(callResult.get()) ? Option.some(this) : Option.none();
+      Objects.requireNonNull(predicate, PREDICATE_IS_NULL);
+      return callResult.isFailure() || predicate.test(callResult.get())
+          ? Option.some(this)
+          : Option.none();
     }
 
     /**
@@ -1170,10 +1069,9 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      *     mapping result of the success value.
      * @throws NullPointerException if {@code mapper} is null
      */
-    @SuppressWarnings("unchecked")
     public <U> CallResult.SuccessProjection<L, U> flatMap(
         Function<? super R, ? extends CallResult.SuccessProjection<L, ? extends U>> mapper) {
-      Objects.requireNonNull(mapper, "mapper is null");
+      Objects.requireNonNull(mapper, MAPPER_IS_NULL);
       if (callResult.isSuccess()) {
         return (CallResult.SuccessProjection<L, U>) mapper.apply(callResult.get());
       } else {
@@ -1188,10 +1086,9 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @param <U> The new type of a Success value
      * @return A new SuccessProjection
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <U> CallResult.SuccessProjection<L, U> map(Function<? super R, ? extends U> mapper) {
-      Objects.requireNonNull(mapper, "mapper is null");
+      Objects.requireNonNull(mapper, MAPPER_IS_NULL);
       if (callResult.isSuccess()) {
         return callResult.map((Function<R, U>) mapper).success();
       } else {
@@ -1200,15 +1097,15 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
     }
 
     /**
-     * Applies the given action to the value if the projected callResult is a Success. Otherwise nothing
-     * happens.
+     * Applies the given action to the value if the projected callResult is a Success. Otherwise
+     * nothing happens.
      *
      * @param action An action which takes a success value
      * @return this {@code CallResult} instance
      */
     @Override
     public CallResult.SuccessProjection<L, R> peek(Consumer<? super R> action) {
-      Objects.requireNonNull(action, "action is null");
+      Objects.requireNonNull(action, ACTION_IS_NULL);
       if (callResult.isSuccess()) {
         action.accept(callResult.get());
       }
@@ -1224,7 +1121,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super CallResult.SuccessProjection<L, R>, ? extends U> f) {
-      Objects.requireNonNull(f, "f is null");
+      Objects.requireNonNull(f, FUNCTION_IS_NULL);
       return f.apply(this);
     }
 
@@ -1253,8 +1150,10 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
    * @param <R> success component type
    */
   @ToString
+  @SuppressWarnings("java:S1948")
   public static final class Failure<L, R> extends CallResult<L, R> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final L value;
@@ -1310,6 +1209,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   @ToString
   public static final class Success<L, R> extends CallResult<L, R> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final R value;

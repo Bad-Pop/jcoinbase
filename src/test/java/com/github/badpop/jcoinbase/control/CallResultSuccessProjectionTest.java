@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.control;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest {
+class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest {
 
   @Override
   protected <T> CallResult.SuccessProjection<?, T> empty() {
@@ -39,18 +40,18 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldThrowOnGetOnRightProjectionOffailure() {
-    assertThatExceptionOfType(NoSuchElementException.class)
-        .isThrownBy(() -> CallResult.failure(1).success().get());
+  void shouldThrowOnGetOnRightProjectionOffailure() {
+    val actual = CallResult.failure(1).success();
+    assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(actual::get);
   }
 
   @Test
-  public void shouldGetOnRightProjectionOfsuccess() {
+  void shouldGetOnRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().get()).isEqualTo(1);
   }
 
   @Test
-  public void shouldRightProjectionOrElseRightProjection() {
+  void shouldRightProjectionOrElseRightProjection() {
     final CallResult.SuccessProjection<Integer, Integer> elseProjection =
         CallResult.<Integer, Integer>success(2).success();
     assertThat(CallResult.success(1).success().orElse(elseProjection).get()).isEqualTo(1);
@@ -58,7 +59,7 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldRightProjectionOrElseRightProjectionFromSupplier() {
+  void shouldRightProjectionOrElseRightProjectionFromSupplier() {
     final CallResult.SuccessProjection<Integer, Integer> elseProjection =
         CallResult.<Integer, Integer>success(2).success();
     assertThat(CallResult.success(1).success().orElse(() -> elseProjection).get()).isEqualTo(1);
@@ -66,45 +67,45 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldReturnRightWhenOrElseOnRightProjectionOfsuccess() {
+  void shouldReturnRightWhenOrElseOnRightProjectionOfsuccess() {
     final Integer actual = CallResult.<String, Integer>success(1).success().getOrElse(2);
     assertThat(actual).isEqualTo(1);
   }
 
   @Test
-  public void shouldReturnOtherWhenOrElseOnRightProjectionOffailure() {
+  void shouldReturnOtherWhenOrElseOnRightProjectionOffailure() {
     final Integer actual = CallResult.<String, Integer>failure("1").success().getOrElse(2);
     assertThat(actual).isEqualTo(2);
   }
 
   @Test
-  public void shouldReturnRightWhenOrElseGetGivenFunctionOnRightProjectionOfsuccess() {
+  void shouldReturnRightWhenOrElseGetGivenFunctionOnRightProjectionOfsuccess() {
     final Integer actual = CallResult.<String, Integer>success(1).success().getOrElseGet(l -> 2);
     assertThat(actual).isEqualTo(1);
   }
 
   @Test
-  public void shouldReturnOtherWhenOrElseGetGivenFunctionOnRightProjectionOffailure() {
+  void shouldReturnOtherWhenOrElseGetGivenFunctionOnRightProjectionOffailure() {
     final Integer actual = CallResult.<String, Integer>failure("1").success().getOrElseGet(l -> 2);
     assertThat(actual).isEqualTo(2);
   }
 
   @Test
-  public void shouldReturnRightWhenOrElseRunOnRightProjectionOfsuccess() {
+  void shouldReturnRightWhenOrElseRunOnRightProjectionOfsuccess() {
     final boolean[] actual = new boolean[] {true};
     CallResult.<String, Integer>success(1).success().orElseRun(s -> actual[0] = false);
     assertThat(actual[0]).isTrue();
   }
 
   @Test
-  public void shouldReturnOtherWhenOrElseRunOnRightProjectionOffailure() {
+  void shouldReturnOtherWhenOrElseRunOnRightProjectionOffailure() {
     final boolean[] actual = new boolean[] {false};
     CallResult.<String, Integer>failure("1").success().orElseRun(s -> actual[0] = true);
     assertThat(actual[0]).isTrue();
   }
 
   @Test
-  public void shouldReturnRightWhenOrElseThrowWithFunctionOnRightProjectionOfsuccess() {
+  void shouldReturnRightWhenOrElseThrowWithFunctionOnRightProjectionOfsuccess() {
     final Integer actual =
         CallResult.<String, Integer>success(1)
             .success()
@@ -113,84 +114,81 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOffailure() {
+  void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOffailure() {
+    val actual = CallResult.<String, Integer>failure("1").success();
     assertThatExceptionOfType(RuntimeException.class)
-        .isThrownBy(
-            () ->
-                CallResult.<String, Integer>failure("1")
-                    .success()
-                    .getOrElseThrow(i -> new RuntimeException(String.valueOf(i))));
+        .isThrownBy(() -> actual.getOrElseThrow(i -> new RuntimeException(String.valueOf(i))));
   }
 
   @Test
-  public void shouldConvertRightProjectionOfLeftToNone() {
+  void shouldConvertRightProjectionOfLeftToNone() {
     assertThat(CallResult.failure(0).success().toOption()).isEqualTo(Option.none());
   }
 
   @Test
-  public void shouldConvertRightProjectionOfRightToSome() {
+  void shouldConvertRightProjectionOfRightToSome() {
     assertThat(CallResult.<Integer, String>success("1").success().toOption())
         .isEqualTo(Option.of("1"));
   }
 
   @Test
-  public void shouldConvertRightProjectionOfLeftToCallResult() {
+  void shouldConvertRightProjectionOfLeftToCallResult() {
     final CallResult<Integer, String> self = CallResult.failure(1);
     assertThat(self.success().toCallResult()).isEqualTo(self);
   }
 
   @Test
-  public void shouldConvertRightProjectionOfRightToCallResult() {
+  void shouldConvertRightProjectionOfRightToCallResult() {
     final CallResult<Integer, String> self = CallResult.success("1");
     assertThat(self.success().toCallResult()).isEqualTo(self);
   }
 
   @Test
-  public void shouldConvertRightProjectionOfLeftToJavaOptional() {
+  void shouldConvertRightProjectionOfLeftToJavaOptional() {
     assertThat(CallResult.failure(0).success().toJavaOptional()).isEqualTo(Optional.empty());
   }
 
   @Test
-  public void shouldConvertRightProjectionOfRightToJavaOptional() {
+  void shouldConvertRightProjectionOfRightToJavaOptional() {
     assertThat(CallResult.<Integer, String>success("1").success().toJavaOptional())
         .isEqualTo(Optional.of("1"));
   }
 
   @Test
-  public void shouldTransform() {
+  void shouldTransform() {
     final String transformed = of(1).transform(v -> String.valueOf(v.get()));
     assertThat(transformed).isEqualTo("1");
   }
 
   @Test
-  public void shouldFilterSomeOnRightProjectionOfRightIfPredicateMatches() {
+  void shouldFilterSomeOnRightProjectionOfRightIfPredicateMatches() {
     final boolean actual =
         CallResult.<String, Integer>success(1).success().filter(i -> true).toOption().isDefined();
     assertThat(actual).isTrue();
   }
 
   @Test
-  public void shouldFilterNoneOnRightProjectionOfRightIfPredicateNotMatches() {
+  void shouldFilterNoneOnRightProjectionOfRightIfPredicateNotMatches() {
     assertThat(CallResult.<String, Integer>success(1).success().filter(i -> false))
         .isEqualTo(Option.none());
   }
 
   @Test
-  public void shouldFilterSomeOnRightProjectionOfLeftIfPredicateMatches() {
+  void shouldFilterSomeOnRightProjectionOfLeftIfPredicateMatches() {
     final boolean actual =
         CallResult.<String, Integer>failure("1").success().filter(i -> true).isDefined();
     assertThat(actual).isTrue();
   }
 
   @Test
-  public void shouldFilterNoneOnRightProjectionOfLeftIfPredicateNotMatches() {
+  void shouldFilterNoneOnRightProjectionOfLeftIfPredicateNotMatches() {
     final boolean actual =
         CallResult.<String, Integer>failure("1").success().filter(i -> false).isDefined();
     assertThat(actual).isTrue();
   }
 
   @Test
-  public void shouldFlatMapOnRightProjectionOfsuccess() {
+  void shouldFlatMapOnRightProjectionOfsuccess() {
     final CallResult<String, Integer> actual =
         CallResult.<String, Integer>success(1)
             .success()
@@ -200,7 +198,7 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldFlatMapOnRightProjectionOffailure() {
+  void shouldFlatMapOnRightProjectionOffailure() {
     final CallResult<String, Integer> actual =
         CallResult.<String, Integer>failure("1")
             .success()
@@ -210,7 +208,7 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldFlatMapRightProjectionOfLeftOnRightProjectionOfsuccess() {
+  void shouldFlatMapRightProjectionOfLeftOnRightProjectionOfsuccess() {
     final CallResult<String, String> good = CallResult.success("good");
     final CallResult<String, String> bad = CallResult.failure("bad");
     final CallResult.SuccessProjection<String, Tuple2<String, String>> actual =
@@ -219,51 +217,51 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatHoldsExistsOfRightProjectionOfsuccess() {
+  void shouldBeAwareOfPropertyThatHoldsExistsOfRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().exists(i -> i == 1)).isTrue();
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatNotHoldsExistsOfRightProjectionOfsuccess() {
+  void shouldBeAwareOfPropertyThatNotHoldsExistsOfRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().exists(i -> i == 2)).isFalse();
   }
 
   @Test
-  public void shouldNotHoldPropertyExistsOfRightProjectionOffailure() {
+  void shouldNotHoldPropertyExistsOfRightProjectionOffailure() {
     assertThat(CallResult.success(1).failure().exists(e -> true)).isFalse();
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatHoldsForAllOfRightProjectionOfsuccess() {
+  void shouldBeAwareOfPropertyThatHoldsForAllOfRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().forAll(i -> i == 1)).isTrue();
   }
 
   @Test
-  public void shouldBeAwareOfPropertyThatNotHoldsForAllOfRightProjectionOfsuccess() {
+  void shouldBeAwareOfPropertyThatNotHoldsForAllOfRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().forAll(i -> i == 2)).isFalse();
   }
 
   @Test
-  public void shouldNotHoldPropertyForAllOfRightProjectionOffailure() {
+  void shouldNotHoldPropertyForAllOfRightProjectionOffailure() {
     assertThat(CallResult.success(1).failure().forAll(e -> true)).isTrue();
   }
 
   @Test
-  public void shouldForEachOnRightProjectionOfsuccess() {
+  void shouldForEachOnRightProjectionOfsuccess() {
     final List<Integer> actual = new ArrayList<>();
     CallResult.<String, Integer>success(1).success().forEach(actual::add);
     assertThat(actual).isEqualTo(Collections.singletonList(1));
   }
 
   @Test
-  public void shouldForEachOnRightProjectionOffailure() {
+  void shouldForEachOnRightProjectionOffailure() {
     final List<Integer> actual = new ArrayList<>();
     CallResult.<String, Integer>failure("1").success().forEach(actual::add);
     assertThat(actual.isEmpty()).isTrue();
   }
 
   @Test
-  public void shouldPeekOnRightProjectionOfsuccess() {
+  void shouldPeekOnRightProjectionOfsuccess() {
     final List<Integer> actual = new ArrayList<>();
     final CallResult<String, Integer> testee =
         CallResult.<String, Integer>success(1).success().peek(actual::add).toCallResult();
@@ -272,7 +270,7 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldPeekOnRightProjectionOffailure() {
+  void shouldPeekOnRightProjectionOffailure() {
     final List<Integer> actual = new ArrayList<>();
     final CallResult<String, Integer> testee =
         CallResult.<String, Integer>failure("1").success().peek(actual::add).toCallResult();
@@ -281,106 +279,108 @@ public class CallResultSuccessProjectionTest extends AbstractFunctionalValueTest
   }
 
   @Test
-  public void shouldMapOnRightProjectionOfsuccess() {
+  void shouldMapOnRightProjectionOfsuccess() {
     final CallResult<String, Integer> actual =
         CallResult.<String, Integer>success(1).success().map(i -> i + 1).toCallResult();
     assertThat(actual).isEqualTo(CallResult.success(2));
   }
 
   @Test
-  public void shouldMapOnRightProjectionOffailure() {
+  void shouldMapOnRightProjectionOffailure() {
     final CallResult<String, Integer> actual =
         CallResult.<String, Integer>failure("1").success().map(i -> i + 1).toCallResult();
     assertThat(actual).isEqualTo(CallResult.failure("1"));
   }
 
   @Test
-  public void shouldReturnIteratorOfRightOfRightProjection() {
+  void shouldReturnIteratorOfRightOfRightProjection() {
     assertThat((Iterator<Integer>) CallResult.success(1).success().iterator()).isNotNull();
   }
 
   @Test
-  public void shouldReturnIteratorOfLeftOfRightProjection() {
+  void shouldReturnIteratorOfLeftOfRightProjection() {
     assertThat((Iterator<Object>) CallResult.failure(1).success().iterator()).isNotNull();
   }
 
   @Test
-  public void shouldEqualRightProjectionOfRightIfObjectIsSame() {
+  void shouldEqualRightProjectionOfRightIfObjectIsSame() {
     final CallResult.SuccessProjection<?, ?> r = CallResult.success(1).success();
     assertThat(r.equals(r)).isTrue();
   }
 
   @Test
-  public void shouldEqualRightProjectionOfLeftIfObjectIsSame() {
+  void shouldEqualRightProjectionOfLeftIfObjectIsSame() {
     final CallResult.SuccessProjection<?, ?> r = CallResult.failure(1).success();
     assertThat(r.equals(r)).isTrue();
   }
 
   @Test
-  public void shouldNotEqualRightProjectionOfRightIfObjectIsNull() {
+  void shouldNotEqualRightProjectionOfRightIfObjectIsNull() {
     assertThat(CallResult.success(1).success().equals(null)).isFalse();
   }
 
   @Test
-  public void shouldNotEqualRightProjectionOfLeftIfObjectIsNull() {
+  void shouldNotEqualRightProjectionOfLeftIfObjectIsNull() {
     assertThat(CallResult.failure(1).success().equals(null)).isFalse();
   }
 
   @Test
-  public void shouldNotEqualRightProjectionOfRightIfObjectIsOfDifferentType() {
+  void shouldNotEqualRightProjectionOfRightIfObjectIsOfDifferentType() {
     assertThat(CallResult.success(1).success().equals(new Object())).isFalse();
   }
 
   @Test
-  public void shouldNotEqualRightProjectionOfLeftIfObjectIsOfDifferentType() {
+  void shouldNotEqualRightProjectionOfLeftIfObjectIsOfDifferentType() {
     assertThat(CallResult.failure(1).success().equals(new Object())).isFalse();
   }
 
   @Test
-  public void shouldEqualRightProjectionOfsuccess() {
+  void shouldEqualRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success()).isEqualTo(CallResult.success(1).success());
   }
 
   @Test
-  public void shouldEqualRightProjectionOffailure() {
+  void shouldEqualRightProjectionOffailure() {
     assertThat(CallResult.failure(1).success()).isEqualTo(CallResult.failure(1).success());
   }
 
   @Test
-  public void shouldHashRightProjectionOfsuccess() {
+  void shouldHashRightProjectionOfsuccess() {
     assertThat(CallResult.success(1).success().hashCode())
         .isEqualTo(Objects.hashCode(CallResult.success(1)));
   }
 
   @Test
-  public void shouldHashRightProjectionOffailure() {
+  void shouldHashRightProjectionOffailure() {
     assertThat(CallResult.failure(1).success().hashCode())
         .isEqualTo(Objects.hashCode(CallResult.failure(1)));
   }
 
   @Test
-  public void shouldConvertRightProjectionOfLeftToString() {
-    assertThat(CallResult.failure(1).success().toString()).isEqualTo("CallResult.SuccessProjection(callResult=CallResult.Failure(value=1))");
+  void shouldConvertRightProjectionOfLeftToString() {
+    assertThat(CallResult.failure(1).success().toString())
+        .isEqualTo("CallResult.SuccessProjection(callResult=CallResult.Failure(value=1))");
   }
 
   @Test
-  public void shouldConvertRightProjectionOfRightToString() {
-    assertThat(CallResult.success(1).success().toString()).isEqualTo("CallResult.SuccessProjection(callResult=CallResult.Success(value=1))");
+  void shouldConvertRightProjectionOfRightToString() {
+    assertThat(CallResult.success(1).success().toString())
+        .isEqualTo("CallResult.SuccessProjection(callResult=CallResult.Success(value=1))");
   }
 
   @Test
-  public void shouldHaveSizedSpliterator() {
+  void shouldHaveSizedSpliterator() {
     assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED))
         .isTrue();
   }
 
   @Test
-  public void shouldHaveOrderedSpliterator() {
+  void shouldHaveOrderedSpliterator() {
     assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
   }
 
   @Test
-  public void shouldReturnSizeWhenSpliterator() {
+  void shouldReturnSizeWhenSpliterator() {
     assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
   }
 }

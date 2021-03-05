@@ -13,6 +13,7 @@ public class JCoinbaseClientFactory {
 
   private static JCoinbaseClient instance = null;
 
+  // TODO REMOVE ZONE ID TO USE SYSTEM ZONE ID INSTEAD
   public static JCoinbaseClient build(
       final String apiKey,
       final String secret,

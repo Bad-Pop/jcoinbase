@@ -41,9 +41,9 @@ import java.util.function.Supplier;
 
 /**
  * Functional programming is all about values and transformation of values using functions. The
- * {@code FunctionalValue} type reflects the values in a functional setting. It can be seen as the result of a
- * partial function application. Hence the result may be undefined. If a value is undefined, we say
- * it is empty.
+ * {@code FunctionalValue} type reflects the values in a functional setting. It can be seen as the
+ * result of a partial function application. Hence the result may be undefined. If a value is
+ * undefined, we say it is empty.
  *
  * <p>How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>,
  * <em>failed</em>, <em>no elements</em>, etc.
@@ -84,6 +84,7 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the wrapped value.
  */
+@SuppressWarnings("unchecked")
 public interface FunctionalValue<T> extends Iterable<T> {
 
   /**
@@ -116,28 +117,35 @@ public interface FunctionalValue<T> extends Iterable<T> {
 
   /**
    * Checks if this {@code Value} is asynchronously (short: async) computed.
-   * <p>
-   * Methods of a {@code Value} instance that operate on the underlying value may block the current thread
-   * until the value is present and the computation can be performed.
    *
-   * @return true if this {@code Value} is async (like {@link io.vavr.concurrent.Future}), false otherwise.
+   * <p>Methods of a {@code Value} instance that operate on the underlying value may block the
+   * current thread until the value is present and the computation can be performed.
+   *
+   * @return true if this {@code Value} is async (like {@link io.vavr.concurrent.Future}), false
+   *     otherwise.
    */
-  boolean isAsync();
-
+  default boolean isAsync() {
+    return false;
+  }
 
   /**
    * Checks if this {@code Value} is lazily evaluated.
    *
-   * @return true if this {@code Value} is lazy (like {@link Lazy} and {@link Stream}), false otherwise.
+   * @return true if this {@code Value} is lazy (like {@link Lazy} and {@link Stream}), false
+   *     otherwise.
    */
-  boolean isLazy();
+  default boolean isLazy() {
+    return false;
+  }
 
   /**
    * States whether this is a single-valued type.
    *
    * @return {@code true} if this is single-valued, {@code false} otherwise.
    */
-  boolean isSingleValued();
+  default boolean isSingleValued() {
+    return true;
+  }
 
   /**
    * Checks, if the given predicate holds for all elements.
@@ -327,7 +335,6 @@ public interface FunctionalValue<T> extends Iterable<T> {
    *
    * @return A new {@link Option}.
    */
-  @SuppressWarnings("unchecked")
   default Option<T> toOption() {
     if (this instanceof Option) {
       return (Option<T>) this;

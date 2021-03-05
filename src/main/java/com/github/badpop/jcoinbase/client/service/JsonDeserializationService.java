@@ -18,10 +18,10 @@ import static io.vavr.API.Seq;
 public interface JsonDeserializationService {
 
   // TODO TEST
-  static <DTO> CallResult<Seq<CoinbaseError>, DataDto<DTO>> deserialize(
+  static <T> CallResult<Seq<CoinbaseError>, DataDto<T>> deserialize(
       final HttpResponse<String> response,
       final ObjectMapper mapper,
-      final TypeReference<DataDto<DTO>> typeReference)
+      final TypeReference<DataDto<T>> typeReference)
       throws JsonProcessingException {
     if (response.statusCode() >= 200 && response.statusCode() <= 204) {
       return CallResult.success(mapper.readValue(response.body(), typeReference));
@@ -34,10 +34,10 @@ public interface JsonDeserializationService {
 
   // TODO TEST
   // TODO CHECK IF IT WORKS WITH SINGLE ERROR CASE
-  static <DTO> CallResult<Seq<CoinbaseError>, DataDto<DTO>> deserializeSingleError(
+  static <T> CallResult<Seq<CoinbaseError>, DataDto<T>> deserializeSingleError(
       final HttpResponse<String> response,
       final ObjectMapper mapper,
-      final TypeReference<DataDto<DTO>> typeReference)
+      final TypeReference<DataDto<T>> typeReference)
       throws JsonProcessingException {
     if (response.statusCode() >= 200 && response.statusCode() <= 204) {
       return CallResult.success(mapper.readValue(response.body(), typeReference));
