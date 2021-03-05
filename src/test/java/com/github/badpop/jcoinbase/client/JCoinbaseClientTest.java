@@ -24,7 +24,7 @@ class JCoinbaseClientTest {
   @Test
   void should_properly_build_JCoinbaseClient() {
 
-    var actual = new JCoinbaseClient().build(null, null, 3, false, ZoneId.of("UTC+01:00"), false);
+    var actual = new JCoinbaseClient().build(null, null, 3, false);
 
     assertThat(actual).isNotNull().isInstanceOf(JCoinbaseClient.class);
 
@@ -44,30 +44,8 @@ class JCoinbaseClientTest {
   }
 
   @Test
-  void should_properly_build_JCoinbaseClient_with_followRedirect() {
-
-    var actual = new JCoinbaseClient().build(null, null, 3, true, ZoneId.of("UTC+01:00"), false);
-
-    assertThat(actual).isNotNull().isInstanceOf(JCoinbaseClient.class);
-
-    assertThat(actual.getHttpClient()).isNotNull().isInstanceOf(HttpClient.class);
-    assertThat(actual.getHttpClient().connectTimeout()).contains(Duration.ofSeconds(3));
-    assertThat(actual.getHttpClient().followRedirects()).isEqualTo(NORMAL);
-
-    assertThat(actual.getJsonSerDes()).isNotNull().isInstanceOf(ObjectMapper.class);
-    assertThat(actual.getJsonSerDes().isEnabled(WRITE_DATES_AS_TIMESTAMPS)).isFalse();
-    assertThat(actual.getJsonSerDes().getRegisteredModuleIds()).isNotEmpty().doesNotContainNull();
-    assertThat(actual.getJsonSerDes().getRegisteredModuleIds().size()).isEqualTo(2);
-    assertThat(actual.getJsonSerDes().getPropertyNamingStrategy()).isEqualTo(SNAKE_CASE);
-
-    assertThat(actual.getProperties()).isNotNull();
-    assertThat(actual.getProperties()).isInstanceOf(JCoinbaseProperties.class);
-    assertThat(actual.getProperties().getProperties()).isNotEmpty();
-  }
-
-  @Test
   void should_return_DataService() throws NoSuchFieldException, IllegalAccessException {
-    var client = new JCoinbaseClient().build(null, null, 3, false, ZoneId.of("UTC+01:00"), false);
+    var client = new JCoinbaseClient().build(null, null, 3, false);
 
     var actual = client.data();
 
@@ -81,7 +59,7 @@ class JCoinbaseClientTest {
   void should_return_UserService() throws NoSuchFieldException, IllegalAccessException {
     var client =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false, ZoneId.of("UTC+01:00"), false);
+            .build("loremIpsum", "dolorSitAmet", 3, false);
 
     var actual = client.user();
 
@@ -93,7 +71,7 @@ class JCoinbaseClientTest {
 
   @Test
   void should_not_return_UserService_if_not_allowed() {
-    var client = new JCoinbaseClient().build(null, null, 3, false, ZoneId.of("UTC+01:00"), false);
+    var client = new JCoinbaseClient().build(null, null, 3, false);
 
     assertThatExceptionOfType(JCoinbaseException.class)
         .isThrownBy(client::user)
@@ -105,11 +83,11 @@ class JCoinbaseClientTest {
   void should_call_buildThreadSafeSingleton_on_build() {
     var computed =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false, ZoneId.of("UTC+01:00"), true)
+            .build("loremIpsum", "dolorSitAmet", 3, true)
             .getProperties();
     var actual =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false, ZoneId.of("UTC+01:00"), true)
+            .build("loremIpsum", "dolorSitAmet", 3, true)
             .getProperties();
 
     assertThat(actual)
@@ -123,11 +101,11 @@ class JCoinbaseClientTest {
   void should_call_buildWithoutThreadSafeSingleton_on_build() {
     var computed =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false, ZoneId.of("UTC+01:00"), false)
+            .build("loremIpsum", "dolorSitAmet", 3, false)
             .getProperties();
     var actual =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false, ZoneId.of("UTC+01:00"), false)
+            .build("loremIpsum", "dolorSitAmet", 3, false)
             .getProperties();
 
     assertThat(actual)

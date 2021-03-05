@@ -43,7 +43,7 @@ class CoinbaseDataServiceTest {
     mockServer = ClientAndServer.startClientAndServer(port);
     client =
         JCoinbaseClientFactory.build(
-            "loremIpsum", "dolorSitAmet", 3, false, false, ZoneId.of("UTC+01:00"));
+            "loremIpsum", "dolorSitAmet", 3, false);
   }
 
   @BeforeEach

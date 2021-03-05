@@ -10,8 +10,8 @@ import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
-import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.jackson.datatype.VavrModule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,6 @@ import java.util.TimeZone;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.net.http.HttpClient.Redirect.NEVER;
-import static java.net.http.HttpClient.Redirect.NORMAL;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
@@ -57,34 +56,29 @@ public class JCoinbaseClient {
   }
 
   protected JCoinbaseClient build(
-      final String apiKey,
-      final String secret,
-      final long timeout,
-      final boolean followRedirects,
-      final ZoneId zoneId,
-      final boolean threadSafe) {
+      final String apiKey, final String secret, final long timeout, final boolean threadSafe) {
     log.info("Start building new JCoinbase client !");
 
-    buildJsonSerDes(zoneId);
+    buildJsonSerDes();
     buildProperties(apiKey, secret, threadSafe);
     buildAuthService();
     buildDataService();
     buildUserService();
-    buildHttpClient(followRedirects, timeout);
+    buildHttpClient(timeout);
 
     log.info("JCoinbase client successfully built !");
 
     return this;
   }
 
-  private void buildJsonSerDes(final ZoneId zoneId) {
+  private void buildJsonSerDes() {
     this.jsonSerDes =
         new ObjectMapper()
             .findAndRegisterModules()
             .registerModule(new VavrModule())
             .registerModule(new JavaTimeModule())
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-            .setTimeZone(TimeZone.getTimeZone(zoneId))
+            .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()))
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
   }
 
@@ -107,20 +101,12 @@ public class JCoinbaseClient {
     this.userService = new UserService(this, new CoinbaseUserService(), authService);
   }
 
-  private void buildHttpClient(final boolean followRedirects, final long timeout) {
-    if (followRedirects) {
-      this.httpClient =
-          HttpClient.newBuilder()
-              .connectTimeout(Duration.of(timeout, SECONDS))
-              .followRedirects(NORMAL)
-              .build();
-    } else {
-      this.httpClient =
-          HttpClient.newBuilder()
-              .connectTimeout(Duration.of(timeout, SECONDS))
-              .followRedirects(NEVER)
-              .build();
-    }
+  private void buildHttpClient(final long timeout) {
+    this.httpClient =
+        HttpClient.newBuilder()
+            .connectTimeout(Duration.of(timeout, SECONDS))
+            .followRedirects(NEVER)
+            .build();
   }
 
   private void manageNotAllowed(final Throwable throwable) {

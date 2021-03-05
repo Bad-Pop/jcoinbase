@@ -159,7 +159,7 @@ class AuthenticationServiceTest {
     void should_be_allowed() {
       var client =
           JCoinbaseClientFactory.build(
-              "loremIpsumd", "dolorSitAmet", 3, false, false, ZoneId.of("UTC+01:00"));
+              "loremIpsumd", "dolorSitAmet", 3, false);
       var actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsOnRight(VOID);
     }
@@ -167,7 +167,7 @@ class AuthenticationServiceTest {
     @Test
     void should_not_be_allowed() {
       var client =
-          JCoinbaseClientFactory.build(null, null, 3, false, false, ZoneId.of("UTC+01:00"));
+          JCoinbaseClientFactory.build(null, null, 3, false);
       var actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsLeftInstanceOf(JCoinbaseException.class);
     }
