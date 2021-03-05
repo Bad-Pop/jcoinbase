@@ -3,11 +3,13 @@ package com.github.badpop.jcoinbase.client.service.data.dto;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
 import com.github.badpop.jcoinbase.model.data.Time;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class TimeDto {
 

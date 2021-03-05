@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.control;
 
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
@@ -40,6 +41,32 @@ class CallResultTest extends AbstractFunctionalValueTest {
   @Override
   protected int getPeekNonNilPerformingAnAction() {
     return 1;
+  }
+
+
+
+  @Test
+  void shouldPeek() {
+    val actualSuccess = of(1);
+    val actualFailure = empty();
+
+    assertThatExceptionOfType(JCoinbaseException.class)
+        .isThrownBy(
+            () ->
+                actualFailure.peek(
+                    integer -> {
+                      throw new JCoinbaseException("error");
+                    },
+                    integer -> {}));
+
+    assertThatExceptionOfType(JCoinbaseException.class)
+        .isThrownBy(
+            () ->
+                actualSuccess.peek(
+                    integer -> {},
+                    integer -> {
+                      throw new JCoinbaseException("error");
+                    }));
   }
 
   @Test
@@ -404,8 +431,7 @@ class CallResultTest extends AbstractFunctionalValueTest {
 
   @Test
   void shouldHaveSizedSpliterator() {
-    assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED))
-        .isTrue();
+    assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
   }
 
   @Test

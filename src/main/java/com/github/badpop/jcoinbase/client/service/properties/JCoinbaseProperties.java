@@ -24,7 +24,7 @@ public class JCoinbaseProperties {
   Option<String> apiKey;
   Option<String> secret;
 
-  // With privileges
+  // With authentication
   String apiUrl;
   String currentUserPath;
   String currentUserAuthorizationsPath;
@@ -33,7 +33,7 @@ public class JCoinbaseProperties {
   String accountPath;
   String paymentMethodPath;
 
-  // Without privileges
+  // Without authentication
   String currenciesPath;
   String exchangeRatesPath;
   String pricesPath;

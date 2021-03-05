@@ -26,7 +26,6 @@ import io.vavr.CheckedFunction0;
 import io.vavr.Lazy;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Stream;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
@@ -308,7 +307,7 @@ public interface FunctionalValue<T> extends Iterable<T> {
    */
   default <L> CallResult<L, T> toCallResult(Supplier<? extends L> leftSupplier) {
     Objects.requireNonNull(leftSupplier, "leftSupplier is null");
-    if (this instanceof Either) {
+    if (this instanceof CallResult) {
       return ((CallResult<?, T>) this).mapLeft(ignored -> leftSupplier.get());
     } else {
       return isEmpty() ? CallResult.failure(leftSupplier.get()) : CallResult.success(get());
@@ -323,7 +322,7 @@ public interface FunctionalValue<T> extends Iterable<T> {
    * @return A new {@link CallResult}.
    */
   default <L> CallResult<L, T> toCallResult(L left) {
-    if (this instanceof Either) {
+    if (this instanceof CallResult) {
       return ((CallResult<?, T>) this).mapLeft(ignored -> left);
     } else {
       return isEmpty() ? CallResult.failure(left) : CallResult.success(get());

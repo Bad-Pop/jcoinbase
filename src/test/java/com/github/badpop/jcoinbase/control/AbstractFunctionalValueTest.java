@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,6 +61,33 @@ abstract class AbstractFunctionalValueTest {
   void shouldGetEmpty() {
     val empty = empty();
     assertThrows(NoSuchElementException.class, empty::get);
+  }
+
+  @Test
+  void shouldContains() {
+    val actual = of(1);
+    assertThat(actual.contains(1)).isTrue();
+  }
+
+  @Test
+  void shouldNotContains() {
+    val actual = of(1);
+    assertThat(actual.contains(2)).isFalse();
+  }
+
+  @Test
+  void shouldNotBeAsync() {
+    assertThat(empty().isAsync()).isFalse();
+  }
+
+  @Test
+  void shouldNotBeLazy() {
+    assertThat(empty().isLazy()).isFalse();
+  }
+
+  @Test
+  void shouldBesINGLEvalued() {
+    assertThat(empty().isSingleValued()).isTrue();
   }
 
   @Test

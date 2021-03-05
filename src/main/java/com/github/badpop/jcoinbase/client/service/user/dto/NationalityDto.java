@@ -2,9 +2,11 @@ package com.github.badpop.jcoinbase.client.service.user.dto;
 
 import com.github.badpop.jcoinbase.model.user.Nationality;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class NationalityDto {
   private final String code;

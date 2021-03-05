@@ -5,6 +5,7 @@ import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
 import com.github.badpop.jcoinbase.model.user.ResourceType;
 import com.github.badpop.jcoinbase.model.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -13,6 +14,7 @@ import static com.github.badpop.jcoinbase.model.user.ResourceType.UNKNOWN;
 import static io.vavr.API.Option;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class UserDto {
   private final String id;
