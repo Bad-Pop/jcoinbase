@@ -24,15 +24,16 @@ public class JCoinbaseProperties {
   Option<String> apiKey;
   Option<String> secret;
 
-  // With privileges
+  // With authentication
   String apiUrl;
   String currentUserPath;
   String currentUserAuthorizationsPath;
   String userPath;
+  String usersPath;
   String accountPath;
   String paymentMethodPath;
 
-  // Without privileges
+  // Without authentication
   String currenciesPath;
   String exchangeRatesPath;
   String pricesPath;
@@ -89,6 +90,7 @@ public class JCoinbaseProperties {
     this.currentUserAuthorizationsPath =
         properties.getProperty("coinbase.api.path.resource.currentUserAuthorizations");
     this.userPath = properties.getProperty("coinbase.api.path.resource.user");
+    this.usersPath = properties.getProperty("coinbase.api.path.resource.users");
     this.accountPath = properties.getProperty("coinbase.api.path.resource.account");
     this.paymentMethodPath = properties.getProperty("coinbase.api.path.resource.paymentMethods");
 

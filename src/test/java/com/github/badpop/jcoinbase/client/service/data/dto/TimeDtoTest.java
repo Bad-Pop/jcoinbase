@@ -21,7 +21,7 @@ class TimeDtoTest {
     assertThat(actual)
         .isEqualTo(
             Time.builder()
-                .iso(DateAndTimeUtils.fromInstant(now))
+                .iso(DateAndTimeUtils.fromInstant(now).getOrNull())
                 .epoch(now.getEpochSecond())
                 .build());
   }

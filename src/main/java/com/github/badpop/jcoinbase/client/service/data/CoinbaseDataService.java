@@ -6,7 +6,7 @@ import com.github.badpop.jcoinbase.client.service.data.dto.CurrencyDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.PriceDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
-import com.github.badpop.jcoinbase.client.service.DataDto;
+import com.github.badpop.jcoinbase.client.service.dto.DataDto;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
@@ -27,7 +27,8 @@ public class CoinbaseDataService {
   private static final String ACCEPT_HEADER = "Accept";
   private static final String ACCEPT_HEADER_VALUE = "application/json";
 
-  public Try<Time> getTime(final JCoinbaseClient client) {
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
+  public Try<Time> fetchTime(final JCoinbaseClient client) {
     var request =
         HttpRequest.newBuilder()
             .GET()
@@ -37,17 +38,18 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(stringHttpResponse.body(), new TypeReference<DataDto<TimeDto>>() {})
                     .getData()
                     .toTime());
   }
 
-  public Try<List<Currency>> getCurrencies(final JCoinbaseClient client) {
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
+  public Try<List<Currency>> fetchCurrencies(final JCoinbaseClient client) {
 
     var request =
         HttpRequest.newBuilder()
@@ -59,11 +61,11 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(
                         stringHttpResponse.body(),
                         new TypeReference<DataDto<List<CurrencyDto>>>() {})
@@ -71,7 +73,9 @@ public class CoinbaseDataService {
                     .map(CurrencyDto::toCurrency));
   }
 
-  public Try<ExchangeRates> getExchangeRates(final JCoinbaseClient client, final String currency) {
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
+  public Try<ExchangeRates> fetchExchangeRates(
+      final JCoinbaseClient client, final String currency) {
 
     var request =
         HttpRequest.newBuilder()
@@ -84,11 +88,11 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(
                         stringHttpResponse.body(),
                         new TypeReference<DataDto<ExchangeRatesDto>>() {})
@@ -96,7 +100,8 @@ public class CoinbaseDataService {
                     .toExchangeRates());
   }
 
-  public Try<Price> getPriceByType(
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
+  public Try<Price> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
     var request =
         HttpRequest.newBuilder()
@@ -105,29 +110,28 @@ public class CoinbaseDataService {
             .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
             .build();
 
-    return Try.of(() -> client.getClient().send(request, HttpResponse.BodyHandlers.ofString()))
+    return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
             stringHttpResponse ->
                 client
-                    .getJsonDeserializer()
+                    .getJsonSerDes()
                     .readValue(stringHttpResponse.body(), new TypeReference<DataDto<PriceDto>>() {})
                     .getData()
                     .toPrice(priceType));
   }
 
+  // TODO CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD
   private URI buildPriceURI(
       final JCoinbaseProperties properties,
       final PriceType priceType,
       final String baseCurrency,
       final String targetCurrency) {
     return URI.create(
-        properties.getApiUrl()
-            + properties.getPricesPath()
-            + "/"
-            + baseCurrency
-            + "-"
-            + targetCurrency
-            + "/"
-            + priceType.getType());
+        String.format(
+            "%s%s/%s/%s",
+            properties.getApiUrl(),
+            properties.getPricesPath(),
+            baseCurrency + "-" + targetCurrency,
+            priceType.getType()));
   }
 }

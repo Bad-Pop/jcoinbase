@@ -1,0 +1,58 @@
+{
+  "data": {
+    "id": "ID",
+    "name": "name",
+    "username": "username",
+    "profile_location": "profileLocation",
+    "profile_bio": "profileBio",
+    "profile_url": "profileUrl",
+    "avatar_url": "avatarUrl",
+    "resource": "user",
+    "resource_path": "/v2/user",
+    "email": "email@email.com",
+    "legacy_id": "legacyId",
+    "time_zone": "Paris",
+    "native_currency": "EUR",
+    "bitcoin_unit": "BTC",
+    "state": "France",
+    "country": {
+      "code": "FR",
+      "name": "France",
+      "is_in_europe": true
+    },
+    "nationality": {
+      "code": "FR",
+      "name": "France"
+    },
+    "region_supports_fiat_transfers": true,
+    "region_supports_crypto_to_crypto_transfers": true,
+    "created_at": "2017-12-11T12:38:24Z",
+    "supports_rewards": true,
+    "tiers": {
+      "completed_description": "Niveau 2",
+      "upgrade_button_text": null,
+      "header": null,
+      "body": null
+    },
+    "referral_money": {
+      "amount": "8.30",
+      "currency": "EUR",
+      "currency_symbol": "€",
+      "referral_threshold": "83.00"
+    },
+    "has_blocking_buy_restrictions": false,
+    "has_made_a_purchase": true,
+    "has_buy_deposit_payment_methods": true,
+    "has_unverified_buy_deposit_payment_methods": false,
+    "needs_kyc_remediation": false,
+    "show_instant_ach_ux": false,
+    "user_type": "individual"
+  },
+  "warnings": [
+    {
+      "id": "missing_version",
+      "message": "Please supply API version (YYYY-MM-DD) as CB-VERSION header",
+      "url": "https://developers.coinbase.com/api#versioning"
+    }
+  ]
+}
