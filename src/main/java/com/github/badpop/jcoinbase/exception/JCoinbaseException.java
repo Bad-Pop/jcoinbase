@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.exception;
 
+// TODO UPGRADE EXCEPTIONS MANAGEMENT TO USE MORE THAN ONE EXCEPTION TYPE
 public class JCoinbaseException extends RuntimeException {
 
   public JCoinbaseException(String message) {

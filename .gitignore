@@ -10,3 +10,6 @@ out/
 
 target/
 dependency-reduced-pom.xml
+
+.DS_STORE
+src/test/java/com/github/badpop/jcoinbase/FeatureDevelopmentTest.java

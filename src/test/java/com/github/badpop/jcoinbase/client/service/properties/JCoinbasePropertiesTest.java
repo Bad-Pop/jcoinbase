@@ -30,6 +30,8 @@ class JCoinbasePropertiesTest {
             expectedProperties.getProperty("coinbase.api.path.resource.currentUserAuthorizations"));
     assertThat(actual.getUserPath())
         .isEqualTo(expectedProperties.getProperty("coinbase.api.path.resource.user"));
+    assertThat(actual.getUsersPath())
+        .isEqualTo(expectedProperties.getProperty("coinbase.api.path.resource.users"));
     assertThat(actual.getAccountPath())
         .isEqualTo(expectedProperties.getProperty("coinbase.api.path.resource.account"));
     assertThat(actual.getPaymentMethodPath())
