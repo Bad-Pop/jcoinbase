@@ -7,6 +7,7 @@ import com.github.badpop.jcoinbase.model.data.ExchangeRates;
 import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Time;
 import io.vavr.control.Try;
+import lombok.val;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +36,8 @@ class DataServiceTest {
   @Test
   void should_return_time() {
 
-    var localDT = LocalDateTime.of(2021, 2, 7, 15, 30);
-    var time =
+    val localDT = LocalDateTime.of(2021, 2, 7, 15, 30);
+    val time =
         Time.builder()
             .iso(localDT)
             .epoch(localDT.toEpochSecond(ZoneOffset.systemDefault().getRules().getOffset(localDT)))
@@ -44,7 +45,7 @@ class DataServiceTest {
 
     when(coinbaseDataService.fetchTime(client)).thenReturn(Try.success(time));
 
-    var actual = dataService.fetchTime();
+    val actual = dataService.fetchTime();
 
     assertThat(actual).isEqualTo(time);
 
@@ -56,7 +57,7 @@ class DataServiceTest {
   @Test
   void getTime_should_throw_JCoinbaseException() {
 
-    var throwable = new Exception("Error message");
+    val throwable = new Exception("Error message");
 
     when(coinbaseDataService.fetchTime(client)).thenReturn(Try.failure(throwable));
 
@@ -72,8 +73,8 @@ class DataServiceTest {
   @Test
   void getCurrenciesAsJavaList_should_return_currencies_as_java_list() {
 
-    var eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
-    var usd =
+    val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
+    val usd =
         Currency.builder()
             .id("USD")
             .name("United States Dollar")
@@ -82,7 +83,7 @@ class DataServiceTest {
 
     when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
 
-    var actual = dataService.fetchCurrenciesAsJavaList();
+    val actual = dataService.fetchCurrenciesAsJavaList();
 
     assertThat(actual).containsExactly(eur, usd);
 
@@ -93,7 +94,7 @@ class DataServiceTest {
 
   @Test
   void getCurrenciesAsJavaList_should_throw_JCoinbaseException() {
-    var throwable = new Exception("Error message");
+    val throwable = new Exception("Error message");
     when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
@@ -108,8 +109,8 @@ class DataServiceTest {
   @Test
   void getCurrencies_should_return_currencies_as_vavr_list() {
 
-    var eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
-    var usd =
+    val eur = Currency.builder().id("EUR").name("Euro").minSize(BigDecimal.valueOf(0.01)).build();
+    val usd =
         Currency.builder()
             .id("USD")
             .name("United States Dollar")
@@ -118,7 +119,7 @@ class DataServiceTest {
 
     when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
 
-    var actual = dataService.fetchCurrencies();
+    val actual = dataService.fetchCurrencies();
 
     VavrAssertions.assertThat(actual).containsExactly(eur, usd);
 
@@ -129,7 +130,7 @@ class DataServiceTest {
 
   @Test
   void getCurrencies_should_throw_JCoinbaseException() {
-    var throwable = new Exception("Error message");
+    val throwable = new Exception("Error message");
     when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.failure(throwable));
 
     assertThatExceptionOfType(JCoinbaseException.class)
@@ -144,18 +145,18 @@ class DataServiceTest {
   @Test
   void getExchangeRates_should_return_ExchangeRates() {
 
-    var currency = "BTC";
-    var rates =
+    val currency = "BTC";
+    val rates =
         Map(
             "EUR", BigDecimal.valueOf(32000.47),
             "USD", BigDecimal.valueOf(39000.09));
 
-    var exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
+    val exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
 
     when(coinbaseDataService.fetchExchangeRates(client, currency))
         .thenReturn(Try.success(exchangeRates));
 
-    var actual = dataService.fetchExchangeRates(currency);
+    val actual = dataService.fetchExchangeRates(currency);
 
     assertThat(actual).isEqualTo(exchangeRates);
     assertThat(actual.getRates()).containsExactlyElementsOf(rates);
@@ -168,8 +169,8 @@ class DataServiceTest {
 
   @Test
   void getExchangeRates_should_throw_JCoinbaseException() {
-    var currency = "BTC";
-    var throwable = new Exception("Error message");
+    val currency = "BTC";
+    val throwable = new Exception("Error message");
     when(coinbaseDataService.fetchExchangeRates(client, currency))
         .thenReturn(Try.failure(throwable));
 
@@ -185,16 +186,16 @@ class DataServiceTest {
   @Test
   void getPrice_should_return_currency_BUY_PRICE() {
 
-    var priceType = BUY;
-    var baseCurrency = "BTC";
-    var targetCurrency = "EUR";
+    val priceType = BUY;
+    val baseCurrency = "BTC";
+    val targetCurrency = "EUR";
 
-    var price = Price.builder().build();
+    val price = Price.builder().build();
 
     when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
+    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
@@ -205,16 +206,16 @@ class DataServiceTest {
 
   @Test
   void getPrice_should_return_currency_SELL_PRICE() {
-    var priceType = SELL;
-    var baseCurrency = "BTC";
-    var targetCurrency = "EUR";
+    val priceType = SELL;
+    val baseCurrency = "BTC";
+    val targetCurrency = "EUR";
 
-    var price = Price.builder().build();
+    val price = Price.builder().build();
 
     when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
+    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
@@ -225,16 +226,16 @@ class DataServiceTest {
 
   @Test
   void getPrice_should_return_currency_SPOT_PRICE() {
-    var priceType = SPOT;
-    var baseCurrency = "BTC";
-    var targetCurrency = "EUR";
+    val priceType = SPOT;
+    val baseCurrency = "BTC";
+    val targetCurrency = "EUR";
 
-    var price = Price.builder().build();
+    val price = Price.builder().build();
 
     when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.success(price));
 
-    var actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
+    val actual = dataService.fetchPrice(priceType, baseCurrency, targetCurrency);
 
     assertThat(actual).isNotNull().isEqualTo(price);
 
@@ -246,10 +247,10 @@ class DataServiceTest {
   @Test
   void getPrice_should_throw_JCoinbaseException() {
 
-    var throwable = new Exception("Error message");
-    var priceType = SPOT;
-    var baseCurrency = "BTC";
-    var targetCurrency = "EUR";
+    val throwable = new Exception("Error message");
+    val priceType = SPOT;
+    val baseCurrency = "BTC";
+    val targetCurrency = "EUR";
 
     when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
         .thenReturn(Try.failure(throwable));

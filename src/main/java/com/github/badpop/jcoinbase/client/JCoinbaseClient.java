@@ -10,7 +10,7 @@ import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
-import com.github.badpop.jcoinbase.exception.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.jackson.datatype.VavrModule;
 import lombok.Getter;

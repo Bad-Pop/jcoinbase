@@ -1,7 +1,7 @@
 package com.github.badpop.jcoinbase.client.service.data;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
-import com.github.badpop.jcoinbase.exception.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
@@ -19,6 +19,7 @@ public class DataService {
   private final JCoinbaseClient client;
   private final CoinbaseDataService service;
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Time fetchTime() {
     return service
         .fetchTime(client)
@@ -32,10 +33,12 @@ public class DataService {
         .get();
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public java.util.List<Currency> fetchCurrenciesAsJavaList() {
     return fetchCurrencies().toJavaList();
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public List<Currency> fetchCurrencies() {
     return service
         .fetchCurrencies(client)
@@ -49,6 +52,7 @@ public class DataService {
         .get();
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public ExchangeRates fetchExchangeRates(final String currency) {
     return service
         .fetchExchangeRates(client, currency)
@@ -65,6 +69,7 @@ public class DataService {
         .get();
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Price fetchPrice(
       final PriceType priceType, final String baseCurrency, final String targetCurrency) {
 

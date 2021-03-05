@@ -3,7 +3,7 @@ package com.github.badpop.jcoinbase.client.service.auth;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
-import com.github.badpop.jcoinbase.exception.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Either;
 import io.vavr.control.Option;

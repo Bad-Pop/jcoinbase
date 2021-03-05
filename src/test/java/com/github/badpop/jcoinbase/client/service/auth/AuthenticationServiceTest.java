@@ -58,6 +58,7 @@ class AuthenticationServiceTest {
        We are not testing timestamp and signature
        due to incapacity to mock private long getCurrentTime().
        TODO find a better implementation and refactor
+       POTENTIAL SOLUTION 1 : USE JAVA REFLECTION
       */
       assertThat(actualWrapper)
           .isNotEmpty()

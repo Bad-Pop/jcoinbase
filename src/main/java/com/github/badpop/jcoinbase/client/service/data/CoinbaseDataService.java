@@ -2,11 +2,11 @@ package com.github.badpop.jcoinbase.client.service.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
-import com.github.badpop.jcoinbase.client.service.DataDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.CurrencyDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.PriceDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
+import com.github.badpop.jcoinbase.client.service.dto.DataDto;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
@@ -27,6 +27,7 @@ public class CoinbaseDataService {
   private static final String ACCEPT_HEADER = "Accept";
   private static final String ACCEPT_HEADER_VALUE = "application/json";
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<Time> fetchTime(final JCoinbaseClient client) {
     var request =
         HttpRequest.newBuilder()
@@ -47,6 +48,7 @@ public class CoinbaseDataService {
                     .toTime());
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<List<Currency>> fetchCurrencies(final JCoinbaseClient client) {
 
     var request =
@@ -71,6 +73,7 @@ public class CoinbaseDataService {
                     .map(CurrencyDto::toCurrency));
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<ExchangeRates> fetchExchangeRates(
       final JCoinbaseClient client, final String currency) {
 
@@ -97,6 +100,7 @@ public class CoinbaseDataService {
                     .toExchangeRates());
   }
 
+  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<Price> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
     var request =
@@ -116,6 +120,7 @@ public class CoinbaseDataService {
                     .toPrice(priceType));
   }
 
+  // TODO CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD
   private URI buildPriceURI(
       final JCoinbaseProperties properties,
       final PriceType priceType,

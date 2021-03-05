@@ -6,13 +6,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import static io.vavr.API.None;
-import static io.vavr.API.Some;
+import static io.vavr.API.Option;
 
 public interface DateAndTimeUtils {
 
   static Option<LocalDateTime> fromInstant(final Instant instant) {
-    if (instant != null) return Some(LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
-    else return None();
+    return Option(instant).map(value -> LocalDateTime.ofInstant(value, ZoneId.systemDefault()));
   }
 }
