@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client.service.data.dto;
 
 import com.github.badpop.jcoinbase.model.data.Currency;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -12,8 +13,8 @@ class CurrencyDtoTest {
   @Test
   void should_return_Currency() {
 
-    var dto = new CurrencyDto("BTC", "Bitcoin", BigDecimal.valueOf(0.01));
-    var actual = dto.toCurrency();
+    val dto = new CurrencyDto("BTC", "Bitcoin", BigDecimal.valueOf(0.01));
+    val actual = dto.toCurrency();
 
     assertThat(actual)
         .isEqualTo(

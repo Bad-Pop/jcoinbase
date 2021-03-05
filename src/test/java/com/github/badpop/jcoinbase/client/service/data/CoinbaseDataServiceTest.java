@@ -10,6 +10,7 @@ import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Time;
 import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
 import com.github.badpop.jcoinbase.testutils.JsonUtils;
+import lombok.val;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/time.json")));
 
-      var actual = service.fetchTime(client);
+      val actual = service.fetchTime(client);
 
       assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
       Assertions.assertThat(actual.get()).isNotEmpty();
@@ -88,7 +89,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
-      var actual = service.fetchTime(client);
+      val actual = service.fetchTime(client);
 
       assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
       Assertions.assertThat(actual.get()).isEmpty();
@@ -105,7 +106,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
-      var actual = service.fetchTime(client);
+      val actual = service.fetchTime(client);
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }
@@ -122,8 +123,8 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/currencies.json")));
 
-      var actual = service.fetchCurrencies(client);
-      var actualList = actual.get();
+      val actual = service.fetchCurrencies(client);
+      val actualList = actual.get();
 
       assertThat(actual)
           .isSuccess()
@@ -147,7 +148,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
-      var actual = service.fetchCurrencies(client);
+      val actual = service.fetchCurrencies(client);
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }
@@ -169,7 +170,7 @@ class CoinbaseDataServiceTest {
                   .withBody(
                       JsonUtils.readResource("/json/coinbaseDataService/exchange_rates.json")));
 
-      var actual = service.fetchExchangeRates(client, "BTC");
+      val actual = service.fetchExchangeRates(client, "BTC");
 
       assertThat(actual).isSuccess().containsInstanceOf(ExchangeRates.class);
       Assertions.assertThat(actual.get())
@@ -196,7 +197,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
-      var actual = service.fetchExchangeRates(client, "invalidCurrency");
+      val actual = service.fetchExchangeRates(client, "invalidCurrency");
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }
@@ -213,7 +214,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/price.json")));
 
-      var actual = service.fetchPriceByType(client, BUY, "BTC", "EUR");
+      val actual = service.fetchPriceByType(client, BUY, "BTC", "EUR");
 
       assertThat(actual).isSuccess().containsInstanceOf(Price.class);
       Assertions.assertThat(actual.get())
@@ -235,7 +236,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/price.json")));
 
-      var actual = service.fetchPriceByType(client, SELL, "BTC", "EUR");
+      val actual = service.fetchPriceByType(client, SELL, "BTC", "EUR");
 
       assertThat(actual).isSuccess().containsInstanceOf(Price.class);
       Assertions.assertThat(actual.get())
@@ -257,7 +258,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/price.json")));
 
-      var actual = service.fetchPriceByType(client, SPOT, "BTC", "EUR");
+      val actual = service.fetchPriceByType(client, SPOT, "BTC", "EUR");
 
       assertThat(actual).isSuccess().containsInstanceOf(Price.class);
       Assertions.assertThat(actual.get())
@@ -279,7 +280,7 @@ class CoinbaseDataServiceTest {
                   .withHeader("Content-Type", "application/json")
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
-      var actual = service.fetchPriceByType(client, SPOT, "BTC", "invalidCurrency");
+      val actual = service.fetchPriceByType(client, SPOT, "BTC", "invalidCurrency");
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }

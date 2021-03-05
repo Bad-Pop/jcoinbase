@@ -20,6 +20,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.Try;
 import lombok.AllArgsConstructor;
+import lombok.val;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -34,7 +35,7 @@ public class CoinbaseDataService {
   private static final String ACCEPT_HEADER_VALUE = "application/json";
 
   public Try<CallResult<Seq<CoinbaseError>, Time>> fetchTime(final JCoinbaseClient client) {
-    var request =
+    val request =
         HttpRequest.newBuilder()
             .GET()
             .uri(
@@ -58,7 +59,7 @@ public class CoinbaseDataService {
   // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<List<Currency>> fetchCurrencies(final JCoinbaseClient client) {
 
-    var request =
+    val request =
         HttpRequest.newBuilder()
             .GET()
             .uri(
@@ -84,7 +85,7 @@ public class CoinbaseDataService {
   public Try<ExchangeRates> fetchExchangeRates(
       final JCoinbaseClient client, final String currency) {
 
-    var request =
+    val request =
         HttpRequest.newBuilder()
             .GET()
             .uri(
@@ -110,7 +111,7 @@ public class CoinbaseDataService {
   // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
   public Try<Price> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
-    var request =
+    val request =
         HttpRequest.newBuilder()
             .GET()
             .uri(buildPriceURI(client.getProperties(), priceType, baseCurrency, targetCurrency))

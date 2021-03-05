@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.client;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -12,10 +13,10 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void should_not_return_thread_safe_singleton() {
-    var computed =
+    val computed =
         JCoinbaseClientFactory.build(
             "loremIpsum", "dolorSitAmet", 3, false);
-    var actual =
+    val actual =
         JCoinbaseClientFactory.build(
             "loremIpsum", "dolorSitAmet", 3, false);
 
@@ -28,7 +29,7 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void should_return_new_instance_if_null() {
-    var actual =
+    val actual =
         JCoinbaseClientFactory.build(
             "loremIpsum", "dolorSitAmet", 3, false);
 
@@ -37,11 +38,11 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void should_return_same_instance_if_already_computed() {
-    var computed =
+    val computed =
         JCoinbaseClientFactory.build(
             "loremIpsum", "dolorSitAmet", 3, true);
 
-    var actual =
+    val actual =
         JCoinbaseClientFactory.build(
             "loremIpsum", "dolorSitAmet", 3, true);
 
@@ -50,10 +51,10 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void buildWithoutThreadSafeSingleton_should_not_return_thread_safe_singleton() {
-    var computed =
+    val computed =
         JCoinbaseClientFactory.buildWithoutThreadSafeSingleton(
             "loremIpsum", "dolorSitAmet", 3);
-    var actual =
+    val actual =
         JCoinbaseClientFactory.buildWithoutThreadSafeSingleton(
             "loremIpsum", "dolorSitAmet", 3);
 
@@ -66,7 +67,7 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void buildThreadSafeSingleton_should_return_new_instance_if_null() {
-    var actual =
+    val actual =
         JCoinbaseClientFactory.buildThreadSafeSingleton(
             "loremIpsum", "dolorSitAmet", 3);
 
@@ -75,11 +76,11 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void buildThreadSafeSingleton_should_return_same_instance_if_already_computed() {
-    var computed =
+    val computed =
         JCoinbaseClientFactory.buildThreadSafeSingleton(
             "loremIpsum", "dolorSitAmet", 3);
 
-    var actual =
+    val actual =
         JCoinbaseClientFactory.buildThreadSafeSingleton(
             "loremIpsum", "dolorSitAmet", 3);
 
@@ -88,15 +89,15 @@ class JCoinbaseClientFactoryTest {
 
   @Test
   void should_set_timeout_to_3_if_less_than_1() {
-    var defaultTimeout = 3L;
-    var actualBuild =
+    val defaultTimeout = 3L;
+    val actualBuild =
         JCoinbaseClientFactory.build(null, null, 0, false)
             .getHttpClient();
-    var actualBuildTS =
+    val actualBuildTS =
         JCoinbaseClientFactory.buildThreadSafeSingleton(
                 null, null, 0)
             .getHttpClient();
-    var actualBuildNTS =
+    val actualBuildNTS =
         JCoinbaseClientFactory.buildWithoutThreadSafeSingleton(
                 null, null, 0)
             .getHttpClient();

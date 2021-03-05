@@ -6,6 +6,7 @@ import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties
 import com.github.badpop.jcoinbase.client.service.user.UserService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.testutils.ReflectionUtils;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
@@ -24,7 +25,7 @@ class JCoinbaseClientTest {
   @Test
   void should_properly_build_JCoinbaseClient() {
 
-    var actual = new JCoinbaseClient().build(null, null, 3, false);
+    val actual = new JCoinbaseClient().build(null, null, 3, false);
 
     assertThat(actual).isNotNull().isInstanceOf(JCoinbaseClient.class);
 
@@ -45,9 +46,9 @@ class JCoinbaseClientTest {
 
   @Test
   void should_return_DataService() throws NoSuchFieldException, IllegalAccessException {
-    var client = new JCoinbaseClient().build(null, null, 3, false);
+    val client = new JCoinbaseClient().build(null, null, 3, false);
 
-    var actual = client.data();
+    val actual = client.data();
 
     assertThat(actual)
         .isNotNull()
@@ -57,11 +58,11 @@ class JCoinbaseClientTest {
 
   @Test
   void should_return_UserService() throws NoSuchFieldException, IllegalAccessException {
-    var client =
+    val client =
         new JCoinbaseClient()
             .build("loremIpsum", "dolorSitAmet", 3, false);
 
-    var actual = client.user();
+    val actual = client.user();
 
     assertThat(actual)
         .isNotNull()
@@ -71,7 +72,7 @@ class JCoinbaseClientTest {
 
   @Test
   void should_not_return_UserService_if_not_allowed() {
-    var client = new JCoinbaseClient().build(null, null, 3, false);
+    val client = new JCoinbaseClient().build(null, null, 3, false);
 
     assertThatExceptionOfType(JCoinbaseException.class)
         .isThrownBy(client::user)
@@ -81,11 +82,11 @@ class JCoinbaseClientTest {
 
   @Test
   void should_call_buildThreadSafeSingleton_on_build() {
-    var computed =
+    val computed =
         new JCoinbaseClient()
             .build("loremIpsum", "dolorSitAmet", 3, true)
             .getProperties();
-    var actual =
+    val actual =
         new JCoinbaseClient()
             .build("loremIpsum", "dolorSitAmet", 3, true)
             .getProperties();
@@ -99,11 +100,11 @@ class JCoinbaseClientTest {
 
   @Test
   void should_call_buildWithoutThreadSafeSingleton_on_build() {
-    var computed =
+    val computed =
         new JCoinbaseClient()
             .build("loremIpsum", "dolorSitAmet", 3, false)
             .getProperties();
-    var actual =
+    val actual =
         new JCoinbaseClient()
             .build("loremIpsum", "dolorSitAmet", 3, false)
             .getProperties();

@@ -2,6 +2,7 @@ package com.github.badpop.jcoinbase.client.service.data.dto;
 
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
 import com.github.badpop.jcoinbase.model.data.Time;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -13,10 +14,10 @@ class TimeDtoTest {
   @Test
   void should_return_time() {
 
-    var now = Instant.now();
-    var dto = new TimeDto(now, now.getEpochSecond());
+    val now = Instant.now();
+    val dto = new TimeDto(now, now.getEpochSecond());
 
-    var actual = dto.toTime();
+    val actual = dto.toTime();
 
     assertThat(actual)
         .isEqualTo(
