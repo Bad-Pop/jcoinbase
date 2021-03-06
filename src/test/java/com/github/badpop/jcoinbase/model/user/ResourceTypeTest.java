@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.model.user;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
@@ -9,15 +10,15 @@ class ResourceTypeTest {
 
   @Test
   void should_find_resource_from_string() {
-    var resource = "user";
-    var actual = ResourceType.fromString(resource);
+    val resource = "user";
+    val actual = ResourceType.fromString(resource);
     assertThat(actual).contains(USER);
   }
 
   @Test
   void should_not_find_resource_from_string() {
-    var resource = "Lorem Ipsum Dolor Sit Amet";
-    var actual = ResourceType.fromString(resource);
+    val resource = "Lorem Ipsum Dolor Sit Amet";
+    val actual = ResourceType.fromString(resource);
     assertThat(actual).isEmpty();
   }
 }

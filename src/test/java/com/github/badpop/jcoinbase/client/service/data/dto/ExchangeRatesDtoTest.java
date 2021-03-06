@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client.service.data.dto;
 
 import com.github.badpop.jcoinbase.model.data.ExchangeRates;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -12,23 +13,16 @@ class ExchangeRatesDtoTest {
 
   @Test
   void should_return_ExchangeRates() {
-    var dto =
-        new ExchangeRatesDto(
-            "BTC",
-            Map(
-                "EUR", BigDecimal.valueOf(39000.42),
-                "USD", BigDecimal.valueOf(48045.42)));
+    val currency = "BTC";
+    val k1 = "EUR";
+    val v1 = BigDecimal.valueOf(39000.42);
+    val k2 = "USD";
+    val v2 = BigDecimal.valueOf(48045.42);
+    val dto = new ExchangeRatesDto(currency, Map(k1, v1, k2, v2));
 
-    var actual = dto.toExchangeRates();
+    val actual = dto.toExchangeRates();
 
     assertThat(actual)
-        .isEqualTo(
-            ExchangeRates.builder()
-                .currency("BTC")
-                .rates(
-                    Map(
-                        "EUR", BigDecimal.valueOf(39000.42),
-                        "USD", BigDecimal.valueOf(48045.42)))
-                .build());
+        .isEqualTo(ExchangeRates.builder().currency(currency).rates(Map(k1, v1, k2, v2)).build());
   }
 }

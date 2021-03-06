@@ -2,6 +2,7 @@ package com.github.badpop.jcoinbase.model;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.data.Price.PriceType;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static com.github.badpop.jcoinbase.model.data.Price.PriceType.*;
@@ -12,14 +13,14 @@ class PriceTest {
 
   @Test
   void should_retrieve_correct_PriceType() {
-    var typeBuyLower = "buy";
-    var typeBuyUpper = "BUY";
+    val typeBuyLower = "buy";
+    val typeBuyUpper = "BUY";
 
-    var typeSellLower = "sell";
-    var typeSellUpper = "SELL";
+    val typeSellLower = "sell";
+    val typeSellUpper = "SELL";
 
-    var typeSpotLower = "spot";
-    var typeSpotUpper = "SPOT";
+    val typeSpotLower = "spot";
+    val typeSpotUpper = "SPOT";
 
     assertThat(PriceType.fromString(typeBuyLower)).isEqualTo(BUY);
     assertThat(PriceType.fromString(typeBuyUpper)).isEqualTo(BUY);

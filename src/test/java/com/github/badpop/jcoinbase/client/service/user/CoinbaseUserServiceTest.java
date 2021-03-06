@@ -52,7 +52,7 @@ class CoinbaseUserServiceTest {
   }
 
   @Nested
-  class FetchCurrentUserTest {
+  class FetchCurrentUser {
 
     @Test
     void should_return_CallResult_success_of_User() throws IOException {

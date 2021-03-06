@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.model.user;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ class UserTest {
 
   @Test
   void should_return_vavr_options_as_java_optionals() {
-    var user =
+    val user =
         User.builder()
             .username(Option("username"))
             .profileLocation(Option("profileLocation"))
@@ -21,12 +22,12 @@ class UserTest {
             .state(Option("state"))
             .build();
 
-    var actualUsername = user.getUsernameAsJavaOptional();
-    var actualProfileLocation = user.getProfileLocationAsJavaOptional();
-    var actualProfileBio = user.getProfileBioAsJavaOptional();
-    var actualProfileUrl = user.getProfileUrlAsJavaOptional();
-    var actualUserType = user.getUserTypeAsJavaOptional();
-    var actualState = user.getStateAsJavaOptional();
+    val actualUsername = user.getUsernameAsJavaOptional();
+    val actualProfileLocation = user.getProfileLocationAsJavaOptional();
+    val actualProfileBio = user.getProfileBioAsJavaOptional();
+    val actualProfileUrl = user.getProfileUrlAsJavaOptional();
+    val actualUserType = user.getUserTypeAsJavaOptional();
+    val actualState = user.getStateAsJavaOptional();
 
     assertThat(actualUsername).isInstanceOf(Optional.class).contains(user.getUsername().get());
     assertThat(actualProfileLocation)

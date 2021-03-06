@@ -13,7 +13,7 @@ public class DevelopmentTest {
   //  @DisplayName("Test case for development purpose only")
   //  void main() {
   //
-  //    var client =
+  //    val client =
   //        JCoinbaseClientFactory.build(
   //            "B4FyyXIxMbtAlAfe",
   //            "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ",
@@ -22,7 +22,7 @@ public class DevelopmentTest {
   //            false,
   //            ZoneId.of("UTC+01:00")); // PARIS ZONE ID
   //
-  //    var data = client.user().fetchCurrentUser();
+  //    val data = client.user().fetchCurrentUser();
   //
   //    log.info("Data : {}", data);
   //
@@ -52,13 +52,13 @@ public class DevelopmentTest {
   //  @Test
   //  @DisplayName("Mappers case for development purpose only")
   //  void mappers() {
-  //    var user = User.builder().build();
-  //    var userCallResultSuccess = CallResultMapper.mapSuccess(user);
+  //    val user = User.builder().build();
+  //    val userCallResultSuccess = CallResultMapper.mapSuccess(user);
   //    assertThat(userCallResultSuccess.isSuccess()).isTrue();
   //    log.info("user success : {}", userCallResultSuccess);
   //
-  //    var errors = Seq(new ErrorDto("code", "message", null));
-  //    var userCallResultFailure = CallResultMapper.<User>mapFailure(errors);
+  //    val errors = Seq(new ErrorDto("code", "message", null));
+  //    val userCallResultFailure = CallResultMapper.<User>mapFailure(errors);
   //    assertThat(userCallResultFailure.isFailure()).isTrue();
   //    assertThat(userCallResultFailure.getErrors()).hasSize(1);
   //    log.info("user failure : {}", userCallResultFailure);
@@ -67,7 +67,7 @@ public class DevelopmentTest {
   //  @Test
   //  @DisplayName("CallResult case for development purpose only")
   //  void callResultRealWorld() {
-  //    var client =
+  //    val client =
   //        JCoinbaseClientFactory.buildWithoutThreadSafeSingleton(
   //            "B4FyyXIxMbtAlAfe",
   //            "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ",
@@ -75,7 +75,7 @@ public class DevelopmentTest {
   //            false,
   //            ZoneId.of("UTC+01:00"));
   //
-  //    var result =
+  //    val result =
   //        client
   //            .user()
   //            .fetchCurrentUserTest()
@@ -96,7 +96,7 @@ public class DevelopmentTest {
   //
   //    log.info("getOrElseTry : {}", callFailureApi().getOrElseTry(() -> User.builder().build()));
   //
-  //    var toto = com.github.badpop.jcoinbase.api.CallResult.narrow(callFailureApi());
+  //    val toto = com.github.badpop.jcoinbase.api.CallResult.narrow(callFailureApi());
   //
   //    assertThat(callSuccessApi().isSuccess()).isTrue();
   //  }
