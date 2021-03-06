@@ -27,7 +27,6 @@ import java.time.ZoneId;
 
 import static com.github.badpop.jcoinbase.model.data.Price.PriceType.*;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
-import static io.vavr.API.List;
 import static io.vavr.API.Map;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
@@ -114,6 +113,7 @@ class CoinbaseDataServiceTest {
 
   @Nested
   class FetchCurrencies {
+
     @Test
     void should_return_Currencies() throws IOException {
       mockServer
@@ -124,19 +124,35 @@ class CoinbaseDataServiceTest {
                   .withBody(JsonUtils.readResource("/json/coinbaseDataService/currencies.json")));
 
       val actual = service.fetchCurrencies(client);
-      val actualList = actual.get();
 
-      assertThat(actual)
-          .isSuccess()
-          .containsInstanceOf(List(Currency.builder().build()).getClass());
-      assertThat(actualList).hasSize(1);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get().isSuccess()).isTrue();
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      assertThat(actual.get().get())
           .containsExactly(
               Currency.builder()
                   .id("AED")
                   .name("United Arab Emirates Dirham")
                   .minSize(BigDecimal.valueOf(0.01))
                   .build());
+    }
+
+    @Test
+    void should_return_callresult_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/currencies"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.fetchCurrencies(client);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isEmpty();
+      assertThat(actual.get().getFailure())
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
     }
 
     @Test
@@ -156,6 +172,7 @@ class CoinbaseDataServiceTest {
 
   @Nested
   class FetchExchangeRates {
+
     @Test
     void should_return_ExchangeRates() throws IOException {
       mockServer
@@ -172,8 +189,9 @@ class CoinbaseDataServiceTest {
 
       val actual = service.fetchExchangeRates(client, "BTC");
 
-      assertThat(actual).isSuccess().containsInstanceOf(ExchangeRates.class);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      Assertions.assertThat(actual.get().get())
           .isEqualTo(
               ExchangeRates.builder()
                   .currency("BTC")
@@ -182,6 +200,28 @@ class CoinbaseDataServiceTest {
                           "AAVE", BigDecimal.valueOf(86.09612201542411),
                           "AED", BigDecimal.valueOf(172914.68675109)))
                   .build());
+    }
+
+    @Test
+    void should_return_callresult_failure() throws IOException {
+      mockServer
+          .when(
+              request()
+                  .withMethod("GET")
+                  .withPath("/v2/exchange-rates")
+                  .withQueryStringParameter("currency", "BTC"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.fetchExchangeRates(client, "BTC");
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isEmpty();
+      assertThat(actual.get().getFailure())
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
     }
 
     @Test
@@ -205,6 +245,7 @@ class CoinbaseDataServiceTest {
 
   @Nested
   class FetchPrice {
+
     @Test
     void should_return_BUY_Price() throws IOException {
       mockServer
@@ -216,8 +257,9 @@ class CoinbaseDataServiceTest {
 
       val actual = service.fetchPriceByType(client, BUY, "BTC", "EUR");
 
-      assertThat(actual).isSuccess().containsInstanceOf(Price.class);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      Assertions.assertThat(actual.get().get())
           .isEqualTo(
               Price.builder()
                   .baseCurrency("BTC")
@@ -238,8 +280,9 @@ class CoinbaseDataServiceTest {
 
       val actual = service.fetchPriceByType(client, SELL, "BTC", "EUR");
 
-      assertThat(actual).isSuccess().containsInstanceOf(Price.class);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      Assertions.assertThat(actual.get().get())
           .isEqualTo(
               Price.builder()
                   .baseCurrency("BTC")
@@ -260,8 +303,9 @@ class CoinbaseDataServiceTest {
 
       val actual = service.fetchPriceByType(client, SPOT, "BTC", "EUR");
 
-      assertThat(actual).isSuccess().containsInstanceOf(Price.class);
-      Assertions.assertThat(actual.get())
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isNotEmpty();
+      Assertions.assertThat(actual.get().get())
           .isEqualTo(
               Price.builder()
                   .baseCurrency("BTC")
@@ -269,6 +313,24 @@ class CoinbaseDataServiceTest {
                   .amount(BigDecimal.valueOf(38800.72))
                   .priceType(SPOT)
                   .build());
+    }
+
+    @Test
+    void should_return_callresult_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/prices/BTC-EUR/spot"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.fetchPriceByType(client, SPOT, "BTC", "EUR");
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get()).isEmpty();
+      assertThat(actual.get().getFailure())
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
     }
 
     @Test

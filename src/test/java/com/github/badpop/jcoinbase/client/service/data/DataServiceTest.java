@@ -113,6 +113,40 @@ class DataServiceTest {
 
   @Nested
   class GetCurrencies {
+
+    @Test
+    void should_return_callresult_failure() {
+      when(coinbaseDataService.fetchCurrencies(client))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getCurrencies();
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_callresult_failure_as_java() {
+      when(coinbaseDataService.fetchCurrencies(client))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getCurrenciesAsJava();
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).isInstanceOf(java.util.List.class);
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchCurrencies(client);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
     @Test
     void getCurrenciesAsJavaList_should_return_currencies_as_java_list() {
 
@@ -124,11 +158,14 @@ class DataServiceTest {
               .minSize(BigDecimal.valueOf(0.01))
               .build();
 
-      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+      when(coinbaseDataService.fetchCurrencies(client))
+          .thenReturn(Try.success(CallResult.success(List(eur, usd))));
 
       val actual = dataService.getCurrenciesAsJava();
 
-      assertThat(actual).containsExactly(eur, usd);
+      assertThat(actual).isInstanceOf(CallResult.class).isNotEmpty();
+      assertThat(actual.get()).isInstanceOf(java.util.List.class);
+      assertThat(actual.get()).containsExactly(eur, usd);
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchCurrencies(client);
@@ -160,11 +197,13 @@ class DataServiceTest {
               .minSize(BigDecimal.valueOf(0.01))
               .build();
 
-      when(coinbaseDataService.fetchCurrencies(client)).thenReturn(Try.success(List(eur, usd)));
+      when(coinbaseDataService.fetchCurrencies(client))
+          .thenReturn(Try.success(CallResult.success(List(eur, usd))));
 
       val actual = dataService.getCurrencies();
 
-      VavrAssertions.assertThat(actual).containsExactly(eur, usd);
+      assertThat(actual).isInstanceOf(CallResult.class).isNotEmpty();
+      VavrAssertions.assertThat(actual.get()).containsExactly(eur, usd);
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchCurrencies(client);
@@ -187,7 +226,8 @@ class DataServiceTest {
   }
 
   @Nested
-  class GetEchangeRates {
+  class GetExchangeRates {
+
     @Test
     void getExchangeRates_should_return_ExchangeRates() {
 
@@ -200,13 +240,55 @@ class DataServiceTest {
       val exchangeRates = ExchangeRates.builder().currency(currency).rates(rates).build();
 
       when(coinbaseDataService.fetchExchangeRates(client, currency))
-          .thenReturn(Try.success(exchangeRates));
+          .thenReturn(Try.success(CallResult.success(exchangeRates)));
 
       val actual = dataService.getExchangeRates(currency);
 
-      assertThat(actual).isEqualTo(exchangeRates);
-      assertThat(actual.getRates()).containsExactlyElementsOf(rates);
-      assertThat(actual.getRatesAsJavaMap()).containsExactlyEntriesOf(rates.toJavaMap());
+      assertThat(actual).isInstanceOf(CallResult.class).isNotEmpty();
+
+      assertThat(actual.get()).isEqualTo(exchangeRates);
+      assertThat(actual.get().getRates()).containsExactlyElementsOf(rates);
+      assertThat(actual.get().getRatesAsJavaMap()).containsExactlyEntriesOf(rates.toJavaMap());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchExchangeRates(client, currency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_call_result_failure() {
+
+      val currency = "BTC";
+
+      when(coinbaseDataService.fetchExchangeRates(client, currency))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getExchangeRates(currency);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchExchangeRates(client, currency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_call_result_failure_as_java() {
+
+      val currency = "BTC";
+
+      when(coinbaseDataService.fetchExchangeRates(client, currency))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getExchangeRatesAsJava(currency);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure())
+          .isInstanceOf(java.util.List.class)
+          .containsExactly(CoinbaseErrorSampleProvider.getSingleError());
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchExchangeRates(client, currency);
@@ -233,7 +315,7 @@ class DataServiceTest {
   @Nested
   class GetPrices {
     @Test
-    void getPrice_should_return_currency_BUY_PRICE() {
+    void should_return_currency_BUY_PRICE() {
 
       val priceType = BUY;
       val baseCurrency = "BTC";
@@ -242,11 +324,12 @@ class DataServiceTest {
       val price = Price.builder().build();
 
       when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-          .thenReturn(Try.success(price));
+          .thenReturn(Try.success(CallResult.success(price)));
 
       val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-      assertThat(actual).isNotNull().isEqualTo(price);
+      assertThat(actual).isNotEmpty().isInstanceOf(CallResult.class);
+      assertThat(actual.get()).isNotNull().isEqualTo(price);
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
@@ -254,7 +337,7 @@ class DataServiceTest {
     }
 
     @Test
-    void getPrice_should_return_currency_SELL_PRICE() {
+    void should_return_currency_SELL_PRICE() {
       val priceType = SELL;
       val baseCurrency = "BTC";
       val targetCurrency = "EUR";
@@ -262,11 +345,12 @@ class DataServiceTest {
       val price = Price.builder().build();
 
       when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-          .thenReturn(Try.success(price));
+          .thenReturn(Try.success(CallResult.success(price)));
 
       val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-      assertThat(actual).isNotNull().isEqualTo(price);
+      assertThat(actual).isNotEmpty().isInstanceOf(CallResult.class);
+      assertThat(actual.get()).isNotNull().isEqualTo(price);
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
@@ -274,7 +358,7 @@ class DataServiceTest {
     }
 
     @Test
-    void getPrice_should_return_currency_SPOT_PRICE() {
+    void should_return_currency_SPOT_PRICE() {
       val priceType = SPOT;
       val baseCurrency = "BTC";
       val targetCurrency = "EUR";
@@ -282,11 +366,53 @@ class DataServiceTest {
       val price = Price.builder().build();
 
       when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
-          .thenReturn(Try.success(price));
+          .thenReturn(Try.success(CallResult.success(price)));
 
       val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
 
-      assertThat(actual).isNotNull().isEqualTo(price);
+      assertThat(actual).isNotEmpty().isInstanceOf(CallResult.class);
+      assertThat(actual.get()).isNotNull().isEqualTo(price);
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_callresult_failure() {
+      val priceType = SPOT;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
+
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getPrice(priceType, baseCurrency, targetCurrency);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
+
+      verifyNoInteractions(client);
+      verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);
+      verifyNoMoreInteractions(coinbaseDataService);
+    }
+
+    @Test
+    void should_return_callresult_failure_as_java() {
+      val priceType = SPOT;
+      val baseCurrency = "BTC";
+      val targetCurrency = "EUR";
+
+      when(coinbaseDataService.fetchPriceByType(client, priceType, baseCurrency, targetCurrency))
+          .thenReturn(
+              Try.success(CallResult.failure(Seq(CoinbaseErrorSampleProvider.getSingleError()))));
+
+      val actual = dataService.getPriceAsJava(priceType, baseCurrency, targetCurrency);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isEmpty();
+      assertThat(actual.getFailure()).isInstanceOf(java.util.List.class);
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getSingleError());
 
       verifyNoInteractions(client);
       verify(coinbaseDataService).fetchPriceByType(client, priceType, baseCurrency, targetCurrency);

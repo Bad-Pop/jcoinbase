@@ -26,13 +26,12 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT;
+import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT_VALUE;
 import static com.github.badpop.jcoinbase.client.service.JsonDeserializationService.singleFailureDeserialize;
 
 @AllArgsConstructor
 public class CoinbaseDataService {
-
-  private static final String ACCEPT_HEADER = "Accept";
-  private static final String ACCEPT_HEADER_VALUE = "application/json";
 
   public Try<CallResult<Seq<CoinbaseError>, Time>> fetchTime(final JCoinbaseClient client) {
     val request =
@@ -41,7 +40,7 @@ public class CoinbaseDataService {
             .uri(
                 URI.create(
                     client.getProperties().getApiUrl() + client.getProperties().getTimePath()))
-            .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())
             .build();
 
     return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
@@ -56,8 +55,8 @@ public class CoinbaseDataService {
                     .map(data -> data.getData().toTime()));
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public Try<List<Currency>> fetchCurrencies(final JCoinbaseClient client) {
+  public Try<CallResult<Seq<CoinbaseError>, Seq<Currency>>> fetchCurrencies(
+      final JCoinbaseClient client) {
 
     val request =
         HttpRequest.newBuilder()
@@ -66,23 +65,25 @@ public class CoinbaseDataService {
                 URI.create(
                     client.getProperties().getApiUrl()
                         + client.getProperties().getCurrenciesPath()))
-            .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())
             .build();
 
     return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
-            stringHttpResponse ->
-                client
-                    .getJsonSerDes()
-                    .readValue(
-                        stringHttpResponse.body(),
-                        new TypeReference<DataDto<List<CurrencyDto>>>() {})
-                    .getData()
-                    .map(CurrencyDto::toCurrency));
+            response ->
+                singleFailureDeserialize(
+                    response,
+                    client.getJsonSerDes(),
+                    new TypeReference<DataDto<List<CurrencyDto>>>() {}))
+        .mapTry(
+            callResult ->
+                callResult
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
+                    .map(DataDto::getData)
+                    .map(currencies -> currencies.map(CurrencyDto::toCurrency)));
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public Try<ExchangeRates> fetchExchangeRates(
+  public Try<CallResult<Seq<CoinbaseError>, ExchangeRates>> fetchExchangeRates(
       final JCoinbaseClient client, final String currency) {
 
     val request =
@@ -93,39 +94,45 @@ public class CoinbaseDataService {
                     client.getProperties().getApiUrl()
                         + client.getProperties().getExchangeRatesPath()
                         + currency))
-            .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())
             .build();
 
     return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
-            stringHttpResponse ->
-                client
-                    .getJsonSerDes()
-                    .readValue(
-                        stringHttpResponse.body(),
-                        new TypeReference<DataDto<ExchangeRatesDto>>() {})
-                    .getData()
-                    .toExchangeRates());
+            response ->
+                singleFailureDeserialize(
+                    response,
+                    client.getJsonSerDes(),
+                    new TypeReference<DataDto<ExchangeRatesDto>>() {}))
+        .mapTry(
+            callResult ->
+                callResult
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
+                    .map(DataDto::getData)
+                    .map(ExchangeRatesDto::toExchangeRates));
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public Try<Price> fetchPriceByType(
+  public Try<CallResult<Seq<CoinbaseError>, Price>> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
+
     val request =
         HttpRequest.newBuilder()
             .GET()
             .uri(buildPriceURI(client.getProperties(), priceType, baseCurrency, targetCurrency))
-            .header(ACCEPT_HEADER, ACCEPT_HEADER_VALUE)
+            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())
             .build();
 
     return Try.of(() -> client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString()))
         .mapTry(
-            stringHttpResponse ->
-                client
-                    .getJsonSerDes()
-                    .readValue(stringHttpResponse.body(), new TypeReference<DataDto<PriceDto>>() {})
-                    .getData()
-                    .toPrice(priceType));
+            response ->
+                singleFailureDeserialize(
+                    response, client.getJsonSerDes(), new TypeReference<DataDto<PriceDto>>() {}))
+        .mapTry(
+            callResult ->
+                callResult
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
+                    .map(DataDto::getData)
+                    .map(price -> price.toPrice(priceType)));
   }
 
   // TODO CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD

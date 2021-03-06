@@ -38,13 +38,11 @@ public class DataService {
         .get();
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public java.util.List<Currency> getCurrenciesAsJava() {
-    return getCurrencies().toJavaList();
+  public CallResult<java.util.List<CoinbaseError>, java.util.List<Currency>> getCurrenciesAsJava() {
+    return getCurrencies().map(Seq::asJava).mapFailure(Seq::asJava);
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public Seq<Currency> getCurrencies() {
+  public CallResult<Seq<CoinbaseError>, Seq<Currency>> getCurrencies() {
     return service
         .fetchCurrencies(client)
         .onSuccess(currencies -> log.info("Successfully fetch Currencies resources"))
@@ -57,8 +55,12 @@ public class DataService {
         .get();
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public ExchangeRates getExchangeRates(final String currency) {
+  public CallResult<java.util.List<CoinbaseError>, ExchangeRates> getExchangeRatesAsJava(
+      final String currency) {
+    return getExchangeRates(currency).mapFailure(Seq::asJava);
+  }
+
+  public CallResult<Seq<CoinbaseError>, ExchangeRates> getExchangeRates(final String currency) {
     return service
         .fetchExchangeRates(client, currency)
         .onSuccess(
@@ -74,10 +76,13 @@ public class DataService {
         .get();
   }
 
-  // TODO REFACTOR CURRENT IMPL WITH CALLRESULT
-  public Price getPrice(
+  public CallResult<java.util.List<CoinbaseError>, Price> getPriceAsJava(
       final PriceType priceType, final String baseCurrency, final String targetCurrency) {
+    return getPrice(priceType, baseCurrency, targetCurrency).mapFailure(Seq::asJava);
+  }
 
+  public CallResult<Seq<CoinbaseError>, Price> getPrice(
+      final PriceType priceType, final String baseCurrency, final String targetCurrency) {
     return service
         .fetchPriceByType(client, priceType, baseCurrency, targetCurrency)
         .onSuccess(

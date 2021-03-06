@@ -3,13 +3,16 @@ package com.github.badpop.jcoinbase.client.service.auth;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
-import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import org.apache.commons.codec.digest.HmacUtils;
 
+import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT;
+import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT_VALUE;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
@@ -42,14 +45,14 @@ public class AuthenticationService {
       final String httpBody) {
 
     if (!isAllowed(apiKey, secret)) {
-      var jcex =
+      val jcex =
           new JCoinbaseException(
               "You must specify an Api key and a secret to access this resource.");
       ErrorManagerService.manageOnError(jcex, jcex.getMessage(), jcex);
     }
 
-    var message = timestamp + httpMethod + httpPath + ((httpBody == null) ? "" : httpBody);
-    var signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);
+    val message = timestamp + httpMethod + httpPath + ((httpBody == null) ? "" : httpBody);
+    val signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);
 
     return new String[] {
       "CB-ACCESS-SIGN",
@@ -58,8 +61,8 @@ public class AuthenticationService {
       String.valueOf(timestamp),
       "CB-ACCESS-KEY",
       apiKey.get(),
-      "Accept",
-      "application/json"
+      ACCEPT.getValue(),
+      ACCEPT_VALUE.getValue()
     };
   }
 
