@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.client.service.properties;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -11,11 +12,11 @@ class JCoinbasePropertiesTest {
   @Test
   void should_properly_build_JCoinbaseProperties() throws Exception {
 
-    var inputStream = this.getClass().getClassLoader().getResourceAsStream("jcoinbase.properties");
-    var expectedProperties = new Properties();
+    val inputStream = this.getClass().getClassLoader().getResourceAsStream("jcoinbase.properties");
+    val expectedProperties = new Properties();
     expectedProperties.load(inputStream);
 
-    var actual = new JCoinbaseProperties().build("key", "secret");
+    val actual = new JCoinbaseProperties().build("key", "secret");
 
     assertThat(actual).isNotNull().isInstanceOf(JCoinbaseProperties.class);
     assertThat(actual.getProperties()).isNotEmpty();

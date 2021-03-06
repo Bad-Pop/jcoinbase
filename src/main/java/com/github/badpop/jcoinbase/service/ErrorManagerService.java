@@ -8,13 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class ErrorManagerService {
 
-  public void manageOnFailure(
-          final JCoinbaseException jcex, final String message, final Object... logParams) {
+  public void manageOnError(
+      final JCoinbaseException jcex, final String message, final Object... logParams) {
     log.error(message, logParams);
     throw jcex;
   }
 
-  public void manageOnFailure(
+  public void manageOnError(
       final JCoinbaseException jcex,
       final String message,
       final Throwable throwable,

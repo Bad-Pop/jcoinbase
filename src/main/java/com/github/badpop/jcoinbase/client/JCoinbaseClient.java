@@ -110,7 +110,7 @@ public class JCoinbaseClient {
   }
 
   private void manageNotAllowed(final Throwable throwable) {
-    ErrorManagerService.manageOnFailure(
+    ErrorManagerService.manageOnError(
         new JCoinbaseException(throwable),
         "Unable to allow this request. Please make sure you correctly build your JCoinbaseClient with API KEY and SECRET",
         throwable);

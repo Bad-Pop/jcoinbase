@@ -4,6 +4,7 @@ import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
 import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Option;
+import lombok.val;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,21 +24,21 @@ class AuthenticationServiceTest {
     @Test
     void should_return_headers() {
 
-      var apiKey = "loremIpsum";
-      var secret = "dolorSitAmet";
-      var timestamp = 1613126414L;
-      var httpMethod = "GET";
-      var httpPath = "/path";
-      var httpBody = "{\"currency\" : \"BTC\"}";
+      val apiKey = "loremIpsum";
+      val secret = "dolorSitAmet";
+      val timestamp = 1613126414L;
+      val httpMethod = "GET";
+      val httpPath = "/path";
+      val httpBody = "{\"currency\" : \"BTC\"}";
 
-      var actualWrapper =
+      val actualWrapper =
           authenticationService.getAuthenticationHeaders(
               JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret),
               httpMethod,
               httpPath,
               httpBody);
 
-      var actual =
+      val actual =
           authenticationService.getAuthenticationHeaders(
               Option(apiKey), Option(secret), timestamp, httpMethod, httpPath, httpBody);
 
@@ -75,21 +76,21 @@ class AuthenticationServiceTest {
     @Test
     void should_return_headers_even_if_body_is_empty() {
 
-      var apiKey = "loremIpsum";
-      var secret = "dolorSitAmet";
-      var timestamp = 1613126414L;
-      var httpMethod = "GET";
-      var httpPath = "/path";
-      var httpBody = "";
+      val apiKey = "loremIpsum";
+      val secret = "dolorSitAmet";
+      val timestamp = 1613126414L;
+      val httpMethod = "GET";
+      val httpPath = "/path";
+      val httpBody = "";
 
-      var actualWrapper =
+      val actualWrapper =
           authenticationService.getAuthenticationHeaders(
               JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret),
               httpMethod,
               httpPath,
               httpBody);
 
-      var actual =
+      val actual =
           authenticationService.getAuthenticationHeaders(
               Option(apiKey), Option(secret), timestamp, httpMethod, httpPath, httpBody);
 
@@ -126,12 +127,12 @@ class AuthenticationServiceTest {
     @Test
     void should_not_return_headers_if_not_allowed() {
 
-      var timestamp = 1613126414L;
-      var httpMethod = "GET";
-      var httpPath = "/path";
-      var httpBody = "";
+      val timestamp = 1613126414L;
+      val httpMethod = "GET";
+      val httpPath = "/path";
+      val httpBody = "";
 
-      var properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null);
+      val properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null);
       Option<String> maybeParam = Option(null);
 
       assertThatExceptionOfType(JCoinbaseException.class)
@@ -157,18 +158,18 @@ class AuthenticationServiceTest {
 
     @Test
     void should_be_allowed() {
-      var client =
+      val client =
           JCoinbaseClientFactory.build(
               "loremIpsumd", "dolorSitAmet", 3, false);
-      var actual = authenticationService.allow(client);
+      val actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsOnRight(VOID);
     }
 
     @Test
     void should_not_be_allowed() {
-      var client =
+      val client =
           JCoinbaseClientFactory.build(null, null, 3, false);
-      var actual = authenticationService.allow(client);
+      val actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsLeftInstanceOf(JCoinbaseException.class);
     }
   }
