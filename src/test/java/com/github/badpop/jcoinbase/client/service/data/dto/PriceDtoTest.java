@@ -13,17 +13,19 @@ class PriceDtoTest {
 
   @Test
   void should_return_Price() {
-
-    val dto = new PriceDto("BTC", "EUR", BigDecimal.valueOf(39875.47));
+    val base = "BTC";
+    val currency = "EUR";
+    val amount = BigDecimal.valueOf(39875.47);
+    val dto = new PriceDto(base, currency, amount);
 
     val actual = dto.toPrice(BUY);
 
     assertThat(actual)
         .isEqualTo(
             Price.builder()
-                .baseCurrency("BTC")
-                .targetCurrency("EUR")
-                .amount(BigDecimal.valueOf(39875.47))
+                .baseCurrency(base)
+                .targetCurrency(currency)
+                .amount(amount)
                 .priceType(BUY)
                 .build());
   }

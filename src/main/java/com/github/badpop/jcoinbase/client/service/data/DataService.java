@@ -10,7 +10,6 @@ import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Price.PriceType;
 import com.github.badpop.jcoinbase.model.data.Time;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;
-import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

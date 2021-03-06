@@ -12,12 +12,13 @@ class CurrencyDtoTest {
 
   @Test
   void should_return_Currency() {
+    val id = "BTC";
+    val name = "Bitcoin";
+    val minSize = BigDecimal.valueOf(0.01);
 
-    val dto = new CurrencyDto("BTC", "Bitcoin", BigDecimal.valueOf(0.01));
+    val dto = new CurrencyDto(id, name, minSize);
     val actual = dto.toCurrency();
 
-    assertThat(actual)
-        .isEqualTo(
-            Currency.builder().id("BTC").name("Bitcoin").minSize(BigDecimal.valueOf(0.01)).build());
+    assertThat(actual).isEqualTo(Currency.builder().id(id).name(name).minSize(minSize).build());
   }
 }
