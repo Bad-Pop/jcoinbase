@@ -5,10 +5,7 @@
 ![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/JCoinbase?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Tests](https://img.shields.io/sonar/tests/JCoinbase?compact_message&failed_label=failed&passed_label=passed&server=https%3A%2F%2Fsonarcloud.io&skipped_label=skipped)
 ![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/JCoinbase?server=https%3A%2F%2Fsonarcloud.Io)
-![Sonar Violations (long format)](https://img.shields.io/sonar/violations/JCoinbase?format=long&server=https%3A%2F%2Fsonarcloud.io)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Bad-Pop/JCoinbase)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Bad-Pop/JCoinbase?color=green)
-![GitHub repo size](https://img.shields.io/github/repo-size/Bad-Pop/JCoinbase)
 ![GitHub](https://img.shields.io/github/license/Bad-Pop/JCoinbase)
 ![GitHub contributors](https://img.shields.io/github/contributors/Bad-Pop/JCoinbase)
 ___
