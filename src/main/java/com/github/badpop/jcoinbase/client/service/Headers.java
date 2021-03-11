@@ -7,7 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Headers {
   ACCEPT("Accept"),
-  ACCEPT_VALUE("application/json");
+  ACCEPT_VALUE("application/json"),
+  CB_ACCESS_SIGN("CB-ACCESS-SIGN"),
+  CB_ACCESS_TIMESTAMP("CB-ACCESS-TIMESTAMP"),
+  CB_ACCESS_KEY("CB-ACCESS-KEY"),
+  CB_VERSION("CB-VERSION");
 
   private final String value;
 }

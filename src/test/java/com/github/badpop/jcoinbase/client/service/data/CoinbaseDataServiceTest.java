@@ -43,7 +43,7 @@ class CoinbaseDataServiceTest {
   static void init() {
     port = PortFactory.findFreePort();
     mockServer = ClientAndServer.startClientAndServer(port);
-    client = JCoinbaseClientFactory.build("loremIpsum", "dolorSitAmet", 3, false);
+    client = JCoinbaseClientFactory.build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false);
   }
 
   @BeforeEach

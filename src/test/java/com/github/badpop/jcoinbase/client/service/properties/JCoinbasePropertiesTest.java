@@ -16,13 +16,14 @@ class JCoinbasePropertiesTest {
     val expectedProperties = new Properties();
     expectedProperties.load(inputStream);
 
-    val actual = new JCoinbaseProperties().build("key", "secret");
+    val actual = new JCoinbaseProperties().build("key", "secret", "2021-02-03");
 
     assertThat(actual).isNotNull().isInstanceOf(JCoinbaseProperties.class);
     assertThat(actual.getProperties()).isNotEmpty();
     assertThat(actual.getProperties()).isEqualTo(expectedProperties);
     assertThat(actual.getApiKey()).contains("key");
     assertThat(actual.getSecret()).contains("secret");
+    assertThat(actual.getApiVersion()).contains("2021-02-03");
     assertThat(actual.getApiUrl()).isEqualTo(expectedProperties.getProperty("coinbase.api.url"));
     assertThat(actual.getCurrentUserPath())
         .isEqualTo(expectedProperties.getProperty("coinbase.api.path.resource.currentUser"));
