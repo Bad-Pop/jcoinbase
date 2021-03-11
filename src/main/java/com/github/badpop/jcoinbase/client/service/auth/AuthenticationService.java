@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT;
-import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT_VALUE;
+import static com.github.badpop.jcoinbase.client.service.Headers.*;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
@@ -30,6 +29,7 @@ public class AuthenticationService {
     return getAuthenticationHeaders(
         properties.getApiKey(),
         properties.getSecret(),
+        properties.getApiVersion(),
         getCurrentTime(),
         httpMethod,
         httpPath,
@@ -39,6 +39,7 @@ public class AuthenticationService {
   public String[] getAuthenticationHeaders(
       final Option<String> apiKey,
       final Option<String> secret,
+      final Option<String> apiVersion,
       final long timestamp,
       final String httpMethod,
       final String httpPath,
@@ -55,12 +56,14 @@ public class AuthenticationService {
     val signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);
 
     return new String[] {
-      "CB-ACCESS-SIGN",
+      CB_ACCESS_SIGN.getValue(),
       signature,
-      "CB-ACCESS-TIMESTAMP",
+      CB_ACCESS_TIMESTAMP.getValue(),
       String.valueOf(timestamp),
-      "CB-ACCESS-KEY",
+      CB_ACCESS_KEY.getValue(),
       apiKey.get(),
+      CB_VERSION.getValue(),
+      apiVersion.getOrElse(""),
       ACCEPT.getValue(),
       ACCEPT_VALUE.getValue()
     };

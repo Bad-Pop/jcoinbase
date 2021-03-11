@@ -1,10 +1,10 @@
 package com.github.badpop.jcoinbase.client.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
+import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.user.*;
 import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
 import com.github.badpop.jcoinbase.testutils.JsonUtils;
@@ -19,7 +19,6 @@ import org.mockserver.socket.PortFactory;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneId;
 
 import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
@@ -39,9 +38,7 @@ class CoinbaseUserServiceTest {
   static void init() {
     port = PortFactory.findFreePort();
     mockServer = ClientAndServer.startClientAndServer(port);
-    client =
-        JCoinbaseClientFactory.build(
-            "loremIpsum", "dolorSitAmet", 3, false);
+    client = JCoinbaseClientFactory.build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false);
   }
 
   @BeforeEach

@@ -12,33 +12,37 @@ public class JCoinbaseClientFactory {
   private static JCoinbaseClient instance = null;
 
   public static JCoinbaseClient build(
-      final String apiKey, final String secret, long timeout, final boolean threadSafe) {
+      final String apiKey,
+      final String secret,
+      final String apiVersion,
+      long timeout,
+      final boolean threadSafe) {
     if (timeout < 1) {
       timeout = 3;
       notifyDefaultTimeout();
     }
     return threadSafe
-        ? buildThreadSafeSingleton(apiKey, secret, timeout)
-        : buildWithoutThreadSafeSingleton(apiKey, secret, timeout);
+        ? buildThreadSafeSingleton(apiKey, secret, apiVersion, timeout)
+        : buildWithoutThreadSafeSingleton(apiKey, secret, apiVersion, timeout);
   }
 
-  public static JCoinbaseClient buildWithoutThreadSafeSingleton(
-      final String apiKey, final String secret, long timeout) {
+  protected static JCoinbaseClient buildWithoutThreadSafeSingleton(
+      final String apiKey, final String secret, final String apiVersion, long timeout) {
     if (timeout < 1) {
       timeout = 3;
       notifyDefaultTimeout();
     }
-    return new JCoinbaseClient().build(apiKey, secret, timeout, false);
+    return new JCoinbaseClient().build(apiKey, secret, apiVersion, timeout, false);
   }
 
-  public static synchronized JCoinbaseClient buildThreadSafeSingleton(
-      final String apiKey, final String secret, long timeout) {
+  protected static synchronized JCoinbaseClient buildThreadSafeSingleton(
+      final String apiKey, final String secret, final String apiVersion, long timeout) {
     if (instance == null) {
       if (timeout < 1) {
         timeout = 3;
         notifyDefaultTimeout();
       }
-      instance = new JCoinbaseClient().build(apiKey, secret, timeout, true);
+      instance = new JCoinbaseClient().build(apiKey, secret, apiVersion, timeout, true);
     }
     return instance;
   }

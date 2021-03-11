@@ -56,11 +56,15 @@ public class JCoinbaseClient {
   }
 
   protected JCoinbaseClient build(
-      final String apiKey, final String secret, final long timeout, final boolean threadSafe) {
+      final String apiKey,
+      final String secret,
+      final String apiVersion,
+      final long timeout,
+      final boolean threadSafe) {
     log.info("Start building new JCoinbase client !");
 
     buildJsonSerDes();
-    buildProperties(apiKey, secret, threadSafe);
+    buildProperties(apiKey, secret, apiVersion, threadSafe);
     buildAuthService();
     buildDataService();
     buildUserService();
@@ -82,11 +86,13 @@ public class JCoinbaseClient {
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
   }
 
-  private void buildProperties(final String apiKey, final String secret, final boolean threadSafe) {
+  private void buildProperties(
+      final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
     this.properties =
         threadSafe
-            ? JCoinbasePropertiesFactory.buildThreadSafeSingleton(apiKey, secret)
-            : JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret);
+            ? JCoinbasePropertiesFactory.buildThreadSafeSingleton(apiKey, secret, apiVersion)
+            : JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
+                apiKey, secret, apiVersion);
   }
 
   private void buildAuthService() {

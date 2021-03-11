@@ -9,8 +9,6 @@ import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
-
 import static io.vavr.API.Option;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -26,6 +24,7 @@ class AuthenticationServiceTest {
 
       val apiKey = "loremIpsum";
       val secret = "dolorSitAmet";
+      val apiVersion = "2021-02-03";
       val timestamp = 1613126414L;
       val httpMethod = "GET";
       val httpPath = "/path";
@@ -33,14 +32,21 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret),
+              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
+                  apiKey, secret, apiVersion),
               httpMethod,
               httpPath,
               httpBody);
 
       val actual =
           authenticationService.getAuthenticationHeaders(
-              Option(apiKey), Option(secret), timestamp, httpMethod, httpPath, httpBody);
+              Option(apiKey),
+              Option(secret),
+              Option(apiVersion),
+              timestamp,
+              httpMethod,
+              httpPath,
+              httpBody);
 
       assertThat(actual)
           .isNotEmpty()
@@ -52,6 +58,8 @@ class AuthenticationServiceTest {
               "1613126414",
               "CB-ACCESS-KEY",
               "loremIpsum",
+              "CB-VERSION",
+              "2021-02-03",
               "Accept",
               "application/json");
 
@@ -69,6 +77,8 @@ class AuthenticationServiceTest {
               "CB-ACCESS-TIMESTAMP",
               "CB-ACCESS-KEY",
               "loremIpsum",
+              "CB-VERSION",
+              "2021-02-03",
               "Accept",
               "application/json");
     }
@@ -78,6 +88,7 @@ class AuthenticationServiceTest {
 
       val apiKey = "loremIpsum";
       val secret = "dolorSitAmet";
+      val apiVersion = "2021-02-03";
       val timestamp = 1613126414L;
       val httpMethod = "GET";
       val httpPath = "/path";
@@ -85,14 +96,21 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(apiKey, secret),
+              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
+                  apiKey, secret, apiVersion),
               httpMethod,
               httpPath,
               httpBody);
 
       val actual =
           authenticationService.getAuthenticationHeaders(
-              Option(apiKey), Option(secret), timestamp, httpMethod, httpPath, httpBody);
+              Option(apiKey),
+              Option(secret),
+              Option(apiVersion),
+              timestamp,
+              httpMethod,
+              httpPath,
+              httpBody);
 
       assertThat(actual)
           .isNotEmpty()
@@ -104,6 +122,8 @@ class AuthenticationServiceTest {
               "1613126414",
               "CB-ACCESS-KEY",
               "loremIpsum",
+              "CB-VERSION",
+              "2021-02-03",
               "Accept",
               "application/json");
 
@@ -120,6 +140,8 @@ class AuthenticationServiceTest {
               "CB-ACCESS-TIMESTAMP",
               "CB-ACCESS-KEY",
               "loremIpsum",
+              "CB-VERSION",
+              "2021-02-03",
               "Accept",
               "application/json");
     }
@@ -132,7 +154,7 @@ class AuthenticationServiceTest {
       val httpPath = "/path";
       val httpBody = "";
 
-      val properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null);
+      val properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null, null);
       Option<String> maybeParam = Option(null);
 
       assertThatExceptionOfType(JCoinbaseException.class)
@@ -146,7 +168,13 @@ class AuthenticationServiceTest {
           .isThrownBy(
               () ->
                   authenticationService.getAuthenticationHeaders(
-                      maybeParam, maybeParam, timestamp, httpMethod, httpPath, httpBody))
+                      maybeParam,
+                      maybeParam,
+                      maybeParam,
+                      timestamp,
+                      httpMethod,
+                      httpPath,
+                      httpBody))
           .withMessage("You must specify an Api key and a secret to access this resource.");
     }
   }
@@ -154,21 +182,19 @@ class AuthenticationServiceTest {
   @Nested
   class Allow {
 
-    private Void VOID;
+    private Void aVOID;
 
     @Test
     void should_be_allowed() {
       val client =
-          JCoinbaseClientFactory.build(
-              "loremIpsumd", "dolorSitAmet", 3, false);
+          JCoinbaseClientFactory.build("loremIpsumd", "dolorSitAmet", "2021-02-03", 3, false);
       val actual = authenticationService.allow(client);
-      VavrAssertions.assertThat(actual).containsOnRight(VOID);
+      VavrAssertions.assertThat(actual).containsOnRight(aVOID);
     }
 
     @Test
     void should_not_be_allowed() {
-      val client =
-          JCoinbaseClientFactory.build(null, null, 3, false);
+      val client = JCoinbaseClientFactory.build(null, null, null, 3, false);
       val actual = authenticationService.allow(client);
       VavrAssertions.assertThat(actual).containsLeftInstanceOf(JCoinbaseException.class);
     }

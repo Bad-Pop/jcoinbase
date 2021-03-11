@@ -11,12 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
-import java.time.ZoneId;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.net.http.HttpClient.Redirect.NEVER;
-import static java.net.http.HttpClient.Redirect.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -25,7 +23,7 @@ class JCoinbaseClientTest {
   @Test
   void should_properly_build_JCoinbaseClient() {
 
-    val actual = new JCoinbaseClient().build(null, null, 3, false);
+    val actual = new JCoinbaseClient().build(null, null, null, 3, false);
 
     assertThat(actual).isNotNull().isInstanceOf(JCoinbaseClient.class);
 
@@ -46,7 +44,7 @@ class JCoinbaseClientTest {
 
   @Test
   void should_return_DataService() throws NoSuchFieldException, IllegalAccessException {
-    val client = new JCoinbaseClient().build(null, null, 3, false);
+    val client = new JCoinbaseClient().build(null, null, null, 3, false);
 
     val actual = client.data();
 
@@ -58,9 +56,7 @@ class JCoinbaseClientTest {
 
   @Test
   void should_return_UserService() throws NoSuchFieldException, IllegalAccessException {
-    val client =
-        new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false);
+    val client = new JCoinbaseClient().build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false);
 
     val actual = client.user();
 
@@ -72,7 +68,7 @@ class JCoinbaseClientTest {
 
   @Test
   void should_not_return_UserService_if_not_allowed() {
-    val client = new JCoinbaseClient().build(null, null, 3, false);
+    val client = new JCoinbaseClient().build(null, null, null, 3, false);
 
     assertThatExceptionOfType(JCoinbaseException.class)
         .isThrownBy(client::user)
@@ -84,11 +80,11 @@ class JCoinbaseClientTest {
   void should_call_buildThreadSafeSingleton_on_build() {
     val computed =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, true)
+            .build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, true)
             .getProperties();
     val actual =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, true)
+            .build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, true)
             .getProperties();
 
     assertThat(actual)
@@ -102,11 +98,11 @@ class JCoinbaseClientTest {
   void should_call_buildWithoutThreadSafeSingleton_on_build() {
     val computed =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false)
+            .build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false)
             .getProperties();
     val actual =
         new JCoinbaseClient()
-            .build("loremIpsum", "dolorSitAmet", 3, false)
+            .build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false)
             .getProperties();
 
     assertThat(actual)
