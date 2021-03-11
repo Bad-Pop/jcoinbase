@@ -23,6 +23,7 @@ public class JCoinbaseProperties {
 
   Option<String> apiKey;
   Option<String> secret;
+  Option<String> apiVersion;
 
   // With authentication
   String apiUrl;
@@ -39,7 +40,8 @@ public class JCoinbaseProperties {
   String pricesPath;
   String timePath;
 
-  protected JCoinbaseProperties build(final String apiKey, final String secret) {
+  protected JCoinbaseProperties build(
+      final String apiKey, final String secret, final String apiVersion) {
 
     log.info("Start building JCoinbase properties !");
     var inputStreamProperties =
@@ -60,7 +62,7 @@ public class JCoinbaseProperties {
         .mapTry(
             inputStream -> {
               properties.load(inputStream);
-              extractProperties(apiKey, secret);
+              extractProperties(apiKey, secret, apiVersion);
               return properties;
             })
         .onFailure(
@@ -80,10 +82,12 @@ public class JCoinbaseProperties {
     return this;
   }
 
-  private void extractProperties(final String apiKey, final String secret) {
+  private void extractProperties(
+      final String apiKey, final String secret, final String apiVersion) {
 
     this.apiKey = Option.of(apiKey);
     this.secret = Option.of(secret);
+    this.apiVersion = Option.of(apiVersion);
 
     this.apiUrl = properties.getProperty("coinbase.api.url");
     this.currentUserPath = properties.getProperty("coinbase.api.path.resource.currentUser");
