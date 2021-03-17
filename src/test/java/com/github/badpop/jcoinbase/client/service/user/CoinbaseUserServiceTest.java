@@ -23,6 +23,7 @@ import java.time.Instant;
 import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
 import static io.vavr.API.Option;
+import static io.vavr.API.Seq;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -50,9 +51,8 @@ class CoinbaseUserServiceTest {
 
   @Nested
   class FetchCurrentUser {
-
     @Test
-    void should_return_CallResult_success_of_User() throws IOException {
+    void should_return_CallResult_success() throws IOException {
       mockServer
           .when(request().withMethod("GET").withPath("/v2/user"))
           .respond(
@@ -132,6 +132,65 @@ class CoinbaseUserServiceTest {
     void should_return_failure() throws IOException {
       mockServer
           .when(request().withMethod("GET").withPath("/v2/user"))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.fetchCurrentUser(client, client.getAuthService());
+
+      assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
+    }
+  }
+
+  @Nested
+  class FetchAuthorizations {
+    @Test
+    void should_return_CallResult_success() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/user/auth"))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(
+                      JsonUtils.readResource("/json/coinbaseUserService/authorizations.json")));
+
+      val actual = service.fetchAuthorizations(client, client.getAuthService());
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+
+      Assertions.assertThat(actual.get())
+          .usingRecursiveComparison()
+          .ignoringFields("referralMoney.currencySymbol")
+          .isEqualTo(
+              CallResult.success(
+                  Authorizations.builder()
+                      .method("api_key")
+                      .scopes(Seq("wallet:accounts:read", "wallet:addresses:read"))
+                      .build()));
+    }
+
+    @Test
+    void should_return_CallResult_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/user/auth"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/errors.json")));
+
+      val actual = service.fetchAuthorizations(client, client.getAuthService());
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get().isFailure()).isTrue();
+      assertThat(actual.get().getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
+    }
+
+    @Test
+    void should_return_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/user/auth"))
           .respond(
               response()
                   .withHeader("Content-Type", "application/json")

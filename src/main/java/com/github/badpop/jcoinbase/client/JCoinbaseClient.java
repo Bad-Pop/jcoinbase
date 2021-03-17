@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -46,7 +47,7 @@ public class JCoinbaseClient {
   }
 
   public UserService user() {
-    var allowed = authService.allow(this);
+    val allowed = authService.allow(this);
 
     if (allowed.isLeft()) {
       manageNotAllowed(allowed.getLeft());

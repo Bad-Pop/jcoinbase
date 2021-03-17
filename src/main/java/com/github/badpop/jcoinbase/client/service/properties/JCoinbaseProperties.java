@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 import java.util.Properties;
 
@@ -44,7 +45,7 @@ public class JCoinbaseProperties {
       final String apiKey, final String secret, final String apiVersion) {
 
     log.info("Start building JCoinbase properties !");
-    var inputStreamProperties =
+    val inputStreamProperties =
         Try.of(() -> this.getClass().getClassLoader().getResourceAsStream("jcoinbase.properties"))
             .onFailure(
                 throwable -> {
