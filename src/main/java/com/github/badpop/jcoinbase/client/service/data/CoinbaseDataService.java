@@ -8,7 +8,7 @@ import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.PriceDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
 import com.github.badpop.jcoinbase.client.service.dto.DataDto;
-import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import com.github.badpop.jcoinbase.model.data.Currency;

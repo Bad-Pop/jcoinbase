@@ -14,6 +14,7 @@ public class DevelopmentTest {
 
   @Test
   void test() {
+
     val client =
         JCoinbaseClientFactory.build(
             "B4FyyXIxMbtAlAfe", "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ", "", 3, false);

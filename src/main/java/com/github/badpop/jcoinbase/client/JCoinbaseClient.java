@@ -6,8 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
 import com.github.badpop.jcoinbase.client.service.data.DataService;
-import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
-import com.github.badpop.jcoinbase.client.service.properties.JCoinbasePropertiesFactory;
+import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
@@ -30,6 +30,19 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+/**
+ * The JCoinbaseClient class is the main class of JCoinbase. JCoinbaseClient allows you make
+ * requests to the Coinbase API in a fluent and simple way using it's api.
+ *
+ * <p>To build a new JCoinbaseClient object you should use the {@link JCoinbaseClientFactory}
+ *
+ * <p>Make request to Coinbase api using these methods :
+ *
+ * <ul>
+ *   <li>{@link #data()} to access public data
+ *   <li>{@link #user()} to access users data
+ * </ul>
+ */
 @Slf4j
 @FieldDefaults(level = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
@@ -42,20 +55,43 @@ public class JCoinbaseClient {
   DataService dataService;
   UserService userService;
 
+  /**
+   * This method provides a {@link DataService} allowing to request coinbase public data using it's
+   * api
+   *
+   * @return a {@link DataService}
+   */
   public DataService data() {
     return dataService;
   }
 
+  /**
+   * This method provides a {@link UserService} allowing you to request coinbase public data using it's
+   * api
+   *
+   * <p>Warning : this method throws a {@link JCoinbaseException} if you don't properly build your
+   * JCoinbaseClient by providing your api key and secret
+   *
+   * @return a {@link UserService}
+   */
   public UserService user() {
     val allowed = authService.allow(this);
-
     if (allowed.isLeft()) {
       manageNotAllowed(allowed.getLeft());
     }
-
     return userService;
   }
 
+  /**
+   * This protected method build a new JCoinbaseClient with the given parameters
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @param timeout the wanted timeout for http requests
+   * @param threadSafe a boolean defining if the instance should be a thread safe singleton
+   * @return a {@link JCoinbaseClient}
+   */
   protected JCoinbaseClient build(
       final String apiKey,
       final String secret,
@@ -76,6 +112,7 @@ public class JCoinbaseClient {
     return this;
   }
 
+  /** Method building a new Jackson ObjectMapper with a custom configuration */
   private void buildJsonSerDes() {
     this.jsonSerDes =
         new ObjectMapper()
@@ -87,6 +124,14 @@ public class JCoinbaseClient {
             .configure(WRITE_DATES_AS_TIMESTAMPS, false);
   }
 
+  /**
+   * Build the client properties calling the {@link JCoinbasePropertiesFactory}
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @param threadSafe a boolean defining if the instance should be a thread safe singleton
+   */
   private void buildProperties(
       final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
     this.properties =
@@ -96,18 +141,22 @@ public class JCoinbaseClient {
                 apiKey, secret, apiVersion);
   }
 
+  /** Build a new {@link AuthenticationService} */
   private void buildAuthService() {
     this.authService = new AuthenticationService();
   }
 
+  /** Build a new {@link DataService} */
   private void buildDataService() {
     this.dataService = new DataService(this, new CoinbaseDataService());
   }
 
+  /** Build a new {@link UserService} */
   private void buildUserService() {
     this.userService = new UserService(this, new CoinbaseUserService(), authService);
   }
 
+  /** Build a new {@link HttpClient} */
   private void buildHttpClient(final long timeout) {
     this.httpClient =
         HttpClient.newBuilder()
@@ -116,6 +165,11 @@ public class JCoinbaseClient {
             .build();
   }
 
+  /**
+   * Method to call when the request to a service is not allow
+   *
+   * @param throwable a throwable to log
+   */
   private void manageNotAllowed(final Throwable throwable) {
     ErrorManagerService.manageOnError(
         new JCoinbaseException(throwable),

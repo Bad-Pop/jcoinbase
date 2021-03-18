@@ -699,10 +699,10 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   /**
-   * A failure projection of an CallResult.
+   * A failure projection of a CallResult.
    *
-   * @param <L> The type of the Failure value of an CallResult.
-   * @param <R> The type of the Success value of an CallResult.
+   * @param <L> The type of the Failure value of a CallResult.
+   * @param <R> The type of the Success value of a CallResult.
    */
   @ToString
   public static final class FailureProjection<L, R> implements FunctionalValue<L> {
@@ -917,10 +917,10 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   /**
-   * A success projection of an CallResult.
+   * A success projection of a CallResult.
    *
-   * @param <L> The type of the Failure value of an CallResult.
-   * @param <R> The type of the Success value of an CallResult.
+   * @param <L> The type of the Failure value of a CallResult.
+   * @param <R> The type of the Success value of a CallResult.
    */
   @ToString
   public static final class SuccessProjection<L, R> implements FunctionalValue<R> {
@@ -1144,7 +1144,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   /**
-   * The {@code Failure} version of an {@code CallResult}.
+   * The {@code Failure} version of a {@code CallResult}.
    *
    * @param <L> failure component type
    * @param <R> success component type
@@ -1201,7 +1201,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   }
 
   /**
-   * The {@code Success} version of an {@code CallResult}.
+   * The {@code Success} version of a {@code CallResult}.
    *
    * @param <L> failure component type
    * @param <R> success component type

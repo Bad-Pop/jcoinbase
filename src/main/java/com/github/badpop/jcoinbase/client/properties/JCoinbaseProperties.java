@@ -1,4 +1,4 @@
-package com.github.badpop.jcoinbase.client.service.properties;
+package com.github.badpop.jcoinbase.client.properties;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Option;
@@ -14,6 +14,10 @@ import java.util.Properties;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+/**
+ * This class is used to get properties from the jcoinbase.properties file and to wrap them with
+ * user parameters (api key, secret, api version, ...). Thus the data are centralized in this class.
+ */
 @Slf4j
 @Getter
 @FieldDefaults(level = PRIVATE)
@@ -41,6 +45,14 @@ public class JCoinbaseProperties {
   String pricesPath;
   String timePath;
 
+  /**
+   * Call this method to build a properly configured JCoinbaseProperties.
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @return a new configured {@link JCoinbaseProperties}
+   */
   protected JCoinbaseProperties build(
       final String apiKey, final String secret, final String apiVersion) {
 
@@ -83,6 +95,14 @@ public class JCoinbaseProperties {
     return this;
   }
 
+  /**
+   * A simple method used to extract properties from properties file and put them in the class'
+   * fields
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   */
   private void extractProperties(
       final String apiKey, final String secret, final String apiVersion) {
 

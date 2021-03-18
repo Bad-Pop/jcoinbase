@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.client.service;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/** An enum to manage and centralized all the http headers required by the Coinbase api */
 @Getter
 @AllArgsConstructor
 public enum Headers {
