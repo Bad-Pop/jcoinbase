@@ -21,7 +21,10 @@ class DevelopmentTest {
         JCoinbaseClientFactory.build(
             "B4FyyXIxMbtAlAfe", "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ", "", 3, false);
 
-    val actual = client.user().getAuthorizations().get().getScopesAsJava();
+    val currentUser = client.user().getCurrentUser();
+    log.info("Data : {}", currentUser);
+
+    val actual = client.user().getUserById(currentUser.get().getId());
 
     log.info("Data : {}", actual);
     assertThat(actual).isNotNull();

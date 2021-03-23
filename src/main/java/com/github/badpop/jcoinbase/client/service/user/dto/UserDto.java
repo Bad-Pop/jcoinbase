@@ -76,10 +76,10 @@ public class UserDto {
         .needsKycRemediation(needsKycRemediation)
         .showInstantAchUx(showInstantAchUx)
         .createdAt(DateAndTimeUtils.fromInstant(createdAt).getOrNull())
-        .country(country.toCountry())
-        .nationality(nationality.toNationality())
-        .tiers(tiers.toTiers())
-        .referralMoney(referralMoney.toReferralMoney())
+        .country(Option(country).map(CountryDto::toCountry).getOrNull())
+        .nationality(Option(nationality).map(NationalityDto::toNationality).getOrNull())
+        .tiers(Option(tiers).map(TiersDto::toTiers).getOrNull())
+        .referralMoney(Option(referralMoney).map(ReferralMoneyDto::toReferralMoney).getOrNull())
         .build();
   }
 }
