@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.model.user;
 import lombok.Builder;
 import lombok.Value;
 
+/** A class representing the Coinbase country model */
 @Value
 @Builder
 public class Country {

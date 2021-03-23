@@ -18,7 +18,7 @@ class ExchangeRatesDtoTest {
     val v1 = BigDecimal.valueOf(39000.42);
     val k2 = "USD";
     val v2 = BigDecimal.valueOf(48045.42);
-    val dto = new ExchangeRatesDto(currency, Map(k1, v1, k2, v2));
+    val dto = ExchangeRatesDto.builder().currency(currency).rates(Map(k1, v1, k2, v2)).build();
 
     val actual = dto.toExchangeRates();
 

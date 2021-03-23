@@ -4,9 +4,7 @@ import com.github.badpop.jcoinbase.model.user.Authorizations;
 import io.vavr.collection.Seq;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
-@Getter
 @Builder
 @AllArgsConstructor
 public class AuthorizationsDto {

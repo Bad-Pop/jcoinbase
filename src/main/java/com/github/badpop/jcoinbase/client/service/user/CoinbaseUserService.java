@@ -2,6 +2,7 @@ package com.github.badpop.jcoinbase.client.service.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.WarningManagerService;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.client.service.dto.DataDto;
@@ -11,9 +12,9 @@ import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import com.github.badpop.jcoinbase.model.user.Authorizations;
 import com.github.badpop.jcoinbase.model.user.User;
+import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
 import io.vavr.control.Try;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.net.URI;
@@ -21,8 +22,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
 
 import static com.github.badpop.jcoinbase.client.service.JsonDeserializationService.deserialize;
+import static io.vavr.API.Tuple;
 
-@Slf4j
 public class CoinbaseUserService {
 
   private static String[] getHeaders(
@@ -35,7 +36,7 @@ public class CoinbaseUserService {
         client.getProperties(), httpMethod, httpPath, httpBody);
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, User>> fetchCurrentUser(
+  protected Try<CallResult<Seq<CoinbaseError>, User>> fetchCurrentUser(
       final JCoinbaseClient client, final AuthenticationService authentication) {
     val request =
         HttpRequest.newBuilder()
@@ -59,7 +60,7 @@ public class CoinbaseUserService {
                     .map(data -> data.getData().toUser()));
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, Authorizations>> fetchAuthorizations(
+  protected Try<CallResult<Seq<CoinbaseError>, Authorizations>> fetchAuthorizations(
       final JCoinbaseClient client, final AuthenticationService authentication) {
 
     val request =
@@ -90,5 +91,39 @@ public class CoinbaseUserService {
                 callResult
                     .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
                     .map(data -> data.getData().toAuthorizations()));
+  }
+
+  protected Try<CallResult<Seq<CoinbaseError>, User>> fetchUserById(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final String userId) {
+
+    val tupleUriPath = buildFetchUserByIdUriAndPath(client.getProperties(), userId);
+
+    val request =
+        HttpRequest.newBuilder()
+            .GET()
+            .uri(tupleUriPath._1)
+            .headers(getHeaders(authentication, client, "GET", tupleUriPath._2, ""))
+            .build();
+
+    return Try.of(() -> client.getHttpClient().send(request, BodyHandlers.ofString()))
+        .mapTry(
+            response ->
+                deserialize(
+                    response, client.getJsonSerDes(), new TypeReference<DataDto<UserDto>>() {}))
+        .mapTry(
+            callResult ->
+                callResult
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
+                    .map(data -> data.getData().toUser()));
+  }
+
+  private Tuple2<URI, String> buildFetchUserByIdUriAndPath(
+      final JCoinbaseProperties properties, final String userId) {
+    return Tuple(
+        URI.create(
+            String.format("%s%s/%s", properties.getApiUrl(), properties.getUsersPath(), userId)),
+        properties.getUsersPath() + "/" + userId);
   }
 }

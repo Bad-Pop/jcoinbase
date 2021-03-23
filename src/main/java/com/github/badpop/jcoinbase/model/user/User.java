@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static io.vavr.API.None;
 
+/** A class representing the Coinbase user model */
 @Value
 @Builder
 public class User {
@@ -47,26 +48,56 @@ public class User {
   Tiers tiers;
   ReferralMoney referralMoney;
 
+  /**
+   * Give you the username as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getUsernameAsJavaOptional() {
     return username.toJavaOptional();
   }
 
+  /**
+   * Give you the profile location as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getProfileLocationAsJavaOptional() {
     return profileLocation.toJavaOptional();
   }
 
+  /**
+   * Give you the profile bio as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getProfileBioAsJavaOptional() {
     return profileBio.toJavaOptional();
   }
 
+  /**
+   * Give you the profile url as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getProfileUrlAsJavaOptional() {
     return profileUrl.toJavaOptional();
   }
 
+  /**
+   * Give you the user type as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getUserTypeAsJavaOptional() {
     return userType.toJavaOptional();
   }
 
+  /**
+   * Give you the user's state as a java Optional instead of a Vavr Option
+   *
+   * @return a java Optional
+   */
   public Optional<String> getStateAsJavaOptional() {
     return state.toJavaOptional();
   }

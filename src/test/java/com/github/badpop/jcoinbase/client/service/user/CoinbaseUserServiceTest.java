@@ -22,8 +22,7 @@ import java.time.Instant;
 
 import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
-import static io.vavr.API.Option;
-import static io.vavr.API.Seq;
+import static io.vavr.API.*;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -197,6 +196,98 @@ class CoinbaseUserServiceTest {
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
       val actual = service.fetchCurrentUser(client, client.getAuthService());
+
+      assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
+    }
+  }
+
+  @Nested
+  class FetchUserById {
+    @Test
+    void should_return_CallResult_success() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/users/id"))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/coinbaseUserService/user_by_id.json")));
+
+      val userId = "id";
+
+      val actual = service.fetchUserById(client, client.getAuthService(), userId);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+
+      Assertions.assertThat(actual.get())
+          .usingRecursiveComparison()
+          .ignoringFields("referralMoney.currencySymbol")
+          .isEqualTo(
+              CallResult.success(
+                  User.builder()
+                      .id("ID")
+                      .name("name")
+                      .username(None())
+                      .profileLocation(None())
+                      .profileBio(None())
+                      .profileUrl(None())
+                      .avatarUrl("avatarUrl")
+                      .resourceType(USER)
+                      .resourcePath("resourcePath")
+                      .email("email")
+                      .legacyId(null)
+                      .timeZone(null)
+                      .nativeCurrency(null)
+                      .bitcoinUnit(null)
+                      .state(None())
+                      .country(null)
+                      .nationality(null)
+                      .regionSupportsFiatTransfers(false)
+                      .regionSupportsCryptoToCryptoTransfers(false)
+                      .createdAt(null)
+                      .supportsRewards(false)
+                      .tiers(null)
+                      .referralMoney(null)
+                      .hasBlockingBuyRestrictions(false)
+                      .hasMadeAPurchase(false)
+                      .hasBuyDepositPaymentMethods(false)
+                      .hasUnverifiedBuyDepositPaymentMethods(false)
+                      .needsKycRemediation(false)
+                      .showInstantAchUx(false)
+                      .userType(None())
+                      .build()));
+    }
+
+    @Test
+    void should_return_CallResult_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/users/id"))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/errors.json")));
+
+      val userId = "id";
+
+      val actual = service.fetchUserById(client, client.getAuthService(), userId);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get().isFailure()).isTrue();
+      assertThat(actual.get().getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
+    }
+
+    @Test
+    void should_return_failure() throws IOException {
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/users/id"))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val userId = "id";
+
+      val actual = service.fetchUserById(client, client.getAuthService(), userId);
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }
