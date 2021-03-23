@@ -1,4 +1,4 @@
-# JCoinbase ![Made with love](https://img.shields.io/badge/Made%20with-%3C3-red)
+# JCoinbase
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Bad-Pop/JCoinbase/JCoinbase%20CI?style=plastic)
 ![Sonar Coverage](https://img.shields.io/sonar/coverage/JCoinbase?server=https%3A%2F%2Fsonarcloud.io)
@@ -10,21 +10,9 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/Bad-Pop/JCoinbase)
 ___
 
-**This project is still under development**
+**This project is still under development and made with :heart:**
 
 JCoinbase is an open source client for the Coinbase exchange platform API. It's written in Java 15, but a Java 8 version is being considered. It allows you to make queries to the Coinbase API in a quick and easy way.
-
-
-## Available features
-
-- Access Coinbase public data
-  - Time
-  - Currencies
-  - Exchange rates
-  - Buy prices
-  - Sell prices
-  - Spot prices
-- Access current user data
 
 
 ## Getting started
@@ -66,20 +54,62 @@ CallResult<java.util.List<CoinbaseError>, User> currentUser = client.user().getC
 For further information on Vavr, please take a look at : [https://www.vavr.io/](https://www.vavr.io/)
 
 
-## In development features
+## Features
 
-- Access Users resources
-
-
-## Next features
-
-- Account
-- Addresses
-- Transactions
-- Buy / Sell
-- Deposit
-- Withdrawal
-- Payment methods
+- **Public data**
+  - :white_check_mark: Time
+  - :white_check_mark: Currencies
+  - :white_check_mark: Exchange rates
+  - :white_check_mark: Buy prices
+  - :white_check_mark: Sell prices
+  - :white_check_mark: Spot prices
+- **Users**
+  - :white_check_mark: Current user's data
+  - :white_check_mark: Current user's authorizations
+  - :white_check_mark: Users' data by user id
+  - :x: Update current user
+- **Accounts**
+  - :x: List accounts
+  - :x: Show an account
+  - :x: Update account
+  - :x: Delete account
+- **Addresses**
+  - :x: List addresses
+  - :x: Show addresses
+  - :x: List address's transactions
+  - :x: Create address
+- **Transactions**
+  - :x: List transactions
+  - :x: Show a transaction
+  - :x: Send money
+  - :x: Transfer money between accounts
+  - :x: Request money
+  - :x: Complete request money
+  - :x: Re-send request money
+  - :x: Cancel request money
+- **Buys**
+  - :x: List buys
+  - :x: Show a buy
+  - :x: Place buy order
+  - :x: Commit a buy
+- **Sells**
+  - :x: List sells
+  - :x: Show a sell
+  - :x: Place sell order
+  - :x: Commit a sell
+- **Deposits**
+  - :x: List deposits
+  - :x: Show a deposit
+  - :x: Deposit funds
+  - :x: Commit a deposit
+- **Withdrawals**
+  - :x: List withdrawals
+  - :x: Show a withdrawal
+  - :x: Withdraw funds
+  - :x: Commit a withdrawals
+- **Payment methods**
+  - :x: List payment methods
+  - :x: Show a payment method
 
 
 ## Build project locally
@@ -92,3 +122,7 @@ Else, if you have Maven installed you can run :
 ```shell
 mvn clean install
 ```
+
+
+## Status
+This project is currently being maintained, and will be maintained. If you like this project and want this project to never exhaust, please consider helping or donating <3.

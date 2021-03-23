@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import java.util.function.Function;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CallResultFailureProjectionTest extends AbstractFunctionalValueTest {

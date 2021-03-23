@@ -2,13 +2,13 @@ package com.github.badpop.jcoinbase.client.service.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.WarningManagerService;
 import com.github.badpop.jcoinbase.client.service.data.dto.CurrencyDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.PriceDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.TimeDto;
 import com.github.badpop.jcoinbase.client.service.dto.DataDto;
-import com.github.badpop.jcoinbase.client.service.properties.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import com.github.badpop.jcoinbase.model.data.Currency;
@@ -19,7 +19,6 @@ import com.github.badpop.jcoinbase.model.data.Time;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.Try;
-import lombok.AllArgsConstructor;
 import lombok.val;
 
 import java.net.URI;
@@ -30,10 +29,9 @@ import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT;
 import static com.github.badpop.jcoinbase.client.service.Headers.ACCEPT_VALUE;
 import static com.github.badpop.jcoinbase.client.service.JsonDeserializationService.singleFailureDeserialize;
 
-@AllArgsConstructor
 public class CoinbaseDataService {
 
-  public Try<CallResult<Seq<CoinbaseError>, Time>> fetchTime(final JCoinbaseClient client) {
+  protected Try<CallResult<Seq<CoinbaseError>, Time>> fetchTime(final JCoinbaseClient client) {
     val request =
         HttpRequest.newBuilder()
             .GET()
@@ -55,7 +53,7 @@ public class CoinbaseDataService {
                     .map(data -> data.getData().toTime()));
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, Seq<Currency>>> fetchCurrencies(
+  protected Try<CallResult<Seq<CoinbaseError>, Seq<Currency>>> fetchCurrencies(
       final JCoinbaseClient client) {
 
     val request =
@@ -83,7 +81,7 @@ public class CoinbaseDataService {
                     .map(currencies -> currencies.map(CurrencyDto::toCurrency)));
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, ExchangeRates>> fetchExchangeRates(
+  protected Try<CallResult<Seq<CoinbaseError>, ExchangeRates>> fetchExchangeRates(
       final JCoinbaseClient client, final String currency) {
 
     val request =
@@ -112,7 +110,7 @@ public class CoinbaseDataService {
                     .map(ExchangeRatesDto::toExchangeRates));
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, Price>> fetchPriceByType(
+  protected Try<CallResult<Seq<CoinbaseError>, Price>> fetchPriceByType(
       JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
 
     val request =
@@ -135,7 +133,7 @@ public class CoinbaseDataService {
                     .map(price -> price.toPrice(priceType)));
   }
 
-  // TODO CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD
+  // TODO : CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD
   private URI buildPriceURI(
       final JCoinbaseProperties properties,
       final PriceType priceType,

@@ -53,4 +53,22 @@ public class UserService {
                     throwable))
         .get();
   }
+
+  public CallResult<java.util.List<CoinbaseError>, User> getUserByIdAsJava(final String userId) {
+    return getUserById(userId).mapFailure(Seq::asJava);
+  }
+
+  public CallResult<Seq<CoinbaseError>, User> getUserById(final String userId) {
+    return service
+        .fetchUserById(client, authentication, userId)
+        .onSuccess(user -> log.info("Successfully fetch user by id with id {}", userId))
+        .onFailure(
+            throwable ->
+                ErrorManagerService.manageOnError(
+                    new JCoinbaseException(throwable),
+                    "An error occurred while fetching user by id with the given id {}",
+                    throwable,
+                    userId))
+        .get();
+  }
 }
