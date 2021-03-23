@@ -1,17 +1,11 @@
-package com.github.badpop.jcoinbase.client.properties;
-
-import lombok.NoArgsConstructor;
-
-import static lombok.AccessLevel.PRIVATE;
+package com.github.badpop.jcoinbase.client;
 
 /**
  * A class factory to use to build {@link JCoinbaseProperties} objects
  *
  * <p>This class allows you to build new JCoinbaseProperties instances by calling the {@link
- * #buildThreadSafeSingleton(String, String, String)} or {@link
- * #buildWithoutThreadSafeSingleton(String, String, String)} methods
+ * #build(String, String, String, boolean)} method
  */
-@NoArgsConstructor(access = PRIVATE)
 public abstract class JCoinbasePropertiesFactory {
 
   private static JCoinbaseProperties instance = null;
@@ -29,7 +23,7 @@ public abstract class JCoinbasePropertiesFactory {
    * @param threadSafe boolean defining if the properties should be a thread safe singleton
    * @return a properly configured {@link JCoinbaseProperties}
    */
-  public static JCoinbaseProperties build(
+  protected static JCoinbaseProperties build(
       final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
     return threadSafe
         ? buildThreadSafeSingleton(apiKey, secret, apiVersion)

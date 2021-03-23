@@ -1,4 +1,4 @@
-package com.github.badpop.jcoinbase.client.properties;
+package com.github.badpop.jcoinbase.client;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.github.badpop.jcoinbase.client.properties;
+package com.github.badpop.jcoinbase.client;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;

@@ -12,10 +12,9 @@
     <description>Java Client for Coinbase's API</description>
 
     <licenses>
-        <!--TODO UPDATE LICENCE-->
         <license>
-            <name>GNU General Public License v3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <name>Apache License 2.0</name>
+            <url>https://github.com/Bad-Pop/JCoinbase/blob/master/LICENSE</url>
         </license>
     </licenses>
 

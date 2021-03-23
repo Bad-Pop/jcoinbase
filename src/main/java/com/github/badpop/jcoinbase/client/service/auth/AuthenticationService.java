@@ -1,7 +1,7 @@
 package com.github.badpop.jcoinbase.client.service.auth;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
-import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;

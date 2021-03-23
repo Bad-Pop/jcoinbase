@@ -1,7 +1,6 @@
 package com.github.badpop.jcoinbase.client.service.auth;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
-import com.github.badpop.jcoinbase.client.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import io.vavr.control.Option;
 import lombok.val;
@@ -9,6 +8,9 @@ import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
+import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.invokeJcoinbasePropertiesFactoryBuildMethod;
 import static io.vavr.API.Option;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -20,7 +22,8 @@ class AuthenticationServiceTest {
   @Nested
   class Headers {
     @Test
-    void should_return_headers() {
+    void should_return_headers()
+        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
       val apiKey = "loremIpsum";
       val secret = "dolorSitAmet";
@@ -32,7 +35,7 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, false),
+              invokeJcoinbasePropertiesFactoryBuildMethod(apiKey, secret, apiVersion, false),
               httpMethod,
               httpPath,
               httpBody);
@@ -83,7 +86,8 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void should_return_headers_even_if_body_is_empty() {
+    void should_return_headers_even_if_body_is_empty()
+        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
       val apiKey = "loremIpsum";
       val secret = "dolorSitAmet";
@@ -95,7 +99,7 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, false),
+              invokeJcoinbasePropertiesFactoryBuildMethod(apiKey, secret, apiVersion, false),
               httpMethod,
               httpPath,
               httpBody);
@@ -145,14 +149,15 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void should_not_return_headers_if_not_allowed() {
+    void should_not_return_headers_if_not_allowed()
+        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 
       val timestamp = 1613126414L;
       val httpMethod = "GET";
       val httpPath = "/path";
       val httpBody = "";
 
-      val properties = JCoinbasePropertiesFactory.build(null, null, null, false);
+      val properties = invokeJcoinbasePropertiesFactoryBuildMethod(null, null, null, false);
       Option<String> maybeParam = Option(null);
 
       assertThatExceptionOfType(JCoinbaseException.class)

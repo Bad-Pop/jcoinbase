@@ -2,7 +2,7 @@ package com.github.badpop.jcoinbase.client.service.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
-import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.WarningManagerService;
 import com.github.badpop.jcoinbase.client.service.data.dto.CurrencyDto;
 import com.github.badpop.jcoinbase.client.service.data.dto.ExchangeRatesDto;
