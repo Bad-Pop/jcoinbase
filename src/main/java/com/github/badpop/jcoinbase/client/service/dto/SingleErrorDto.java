@@ -3,9 +3,7 @@ package com.github.badpop.jcoinbase.client.service.dto;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
-@Getter
 @Builder
 @AllArgsConstructor
 public class SingleErrorDto {

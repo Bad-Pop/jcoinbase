@@ -43,7 +43,6 @@ public class Price {
      * @param type the string representation of the price type as given by the coinbase api
      * @return an Option containing the PriceType or empty
      */
-    // TODO REFACTOR to allow retrieve as java Optional
     public static PriceType fromString(final String type) {
       return priceTypes
           .find(priceType -> priceType.getType().equalsIgnoreCase(type))

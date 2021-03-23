@@ -43,8 +43,6 @@ class CallResultTest extends AbstractFunctionalValueTest {
     return 1;
   }
 
-
-
   @Test
   void shouldPeek() {
     val actualSuccess = of(1);
@@ -431,7 +429,8 @@ class CallResultTest extends AbstractFunctionalValueTest {
 
   @Test
   void shouldHaveSizedSpliterator() {
-    assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED))
+        .isTrue();
   }
 
   @Test

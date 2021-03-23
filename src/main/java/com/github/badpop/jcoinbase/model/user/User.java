@@ -10,9 +10,7 @@ import java.util.Optional;
 
 import static io.vavr.API.None;
 
-/**
- * A class representing the Coinbase user model
- */
+/** A class representing the Coinbase user model */
 @Value
 @Builder
 public class User {
@@ -52,6 +50,7 @@ public class User {
 
   /**
    * Give you the username as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getUsernameAsJavaOptional() {
@@ -60,6 +59,7 @@ public class User {
 
   /**
    * Give you the profile location as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getProfileLocationAsJavaOptional() {
@@ -68,6 +68,7 @@ public class User {
 
   /**
    * Give you the profile bio as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getProfileBioAsJavaOptional() {
@@ -76,6 +77,7 @@ public class User {
 
   /**
    * Give you the profile url as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getProfileUrlAsJavaOptional() {
@@ -84,6 +86,7 @@ public class User {
 
   /**
    * Give you the user type as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getUserTypeAsJavaOptional() {
@@ -92,6 +95,7 @@ public class User {
 
   /**
    * Give you the user's state as a java Optional instead of a Vavr Option
+   *
    * @return a java Optional
    */
   public Optional<String> getStateAsJavaOptional() {

@@ -13,7 +13,8 @@ public class Authorizations {
 
   /**
    * Return the Authorizations scopes as a java list instead of a vavr seq
-   * @return a java list of scopes
+   *
+   * @return Authorizations scopes as a java list
    */
   public java.util.List<String> getScopesAsJava() {
     return scopes.asJava();

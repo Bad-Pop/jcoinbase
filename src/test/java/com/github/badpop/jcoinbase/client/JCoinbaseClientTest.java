@@ -1,8 +1,8 @@
 package com.github.badpop.jcoinbase.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.testutils.ReflectionUtils;

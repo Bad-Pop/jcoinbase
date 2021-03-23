@@ -1153,8 +1153,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   @SuppressWarnings("java:S1948")
   public static final class Failure<L, R> extends CallResult<L, R> implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private final L value;
 
@@ -1209,8 +1208,7 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   @ToString
   public static final class Success<L, R> extends CallResult<L, R> implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private final R value;
 

@@ -4,11 +4,9 @@ import com.github.badpop.jcoinbase.model.data.Price;
 import com.github.badpop.jcoinbase.model.data.Price.PriceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Getter
 @Builder
 @AllArgsConstructor
 public class PriceDto {

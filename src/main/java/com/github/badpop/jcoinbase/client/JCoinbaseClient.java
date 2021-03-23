@@ -3,11 +3,11 @@ package com.github.badpop.jcoinbase.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
 import com.github.badpop.jcoinbase.client.service.data.DataService;
-import com.github.badpop.jcoinbase.client.properties.JCoinbaseProperties;
-import com.github.badpop.jcoinbase.client.properties.JCoinbasePropertiesFactory;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
@@ -56,8 +56,8 @@ public class JCoinbaseClient {
   UserService userService;
 
   /**
-   * This method provides a {@link DataService} allowing to request coinbase public data using it's
-   * api
+   * This method provides a {@link DataService} allowing you to request coinbase public data using
+   * it's api
    *
    * @return a {@link DataService}
    */
@@ -66,8 +66,8 @@ public class JCoinbaseClient {
   }
 
   /**
-   * This method provides a {@link UserService} allowing you to request coinbase public data using it's
-   * api
+   * This method provides a {@link UserService} allowing you to request coinbase public data using
+   * it's api
    *
    * <p>Warning : this method throws a {@link JCoinbaseException} if you don't properly build your
    * JCoinbaseClient by providing your api key and secret
@@ -134,11 +134,7 @@ public class JCoinbaseClient {
    */
   private void buildProperties(
       final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
-    this.properties =
-        threadSafe
-            ? JCoinbasePropertiesFactory.buildThreadSafeSingleton(apiKey, secret, apiVersion)
-            : JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
-                apiKey, secret, apiVersion);
+    this.properties = JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, threadSafe);
   }
 
   /** Build a new {@link AuthenticationService} */

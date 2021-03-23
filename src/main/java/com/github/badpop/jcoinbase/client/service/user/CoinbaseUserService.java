@@ -13,7 +13,6 @@ import com.github.badpop.jcoinbase.model.user.Authorizations;
 import com.github.badpop.jcoinbase.model.user.User;
 import io.vavr.collection.Seq;
 import io.vavr.control.Try;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.net.URI;
@@ -22,7 +21,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 import static com.github.badpop.jcoinbase.client.service.JsonDeserializationService.deserialize;
 
-@Slf4j
 public class CoinbaseUserService {
 
   private static String[] getHeaders(
@@ -35,7 +33,7 @@ public class CoinbaseUserService {
         client.getProperties(), httpMethod, httpPath, httpBody);
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, User>> fetchCurrentUser(
+  protected Try<CallResult<Seq<CoinbaseError>, User>> fetchCurrentUser(
       final JCoinbaseClient client, final AuthenticationService authentication) {
     val request =
         HttpRequest.newBuilder()
@@ -59,7 +57,7 @@ public class CoinbaseUserService {
                     .map(data -> data.getData().toUser()));
   }
 
-  public Try<CallResult<Seq<CoinbaseError>, Authorizations>> fetchAuthorizations(
+  protected Try<CallResult<Seq<CoinbaseError>, Authorizations>> fetchAuthorizations(
       final JCoinbaseClient client, final AuthenticationService authentication) {
 
     val request =

@@ -12,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ErrorManagerService {
 
   /**
-   * Write a log with a message and parameters and throw the given exception
+   * Log a parameterized message and throws the given exception
+   *
    * @param jcex a JCoinbase exception that must be thrown
    * @param message the message we want to log
    * @param logParams the message parameters to log
@@ -24,7 +25,8 @@ public class ErrorManagerService {
   }
 
   /**
-   * Write a log with a message, parameters and a throwable and throw the given exception
+   * Log a parameterized message with a throwable and throws the given exception
+   *
    * @param jcex a JCoinbase exception that must be thrown
    * @param message the message we want to log
    * @param throwable a throwable that we want to log

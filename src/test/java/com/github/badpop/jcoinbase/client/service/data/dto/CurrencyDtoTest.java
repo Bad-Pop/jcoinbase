@@ -15,8 +15,8 @@ class CurrencyDtoTest {
     val id = "BTC";
     val name = "Bitcoin";
     val minSize = BigDecimal.valueOf(0.01);
+    val dto = CurrencyDto.builder().id(id).name(name).minSize(minSize).build();
 
-    val dto = new CurrencyDto(id, name, minSize);
     val actual = dto.toCurrency();
 
     assertThat(actual).isEqualTo(Currency.builder().id(id).name(name).minSize(minSize).build());

@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client.properties;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.Getter;
@@ -60,11 +61,13 @@ public class JCoinbaseProperties {
     val inputStreamProperties =
         Try.of(() -> this.getClass().getClassLoader().getResourceAsStream("jcoinbase.properties"))
             .onFailure(
-                throwable -> {
-                  log.error("Unable to build inputStream for JCoinbase properties file", throwable);
-                  throw new JCoinbaseException(
-                      "Unable to build inputStream for JCoinbase properties file.", throwable);
-                });
+                throwable ->
+                    ErrorManagerService.manageOnError(
+                        new JCoinbaseException(
+                            "Unable to build inputStream for JCoinbase properties file.",
+                            throwable),
+                        "Unable to build inputStream for JCoinbase properties file",
+                        throwable));
 
     inputStreamProperties
         .peek(
@@ -80,17 +83,17 @@ public class JCoinbaseProperties {
             })
         .onFailure(
             JCoinbaseException.class,
-            jCoinbaseException -> {
-              log.error(jCoinbaseException.getMessage());
-              throw jCoinbaseException;
-            })
+            jCoinbaseException ->
+                ErrorManagerService.manageOnError(
+                    jCoinbaseException, jCoinbaseException.getMessage()))
         .onFailure(
-            throwable -> {
-              log.error(
-                  "An unknown error occurred while building JCoinbase properties.", throwable);
-              throw new JCoinbaseException(
-                  "An unknown error occurred while building JCoinbase properties.", throwable);
-            });
+            throwable ->
+                ErrorManagerService.manageOnError(
+                    new JCoinbaseException(
+                        "An unknown error occurred while building JCoinbase properties.",
+                        throwable),
+                    "An unknown error occurred while building JCoinbase properties.",
+                    throwable));
     log.info("JCoinbase properties successfully built !");
     return this;
   }

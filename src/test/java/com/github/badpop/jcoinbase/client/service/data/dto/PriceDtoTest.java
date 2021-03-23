@@ -16,7 +16,7 @@ class PriceDtoTest {
     val base = "BTC";
     val currency = "EUR";
     val amount = BigDecimal.valueOf(39875.47);
-    val dto = new PriceDto(base, currency, amount);
+    val dto = PriceDto.builder().base(base).currency(currency).amount(amount).build();
 
     val actual = dto.toPrice(BUY);
 

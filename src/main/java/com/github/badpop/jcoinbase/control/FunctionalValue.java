@@ -26,7 +26,6 @@ import io.vavr.CheckedFunction0;
 import io.vavr.Lazy;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Stream;
-import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
@@ -40,8 +39,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Call result is a simplified version of the vavr {@link io.vavr.Value} adapted to the JCoinbase needs.
- * For more information, please take a look at the <a href="https://www.vavr.io/">vavr site</a>
+ * Call result is a simplified version of the vavr {@link io.vavr.Value} adapted to the JCoinbase
+ * needs. For more information, please take a look at the <a href="https://www.vavr.io/">vavr
+ * site</a>
  *
  * <p>Functional programming is all about values and transformation of values using functions. The
  * {@code FunctionalValue} type reflects the values in a functional setting. It can be seen as the

@@ -17,6 +17,26 @@ public abstract class JCoinbasePropertiesFactory {
   private static JCoinbaseProperties instance = null;
 
   /**
+   * This method build the JCoinbaseClient needed Properties.
+   *
+   * <p>The 'threadSafe' param define if it should build a new instance or use a thread safe
+   * singleton. Note that a thread safe singleton is more resource intensive. You should only use it
+   * in some specific cases where multi-threading is crucial
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @param threadSafe boolean defining if the properties should be a thread safe singleton
+   * @return a properly configured {@link JCoinbaseProperties}
+   */
+  public static JCoinbaseProperties build(
+      final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
+    return threadSafe
+        ? buildThreadSafeSingleton(apiKey, secret, apiVersion)
+        : buildWithoutThreadSafeSingleton(apiKey, secret, apiVersion);
+  }
+
+  /**
    * Call this method will return a new JcoinbaseProperties instance
    *
    * @param apiKey the coinbase api key
@@ -24,7 +44,7 @@ public abstract class JCoinbasePropertiesFactory {
    * @param apiVersion the coinbase api version
    * @return a new configured {@link JCoinbaseProperties}
    */
-  public static JCoinbaseProperties buildWithoutThreadSafeSingleton(
+  private static JCoinbaseProperties buildWithoutThreadSafeSingleton(
       final String apiKey, final String secret, final String apiVersion) {
     return new JCoinbaseProperties().build(apiKey, secret, apiVersion);
   }
@@ -41,7 +61,7 @@ public abstract class JCoinbasePropertiesFactory {
    * @return the already computed instance or a new configured {@link JCoinbaseProperties} if not
    *     already computed
    */
-  public static synchronized JCoinbaseProperties buildThreadSafeSingleton(
+  private static synchronized JCoinbaseProperties buildThreadSafeSingleton(
       final String apiKey, final String secret, final String apiVersion) {
     if (instance == null) {
       instance = new JCoinbaseProperties().build(apiKey, secret, apiVersion);

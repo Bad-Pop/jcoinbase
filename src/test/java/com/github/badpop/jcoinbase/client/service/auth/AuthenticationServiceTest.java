@@ -32,8 +32,7 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
-                  apiKey, secret, apiVersion),
+              JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, false),
               httpMethod,
               httpPath,
               httpBody);
@@ -96,8 +95,7 @@ class AuthenticationServiceTest {
 
       val actualWrapper =
           authenticationService.getAuthenticationHeaders(
-              JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(
-                  apiKey, secret, apiVersion),
+              JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, false),
               httpMethod,
               httpPath,
               httpBody);
@@ -154,7 +152,7 @@ class AuthenticationServiceTest {
       val httpPath = "/path";
       val httpBody = "";
 
-      val properties = JCoinbasePropertiesFactory.buildWithoutThreadSafeSingleton(null, null, null);
+      val properties = JCoinbasePropertiesFactory.build(null, null, null, false);
       Option<String> maybeParam = Option(null);
 
       assertThatExceptionOfType(JCoinbaseException.class)
