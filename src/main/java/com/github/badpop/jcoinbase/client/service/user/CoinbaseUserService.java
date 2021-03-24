@@ -10,6 +10,7 @@ import com.github.badpop.jcoinbase.client.service.user.dto.AuthorizationsDto;
 import com.github.badpop.jcoinbase.client.service.user.dto.UserDto;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
 import com.github.badpop.jcoinbase.model.user.Authorizations;
 import com.github.badpop.jcoinbase.model.user.User;
 import io.vavr.Tuple2;
@@ -19,6 +20,7 @@ import lombok.val;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 
 import static com.github.badpop.jcoinbase.client.service.JsonDeserializationService.deserialize;
@@ -119,11 +121,55 @@ public class CoinbaseUserService {
                     .map(data -> data.getData().toUser()));
   }
 
+  protected Try<CallResult<Seq<CoinbaseError>, User>> updateCurrentUser(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final UpdateCurrentUserRequest request) {
+
+    val maybeHttpRequest = buildUpdateCurrentUserHttpRequest(client, authentication, request);
+
+    return maybeHttpRequest
+        .mapTry(httpRequest -> client.getHttpClient().send(httpRequest, BodyHandlers.ofString()))
+        .mapTry(
+            response ->
+                deserialize(
+                    response, client.getJsonSerDes(), new TypeReference<DataDto<UserDto>>() {}))
+        .mapTry(
+            callResult ->
+                callResult
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings)
+                    .map(data -> data.getData().toUser()));
+  }
+
   private Tuple2<URI, String> buildFetchUserByIdUriAndPath(
       final JCoinbaseProperties properties, final String userId) {
     return Tuple(
         URI.create(
             String.format("%s%s/%s", properties.getApiUrl(), properties.getUsersPath(), userId)),
         properties.getUsersPath() + "/" + userId);
+  }
+
+  private Try<HttpRequest> buildUpdateCurrentUserHttpRequest(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final UpdateCurrentUserRequest request) {
+
+    return Try.of(() -> client.getJsonSerDes().writeValueAsString(request))
+        .mapTry(
+            bodyAsString ->
+                HttpRequest.newBuilder()
+                    .PUT(BodyPublishers.ofString(bodyAsString))
+                    .uri(
+                        URI.create(
+                            client.getProperties().getApiUrl()
+                                + client.getProperties().getUserPath()))
+                    .headers(
+                        getHeaders(
+                            authentication,
+                            client,
+                            "PUT",
+                            client.getProperties().getUserPath(),
+                            bodyAsString))
+                    .build());
   }
 }

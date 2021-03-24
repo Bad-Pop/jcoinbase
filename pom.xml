@@ -8,8 +8,10 @@
     <artifactId>jcoinbase</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+
     <name>JCoinbase</name>
     <description>Java Client for Coinbase's API</description>
+    <url>https://github.com/Bad-Pop/JCoinbase</url>
 
     <licenses>
         <license>
@@ -17,14 +19,6 @@
             <url>https://github.com/Bad-Pop/JCoinbase/blob/master/LICENSE</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Alexis "Bad_Pop" Vachard</name>
-            <email>alexis.vachard@gmail.com</email>
-            <timezone>Europe/Paris</timezone>
-        </developer>
-    </developers>
 
     <scm>
         <connection>scm:git:git@github.com:Bad-Pop/JCoinbase.git</connection>
@@ -409,46 +403,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <createChecksum>false</createChecksum>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.9.1</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.1.1</version>
-            </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
 
     <profiles>
         <profile>
@@ -459,33 +415,6 @@
             <properties>
                 <doclint>none</doclint>
             </properties>
-        </profile>
-        <profile>
-            <id>sonatype-deploy-version</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <configuration>
-                                    <gpgArguments>
-                                        <arg>--pinentry-mode</arg>
-                                        <arg>loopback</arg>
-                                    </gpgArguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 </project>

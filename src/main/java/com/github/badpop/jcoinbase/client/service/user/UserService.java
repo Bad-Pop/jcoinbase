@@ -1,10 +1,12 @@
 package com.github.badpop.jcoinbase.client.service.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
 import com.github.badpop.jcoinbase.model.user.Authorizations;
 import com.github.badpop.jcoinbase.model.user.User;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;
@@ -69,6 +71,37 @@ public class UserService {
                     "An error occurred while fetching user by id with the given id {}",
                     throwable,
                     userId))
+        .get();
+  }
+
+  public CallResult<java.util.List<CoinbaseError>, User> updateCurrentUserAsJava(
+      final UpdateCurrentUserRequest request) {
+    return updateCurrentUser(request).mapFailure(Seq::asJava);
+  }
+
+  public CallResult<Seq<CoinbaseError>, User> updateCurrentUser(
+      final UpdateCurrentUserRequest request) {
+
+    return service
+        .updateCurrentUser(client, authentication, request)
+        .onSuccess(user -> log.info("Successfully updated the current user"))
+        .onFailure(
+            JsonProcessingException.class,
+            jsonProcessingExc ->
+                ErrorManagerService.manageOnError(
+                    new JCoinbaseException(
+                        "An error occurred while serializing request to json", jsonProcessingExc),
+                    "An error occurred while serializing the request to json for the given request {}",
+                    jsonProcessingExc,
+                    request))
+        .onFailure(
+            throwable ->
+                ErrorManagerService.manageOnError(
+                    new JCoinbaseException(
+                        "An error occurred while updating the current user", throwable),
+                    "An error occurred while updating the current user with this request {}",
+                    throwable,
+                    request))
         .get();
   }
 }
