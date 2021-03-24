@@ -5,6 +5,7 @@ import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
 import com.github.badpop.jcoinbase.model.user.Authorizations;
 import com.github.badpop.jcoinbase.model.user.User;
 import lombok.extern.slf4j.Slf4j;
@@ -336,6 +337,115 @@ class UserServiceTest {
 
       verifyNoInteractions(client);
       verify(coinbaseUserService).fetchAuthorizations(client, authenticationService);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+  }
+
+  @Nested
+  class UpdateCurrentUser {
+    @Test
+    void should_return_user_as_java() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val user = User.builder().build();
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(success(CallResult.success(user)));
+
+      val actual = userService.updateCurrentUserAsJava(request);
+
+      assertThat(actual).isEqualTo(CallResult.success(user));
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+
+    @Test
+    void should_throws_JCoinbaseException_if_CoinbaseUserService_return_a_failure_as_java() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val jcex = new JCoinbaseException("error message");
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(failure(jcex));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> userService.updateCurrentUserAsJava(request))
+          .withMessage("An error occurred while updating the current user")
+          .withCause(jcex);
+
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+
+    @Test
+    void should_return_user() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val user = User.builder().build();
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(success(CallResult.success(user)));
+
+      val actual = userService.updateCurrentUser(request);
+
+      assertThat(actual).isEqualTo(CallResult.success(user));
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+
+    @Test
+    void should_throws_JCoinbaseException_if_CoinbaseUserService_return_a_failure() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val jcex = new JCoinbaseException("error message");
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(failure(jcex));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> userService.updateCurrentUser(request))
+          .withMessage("An error occurred while updating the current user")
+          .withCause(jcex);
+
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+
+    @Test
+    void should_return_CallResult_failure_as_java() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val error = CoinbaseError.builder().build();
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(success(CallResult.failure(Seq(error))));
+
+      val actual = userService.updateCurrentUserAsJava(request);
+
+      assertThat(actual.isFailure()).isTrue();
+      assertThat(actual).isEqualTo(CallResult.failure(java.util.List.of(error)));
+      assertThat(actual.getFailure()).containsExactly(error);
+
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
+      verifyNoMoreInteractions(coinbaseUserService);
+    }
+
+    @Test
+    void should_return_CallResult_failure() {
+      val request = UpdateCurrentUserRequest.builder().build();
+      val error = CoinbaseError.builder().build();
+
+      when(coinbaseUserService.updateCurrentUser(client, authenticationService, request))
+          .thenReturn(success(CallResult.failure(Seq(error))));
+
+      val actual = userService.updateCurrentUser(request);
+
+      assertThat(actual.isFailure()).isTrue();
+      assertThat(actual).isEqualTo(CallResult.failure(Seq(error)));
+      assertThat(actual.getFailure()).containsExactly(error);
+
+      verifyNoInteractions(client);
+      verify(coinbaseUserService).updateCurrentUser(client, authenticationService, request);
       verifyNoMoreInteractions(coinbaseUserService);
     }
   }

@@ -17,7 +17,7 @@
  *
  *
  * Modified work in 2021 by Alexis "Bad_Pop" Vachard
- * CallResult is a simplified version of the vavr CallResult adapted for JCoinbase's needs.
+ * CallResult is a simplified version of the vavr Either adapted for JCoinbase's needs.
  * For more information, please take a look at the https://www.vavr.io/
  */
 package com.github.badpop.jcoinbase.control;
@@ -26,6 +26,7 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serial;
@@ -36,6 +37,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static lombok.AccessLevel.PRIVATE;
 
 /**
  * Call result is a simplified version of the vavr {@link Either} adapted to the JCoinbase needs.
@@ -68,6 +71,7 @@ import java.util.function.Supplier;
  * @param <R> The type of the Success value of an CallResult.
  */
 @ToString
+@NoArgsConstructor(access = PRIVATE)
 @SuppressWarnings({"java:S1948", "java:S1905", "unchecked"})
 public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R>, Serializable {
 
@@ -81,9 +85,6 @@ public abstract class CallResult<L, R> implements Iterable<R>, FunctionalValue<R
   private static final String MAPPER_IS_NULL = "mapper is null";
   private static final String PREDICATE_IS_NULL = "predicate is null";
   private static final String SUPPLIER_IS_NULL = "supplier is null";
-
-  // sealed
-  private CallResult() {}
 
   /**
    * Constructs a {@link Success}
