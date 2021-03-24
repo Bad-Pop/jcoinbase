@@ -10,14 +10,14 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/Bad-Pop/JCoinbase)
 ___
 
-**This project is still under development and made with :heart:**
+**This project is still under active development and is made with :heart:**
 
-JCoinbase is an open source client for the Coinbase exchange platform API. It's written in Java 15, but a Java 8 version is being considered. It allows you to make queries to the Coinbase API in a quick and easy way.
+JCoinbase is an open source client for the Coinbase exchange platform API written in java 15. It allows you to make queries to the Coinbase API in a quick and easy way.
 
 
 ## Getting started
 
-To make requests to Coinbase API using JCoinbase, simply instantiate a new `JcoinbaseClient` via the `JCoinbaseClientFactory`
+To make requests to the Coinbase API using JCoinbase, simply instantiate a new `JcoinbaseClient` via the `JCoinbaseClientFactory`
 
 ```java  
 JCoinbaseClient client = JCoinbaseClientFactory.build(yourApiKey, yourSecret, desiredTimoutInSecond, threadSafeSingleton);  
@@ -28,18 +28,13 @@ JCoinbaseClient client = JCoinbaseClientFactory.build(yourApiKey, yourSecret, de
 - desiredTimeoutInSeconds : A long value that defines the timeout in seconds for http requests. Recommended value is 3.
 - threadSafeSingleton : A boolean defining if the `JCoinbaseClient` should be build as a thread safe singleton.
 
-_Notice that, if you pass `null` for the api key and the secret, you won't be able to access non-public Coinbase's data :  user, account, addresses, transactions, buy, sell, deposit, withdrawals and payment methods._
+_Notice that, if you pass `null` for the api key and the secret, you won't be able to access non-public data :  user, account, addresses, transactions, buy, sell, deposit, withdrawals and payment methods._
 
 Then, you can simply call Coinbase resources like that :
 
 ```java
 CallResult<Seq<CoinbaseError>, User> currentUser = client.user().getCurrentUser();  
 ```
-
-CallResult represents a value of two possible types, a Failure or a Success.
-In this example, if this is a failure, `client.user().getCurrentUser()` will return a `CallResult.Failure`,
-otherwise it will return a `CallResult.Success`. CallResult, is simplified version of vavr's `Either` and provide you a powerful API based on lambdas.
-Thus, you are not dependent on vavr if you do not wish to use it.
 
 Please note that, by default, returned values use Vavr data types for objects like `Collections` or `Option`.  
 So if you don't want to use Vavr, you can always get java objects via the api.
@@ -52,6 +47,51 @@ CallResult<java.util.List<CoinbaseError>, User> currentUser = client.user().getC
 ```  
 
 For further information on Vavr, please take a look at : [https://www.vavr.io/](https://www.vavr.io/)
+
+
+## The CallResult class
+
+CallResult represents a value of two possible types, a Failure or a Success.
+In this example, if this is a failure, `client.user().getCurrentUser()` will return a `CallResult.Failure`,
+otherwise it will return a `CallResult.Success`. CallResult, is a simplified version of the vavr `Either` and provide you a powerful API based on lambdas.
+Thus, you are not dependent on vavr if you do not wish to use it.
+
+### CallResult usage examples
+
+For this example we want to get the current user (based on the given api key) :
+```java
+CallResult<Seq<CoinbaseError>, User> currentUser = client.user().getCurrentUser();
+```
+
+Then, as explained, a CallResult can contain a value representing a failure or a success. So imagine we want to access the user inside this CallResult.
+We can use multiple methods :
+```java
+currentUser.get(); //Get the user. Throws exception if this is a failure
+currentUser.getOrNull(); //Get the user or return null if this is a failure
+currentUser.getOrElse(User.builder()[...].build()); //Get the user or return the given user if this is a failure
+currentUser.getOrElse(() -> myInstruction()) //Get the user or execute myInstruction() if this is a failure
+currentUser.getOrElseThrow(() -> new RuntimeException()); //Get the user or throws a new exception if this is a failure
+currentUser.getOrElseTry(OneClass::methodToInvoke); //Get the underlying user or the result of Try.of(theSupplier).get()
+```
+
+Now, imagine that we want to map the underlying user to another thing :
+```java
+currentUser.map(User::getId) //This method maps the value of this CallResult if it is a Success and performs no operation if this is a Failure.
+```
+
+Note that the map is also available for the Failure side of a CallResult using `mapFailure()` :
+```java
+currentUser.mapFailure(coinbaseErrors -> coinbaseErrors.map(CoinbaseError::getMessage)); //Transform the CoinbaseErrors to a list of messages if this is a failure. Do nothing otherwise.
+```
+
+CallResult also gives you access to useful methods like:
+```java
+currentUser.isSuccess(); //Return true if this is a success, false otherwise
+currentUser.isFailure(); //Return true if this is a failure, false otherwise
+currentUser.isEmpty(); //Return true if this a success with an underlying value, false otherwise
+```
+
+Many other methods are available in the CallResult api, like `peek()`, `bimap()`, `flatMap()`, `orElse()`, `fold()`, `toOption()`, `toJavaOptional()` ...
 
 
 ## Features

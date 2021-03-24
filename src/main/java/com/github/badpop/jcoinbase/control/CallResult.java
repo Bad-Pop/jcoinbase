@@ -26,7 +26,6 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
