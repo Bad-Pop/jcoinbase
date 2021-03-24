@@ -5,6 +5,7 @@ import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
 import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
 import com.github.badpop.jcoinbase.model.user.*;
 import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
 import com.github.badpop.jcoinbase.testutils.JsonUtils;
@@ -288,6 +289,130 @@ class CoinbaseUserServiceTest {
       val userId = "id";
 
       val actual = service.fetchUserById(client, client.getAuthService(), userId);
+
+      assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
+    }
+  }
+
+  @Nested
+  class UpdateCurrentUser {
+    @Test
+    void should_return_CallResult_success() throws IOException {
+
+      val request =
+          UpdateCurrentUserRequest.builder()
+              .name("new name")
+              .nativeCurrency("new native currency")
+              .timeZone("new timezone")
+              .build();
+
+      mockServer
+          .when(
+              request()
+                  .withMethod("PUT")
+                  .withPath("/v2/user")
+                  .withBody(client.getJsonSerDes().writeValueAsString(request)))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(
+                      JsonUtils.readResource(
+                          "/json/coinbaseUserService/update_current_user.json")));
+
+      val actual = service.updateCurrentUser(client, client.getAuthService(), request);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+
+      Assertions.assertThat(actual.get())
+          .usingRecursiveComparison()
+          .ignoringFields("referralMoney.currencySymbol")
+          .isEqualTo(
+              CallResult.success(
+                  User.builder()
+                      .id("id")
+                      .name("new name")
+                      .username(Some("username"))
+                      .profileLocation(None())
+                      .profileBio(None())
+                      .profileUrl(None())
+                      .avatarUrl("avatarUrl")
+                      .resourceType(USER)
+                      .resourcePath("resourcePath")
+                      .email(null)
+                      .legacyId(null)
+                      .timeZone(null)
+                      .nativeCurrency(null)
+                      .bitcoinUnit(null)
+                      .state(None())
+                      .country(null)
+                      .nationality(null)
+                      .regionSupportsFiatTransfers(false)
+                      .regionSupportsCryptoToCryptoTransfers(false)
+                      .createdAt(null)
+                      .supportsRewards(false)
+                      .tiers(null)
+                      .referralMoney(null)
+                      .hasBlockingBuyRestrictions(false)
+                      .hasMadeAPurchase(false)
+                      .hasBuyDepositPaymentMethods(false)
+                      .hasUnverifiedBuyDepositPaymentMethods(false)
+                      .needsKycRemediation(false)
+                      .showInstantAchUx(false)
+                      .userType(None())
+                      .build()));
+    }
+
+    @Test
+    void should_return_CallResult_failure() throws IOException {
+
+      val request =
+          UpdateCurrentUserRequest.builder()
+              .name("new name")
+              .nativeCurrency("new native currency")
+              .timeZone("new timezone")
+              .build();
+
+      mockServer
+          .when(
+              request()
+                  .withMethod("PUT")
+                  .withPath("/v2/user")
+                  .withBody(client.getJsonSerDes().writeValueAsString(request)))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/errors.json")));
+
+      val actual = service.updateCurrentUser(client, client.getAuthService(), request);
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get().isFailure()).isTrue();
+      assertThat(actual.get().getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
+    }
+
+    @Test
+    void should_return_failure() throws IOException {
+
+      val request =
+          UpdateCurrentUserRequest.builder()
+              .name("new name")
+              .nativeCurrency("new native currency")
+              .timeZone("new timezone")
+              .build();
+
+      mockServer
+          .when(
+              request()
+                  .withMethod("PUT")
+                  .withPath("/v2/user")
+                  .withBody(client.getJsonSerDes().writeValueAsString(request)))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.updateCurrentUser(client, client.getAuthService(), request);
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
     }

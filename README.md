@@ -67,7 +67,7 @@ For further information on Vavr, please take a look at : [https://www.vavr.io/](
   - :white_check_mark: Current user's data
   - :white_check_mark: Current user's authorizations
   - :white_check_mark: Users' data by user id
-  - :x: Update current user
+  - :white_check_mark: Update current user
 - **Accounts**
   - :x: List accounts
   - :x: Show an account
