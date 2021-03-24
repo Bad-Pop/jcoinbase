@@ -6,7 +6,7 @@
 
     <groupId>com.github.bad-pop</groupId>
     <artifactId>jcoinbase</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>JCoinbase</name>
@@ -19,6 +19,14 @@
             <url>https://github.com/Bad-Pop/JCoinbase/blob/master/LICENSE</url>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <id>Bad_Pop</id>
+            <name>Alexis Vachard</name>
+            <email>alexis.vachard@gmail.com</email>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:git@github.com:Bad-Pop/JCoinbase.git</connection>
@@ -365,10 +373,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <!--TODO REMOVE WHEN JAVADOC IS WRITTEN-->
-                    <failOnError>false</failOnError>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -406,6 +410,17 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
+
     <profiles>
         <profile>
             <id>disable-java8-doclint</id>
@@ -415,6 +430,33 @@
             <properties>
                 <doclint>none</doclint>
             </properties>
+        </profile>
+        <profile>
+            <id>gpg-sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
