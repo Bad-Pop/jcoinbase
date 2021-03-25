@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>JCoinbase</name>
-    <description>Java Client for Coinbase's API</description>
+    <description>Java Client for the Coinbase API</description>
     <url>https://github.com/Bad-Pop/JCoinbase</url>
 
     <licenses>
@@ -348,6 +348,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- TODO MOVE THIS PLUGIN TO THE RELEASE PROFILE -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -361,6 +362,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- TODO MOVE THIS PLUGIN TO THE RELEASE PROFILE -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
