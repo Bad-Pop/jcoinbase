@@ -1,6 +1,2 @@
 .DS_STORE
-.idea
 *.iml
-src
-.mvn
-target
