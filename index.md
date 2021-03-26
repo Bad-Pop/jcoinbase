@@ -4,11 +4,10 @@ JCoinbase is an unofficial & open source client for the Coinbase exchange platfo
 
 This site is currently under development
 
-
 [Sonar](https://sonarcloud.io/dashboard?id=JCoinbase)
 
 [Maven central](https://search.maven.org/search?q=jcoinbase)
 
-[Javadoc](./javadoc/index.html)
+[Javadoc](./sites/javadoc/index.html)
 
-[Jacoco](./jacoco/index.html)
+[Jacoco](./sites/jacoco/index.html)

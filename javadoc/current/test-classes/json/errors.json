@@ -1,9 +1,0 @@
-{
-  "errors": [
-    {
-      "id": "error",
-      "message": "error message",
-      "url": "http://localhost/doc"
-    }
-  ]
-}
