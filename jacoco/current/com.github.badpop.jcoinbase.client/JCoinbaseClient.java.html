@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JCoinbaseClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.client</a> &gt; <span class="el_source">JCoinbaseClient.java</span></div><h1>JCoinbaseClient.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.client;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.badpop.jcoinbase.client.service.auth.AuthenticationService;
+import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
+import com.github.badpop.jcoinbase.client.service.data.DataService;
+import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
+import com.github.badpop.jcoinbase.client.service.user.UserService;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import io.vavr.jackson.datatype.VavrModule;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.net.http.HttpClient;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.util.TimeZone;
+
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.net.http.HttpClient.Redirect.NEVER;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
+/**
+ * The JCoinbaseClient class is the main class of JCoinbase. JCoinbaseClient allows you make
+ * requests to the Coinbase API in a fluent and simple way using it's api.
+ *
+ * &lt;p&gt;To build a new JCoinbaseClient object you should use the {@link JCoinbaseClientFactory}
+ *
+ * &lt;p&gt;Make request to Coinbase api using these methods :
+ *
+ * &lt;ul&gt;
+ *   &lt;li&gt;{@link #data()} to access public data
+ *   &lt;li&gt;{@link #user()} to access users data
+ * &lt;/ul&gt;
+ */
+<span class="fc" id="L44">@Slf4j</span>
+@FieldDefaults(level = PRIVATE)
+@NoArgsConstructor(access = PROTECTED)
+public class JCoinbaseClient {
+
+  @Getter HttpClient httpClient;
+  @Getter ObjectMapper jsonSerDes;
+  @Getter JCoinbaseProperties properties;
+  @Getter AuthenticationService authService;
+  DataService dataService;
+  UserService userService;
+
+  /**
+   * This method provides a {@link DataService} allowing you to request coinbase public data using
+   * it's api
+   *
+   * @return a {@link DataService}
+   */
+  public DataService data() {
+<span class="fc" id="L63">    return dataService;</span>
+  }
+
+  /**
+   * This method provides a {@link UserService} allowing you to request coinbase public data using
+   * it's api
+   *
+   * &lt;p&gt;Warning : this method throws a {@link JCoinbaseException} if you don't properly build your
+   * JCoinbaseClient by providing your api key and secret
+   *
+   * @return a {@link UserService}
+   */
+  public UserService user() {
+<span class="fc" id="L76">    val allowed = authService.allow(this);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (allowed.isLeft()) {</span>
+<span class="nc" id="L78">      manageNotAllowed(allowed.getLeft());</span>
+    }
+<span class="fc" id="L80">    return userService;</span>
+  }
+
+  /**
+   * This protected method build a new JCoinbaseClient with the given parameters
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @param timeout the wanted timeout for http requests
+   * @param threadSafe a boolean defining if the instance should be a thread safe singleton
+   * @return a {@link JCoinbaseClient}
+   */
+  protected JCoinbaseClient build(
+      final String apiKey,
+      final String secret,
+      final String apiVersion,
+      final long timeout,
+      final boolean threadSafe) {
+<span class="fc" id="L99">    log.info(&quot;Start building new JCoinbase client !&quot;);</span>
+
+<span class="fc" id="L101">    buildJsonSerDes();</span>
+<span class="fc" id="L102">    buildProperties(apiKey, secret, apiVersion, threadSafe);</span>
+<span class="fc" id="L103">    buildAuthService();</span>
+<span class="fc" id="L104">    buildDataService();</span>
+<span class="fc" id="L105">    buildUserService();</span>
+<span class="fc" id="L106">    buildHttpClient(timeout);</span>
+
+<span class="fc" id="L108">    log.info(&quot;JCoinbase client successfully built !&quot;);</span>
+
+<span class="fc" id="L110">    return this;</span>
+  }
+
+  /** Method building a new Jackson ObjectMapper with a custom configuration */
+  private void buildJsonSerDes() {
+<span class="fc" id="L115">    this.jsonSerDes =</span>
+        new ObjectMapper()
+<span class="fc" id="L117">            .findAndRegisterModules()</span>
+<span class="fc" id="L118">            .registerModule(new VavrModule())</span>
+<span class="fc" id="L119">            .registerModule(new JavaTimeModule())</span>
+<span class="fc" id="L120">            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)</span>
+<span class="fc" id="L121">            .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()))</span>
+<span class="fc" id="L122">            .configure(WRITE_DATES_AS_TIMESTAMPS, false);</span>
+<span class="fc" id="L123">  }</span>
+
+  /**
+   * Build the client properties calling the {@link JCoinbasePropertiesFactory}
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @param threadSafe a boolean defining if the instance should be a thread safe singleton
+   */
+  private void buildProperties(
+      final String apiKey, final String secret, final String apiVersion, final boolean threadSafe) {
+<span class="fc" id="L135">    this.properties = JCoinbasePropertiesFactory.build(apiKey, secret, apiVersion, threadSafe);</span>
+<span class="fc" id="L136">  }</span>
+
+  /** Build a new {@link AuthenticationService} */
+  private void buildAuthService() {
+<span class="fc" id="L140">    this.authService = new AuthenticationService();</span>
+<span class="fc" id="L141">  }</span>
+
+  /** Build a new {@link DataService} */
+  private void buildDataService() {
+<span class="fc" id="L145">    this.dataService = new DataService(this, new CoinbaseDataService());</span>
+<span class="fc" id="L146">  }</span>
+
+  /** Build a new {@link UserService} */
+  private void buildUserService() {
+<span class="fc" id="L150">    this.userService = new UserService(this, new CoinbaseUserService(), authService);</span>
+<span class="fc" id="L151">  }</span>
+
+  /** Build a new {@link HttpClient} */
+  private void buildHttpClient(final long timeout) {
+<span class="fc" id="L155">    this.httpClient =</span>
+<span class="fc" id="L156">        HttpClient.newBuilder()</span>
+<span class="fc" id="L157">            .connectTimeout(Duration.of(timeout, SECONDS))</span>
+<span class="fc" id="L158">            .followRedirects(NEVER)</span>
+<span class="fc" id="L159">            .build();</span>
+<span class="fc" id="L160">  }</span>
+
+  /**
+   * Method to call when the request to a service is not allow
+   *
+   * @param throwable a throwable to log
+   */
+  private void manageNotAllowed(final Throwable throwable) {
+<span class="nc" id="L168">    ErrorManagerService.manageOnError(</span>
+        new JCoinbaseException(throwable),
+        &quot;Unable to allow this request. Please make sure you correctly build your JCoinbaseClient with API KEY and SECRET&quot;,
+        throwable);
+<span class="nc" id="L172">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

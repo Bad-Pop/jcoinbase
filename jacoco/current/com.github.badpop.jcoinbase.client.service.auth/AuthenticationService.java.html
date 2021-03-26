@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.client.service.auth</a> &gt; <span class="el_source">AuthenticationService.java</span></div><h1>AuthenticationService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.client.service.auth;
+
+import com.github.badpop.jcoinbase.client.JCoinbaseClient;
+import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import io.vavr.control.Either;
+import io.vavr.control.Option;
+import lombok.NoArgsConstructor;
+import lombok.val;
+import org.apache.commons.codec.digest.HmacUtils;
+
+import static com.github.badpop.jcoinbase.client.service.Headers.*;
+import static io.vavr.API.Left;
+import static io.vavr.API.Right;
+import static org.apache.commons.codec.digest.HmacAlgorithms.HMAC_SHA_256;
+
+/** Manage all the security mechanism required by Coinbase to call protected resources */
+@NoArgsConstructor
+public class AuthenticationService {
+
+  private static Void aVoid;
+
+  /**
+   * Get the headers required by the coinbase api to access protected resources like users or
+   * transactions
+   *
+   * @param properties the JCoinbase properties presents int the JCoinbaseClient
+   * @param httpMethod the http verb used to call the resource
+   * @param httpPath the http path of the coinbase api resource
+   * @param httpBody the http body used to call the resource
+   * @return a String[] containing all the headers required by the coinbase api
+   */
+  public String[] getAuthenticationHeaders(
+      final JCoinbaseProperties properties,
+      final String httpMethod,
+      final String httpPath,
+      final String httpBody) {
+<span class="fc" id="L40">    return getAuthenticationHeaders(</span>
+<span class="fc" id="L41">        properties.getApiKey(),</span>
+<span class="fc" id="L42">        properties.getSecret(),</span>
+<span class="fc" id="L43">        properties.getApiVersion(),</span>
+<span class="fc" id="L44">        getCurrentTime(),</span>
+        httpMethod,
+        httpPath,
+        httpBody);
+  }
+
+  /**
+   * Get the headers required by the coinbase api to access protected resources like users or
+   * transactions
+   *
+   * @param apiKey a coinbase api key
+   * @param secret a coinbase api secret
+   * @param apiVersion a coinbase api version
+   * @param timestamp the current system timestamp or, the coinbase api timestamp fetched using
+   *     {@link com.github.badpop.jcoinbase.client.service.data.DataService} #getTime() method
+   * @param httpMethod the http verb used to call the resource
+   * @param httpPath the http path of the coinbase api resource
+   * @param httpBody the http body used to call the resource
+   * @return a String[] containing all the headers required by the coinbase api
+   */
+  public String[] getAuthenticationHeaders(
+      final Option&lt;String&gt; apiKey,
+      final Option&lt;String&gt; secret,
+      final Option&lt;String&gt; apiVersion,
+      final long timestamp,
+      final String httpMethod,
+      final String httpPath,
+      final String httpBody) {
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (!isAllowed(apiKey, secret)) {</span>
+<span class="fc" id="L74">      val jcex =</span>
+          new JCoinbaseException(
+              &quot;You must specify an Api key and a secret to access this resource.&quot;);
+<span class="nc" id="L77">      ErrorManagerService.manageOnError(jcex, jcex.getMessage(), jcex);</span>
+    }
+
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">    val message = timestamp + httpMethod + httpPath + ((httpBody == null) ? &quot;&quot; : httpBody);</span>
+<span class="fc" id="L81">    val signature = new HmacUtils(HMAC_SHA_256, secret.get().getBytes()).hmacHex(message);</span>
+
+<span class="fc" id="L83">    return new String[] {</span>
+<span class="fc" id="L84">      CB_ACCESS_SIGN.getValue(),</span>
+      signature,
+<span class="fc" id="L86">      CB_ACCESS_TIMESTAMP.getValue(),</span>
+<span class="fc" id="L87">      String.valueOf(timestamp),</span>
+<span class="fc" id="L88">      CB_ACCESS_KEY.getValue(),</span>
+<span class="fc" id="L89">      apiKey.get(),</span>
+<span class="fc" id="L90">      CB_VERSION.getValue(),</span>
+<span class="fc" id="L91">      apiVersion.getOrElse(&quot;&quot;),</span>
+<span class="fc" id="L92">      ACCEPT.getValue(),</span>
+<span class="fc" id="L93">      ACCEPT_VALUE.getValue()</span>
+    };
+  }
+
+  /** @return the system current time in seconds */
+  private long getCurrentTime() {
+<span class="fc" id="L99">    return System.currentTimeMillis() / 1000L;</span>
+  }
+
+  /**
+   * Really important method that check if the given client is properly build to access coinbase
+   * protected resources.
+   *
+   * @param client The client we want to know if it can access the protected resources of the
+   *     coinbase api
+   * @return an {@link Either} containing a Left projection if not allowed, a Right projection
+   *     otherwise
+   */
+  public Either&lt;JCoinbaseException, Void&gt; allow(final JCoinbaseClient client) {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">    if (isAllowed(client.getProperties().getApiKey(), client.getProperties().getSecret())) {</span>
+<span class="fc" id="L113">      return Right(aVoid);</span>
+    } else {
+<span class="fc" id="L115">      return Left(</span>
+          new JCoinbaseException(
+              &quot;You must specify an Api key and a secret to access this resource.&quot;));
+    }
+  }
+
+  /**
+   * @param apiKey the api key to check
+   * @param secret the secret to check
+   * @return true if allowed (non empty Options and non blank Options' values), false otherwise
+   */
+  private boolean isAllowed(final Option&lt;String&gt; apiKey, final Option&lt;String&gt; secret) {
+<span class="pc bpc" id="L127" title="1 of 4 branches missed.">    return (!apiKey.isEmpty() &amp;&amp; !secret.isEmpty())</span>
+<span class="pc bpc" id="L128" title="2 of 4 branches missed.">        &amp;&amp; (!StringUtils.isBlank(apiKey.get()) &amp;&amp; !StringUtils.isBlank(secret.get()));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

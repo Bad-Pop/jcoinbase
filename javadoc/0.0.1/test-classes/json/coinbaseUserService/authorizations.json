@@ -1,0 +1,9 @@
+{
+  "data": {
+    "method": "api_key",
+    "scopes": [
+      "wallet:accounts:read",
+      "wallet:addresses:read"
+    ]
+  }
+}
