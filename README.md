@@ -27,6 +27,12 @@ JCoinbase is an open source client for the Coinbase exchange platform API writte
 </dependency>
 ```
 
+### Gradle
+
+```groovy
+compile 'com.github.bad-pop:jcoinbase:0.0.1'
+```
+
 ### Usage
 To make requests to the Coinbase API using JCoinbase, simply instantiate a new `JcoinbaseClient` via the `JCoinbaseClientFactory`
 
