@@ -18,11 +18,11 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  color: #17baef;
+  color: #2a2b2d;
 }
 
 a {
-  color: #17baef;
+  color: #2a2b2d;
   -webkit-transition: all 0.4s ease-in-out;
   -moz-transition: all 0.4s ease-in-out;
   -ms-transition: all 0.4s ease-in-out;
@@ -98,7 +98,7 @@ pre code {
 /* ======= Header ======= */
 .header {
   padding: 10px 0;
-  background: #17baef;
+  background: #2a2b2d;
   color: #fff;
   position: fixed;
   width: 100%;
@@ -113,7 +113,7 @@ pre code {
 }
 
 .header.navbar-fixed-top .logo a {
-  color: #17baef;
+  color: #2a2b2d;
 }
 
 .header .logo {
@@ -181,7 +181,7 @@ pre code {
 }
 
 .header .main-nav .nav .nav-item .nav-link {
-  color: #09617e;
+  color: #808080;
   -webkit-transition: none;
   -moz-transition: none;
   -ms-transition: none;
@@ -191,7 +191,7 @@ pre code {
 }
 
 .header .main-nav .nav .nav-item .nav-link.active {
-  color: #17baef;
+  color: #2a2b2d;
   background: none;
 }
 
@@ -216,14 +216,14 @@ pre code {
 
 /* ======= Promo Section ======= */
 .promo {
-  background: #17baef;
+  background: #2a2b2d;
   color: #fff;
   padding-top: 150px;
 }
 
 .promo .title {
   font-size: 98px;
-  color: #074f66;
+  color: #e7e7e7;
   margin-top: 0;
 }
 
@@ -263,7 +263,7 @@ pre code {
 }
 
 .promo .social-media {
-  background: #0c86ae;
+  background: #1d1d1d;
   padding: 10px 0;
   margin: 0 auto;
 }
@@ -325,7 +325,7 @@ pre code {
 /* ======= Features Section ======= */
 .features {
   padding: 80px 0;
-  background: #17baef;
+  background: #2a2b2d;
   color: #fff;
 }
 
@@ -490,7 +490,7 @@ pre code {
 /* ======= Contact Section ======= */
 .contact {
   padding: 80px 0;
-  background: #17baef;
+  background: #2a2b2d;
   color: #fff;
 }
 
@@ -590,7 +590,7 @@ pre code {
 }
 
 .contact .author-message .speech-bubble .source .title {
-  color: #0c86ae;
+  color: #1d1d1d;
 }
 
 .contact .info .sub-title {
@@ -617,7 +617,7 @@ pre code {
 
 .contact .social-icons a {
   display: inline-block;
-  background: #0c86ae;
+  background: #1d1d1d;
   width: 48px;
   height: 48px;
   text-align: center;
