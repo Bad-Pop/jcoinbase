@@ -11,7 +11,7 @@
 
     <name>JCoinbase</name>
     <description>Java Client for the Coinbase API</description>
-    <url>https://github.com/Bad-Pop/JCoinbase</url>
+    <url>https://bad-pop.github.io/jcoinbase/</url>
 
     <licenses>
         <license>
@@ -29,9 +29,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:Bad-Pop/JCoinbase.git</connection>
-        <developerConnection>scm:git:ssh://github.com:Bad-Pop/JCoinbase.git</developerConnection>
-        <url>https://github.com/Bad-Pop/JCoinbase</url>
+        <connection>scm:git:git@github.com:Bad-Pop/jcoinbase.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Bad-Pop/jcoinbase.git</developerConnection>
+        <url>https://github.com/Bad-Pop/jcoinbase</url>
     </scm>
 
     <properties>
@@ -349,7 +349,6 @@
                     <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
-            <!--TODO MOVE TO A DIFFERENT PROFILE AND UPDATE GITHUB ACTIONS-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -370,8 +369,54 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <distributionManagement>
         <snapshotRepository>
@@ -415,32 +460,6 @@
                                         <arg>loopback</arg>
                                     </gpgArguments>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
                             </execution>
                         </executions>
                     </plugin>

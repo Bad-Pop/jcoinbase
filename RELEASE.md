@@ -32,3 +32,7 @@ git pull && git fetch
 git checkout -b v<RELEASE_VERSION>
 git push origin v<RELEASE_VERSION>
 ```
+4. **Generate reports**
+```bash
+mvn jacoco:prepare-agent clean site jacoco:report
+```
