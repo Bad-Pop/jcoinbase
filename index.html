@@ -9,17 +9,17 @@
     <meta name="description" content="JCoinbase is a powerful java client for the Coinbase API">
     <meta name="author" content="Alexis 'Bad_Pop' Vachard">
 
-    <meta name="twitter:image:src" content="https://bad-pop.github.io/JCoinbase/assets/images/logo.png"/>
+    <meta name="twitter:image:src" content="https://bad-pop.github.io/jcoinbase/assets/images/logo.png"/>
     <meta name="twitter:site" content="@JCoinbase"/>
     <meta name="twitter:card" content="summary"/>
     <meta name="twitter:title" content="JCoinbase"/>
     <meta name="twitter:description"
           content="JCoinbase is an unofficial & open source client for the Coinbase exchange platform API written in Java 15. It allows you to make queries to the Coinbase API in a quick and easy way."/>
-    <meta property="og:image" content="https://bad-pop.github.io/JCoinbase/assets/images/logo.png"/>
+    <meta property="og:image" content="https://bad-pop.github.io/jcoinbase/assets/images/logo.png"/>
     <meta property="og:site_name" content="JCoinbase"/>
     <meta property="og:type" content="object"/>
     <meta property="og:title" content="JCoinbase"/>
-    <meta property="og:url" content="https://bad-pop.github.io/JCoinbase/"/>
+    <meta property="og:url" content="https://bad-pop.github.io/jcoinbase/"/>
     <meta property="og:description"
           content="JCoinbase is an unofficial & open source client for the Coinbase exchange platform API written in Java 15. It allows you to make queries to the Coinbase API in a quick and easy way."/>
 
@@ -29,7 +29,7 @@
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
     <script defer src="assets/fontawesome/js/all.min.js"></script>
     <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/prism/prism-new.css">
     <link id="theme-style" rel="stylesheet" href="assets/css/theme-1.css">
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 </head>
@@ -56,7 +56,10 @@
                 <ul class="nav navbar-nav">
                     <li class="nav-item sr-only"><a class="nav-link scrollto" href="#promo">Home</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#docs">Get started</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#downloads">Downloads</a></li>
                     <li class="nav-item"><a class="nav-link scrollto" href="#license">License</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#javadoc">Javadoc</a></li>
                     <li class="nav-item">
                         <div class="dropdown show">
                             <a class="nav-link dropdown-toggle" href="#" role="button" id="techResources"
@@ -66,7 +69,6 @@
                             <div class="dropdown-menu" aria-labelledby="techResources">
                                 <a class="dropdown-item" href="https://sonarcloud.io/dashboard?id=JCoinbase"
                                    target="_blank">Sonar</a>
-                                <a class="dropdown-item" href="./sites/javadoc" target="_blank">Javadoc</a>
                                 <a class="dropdown-item" href="./sites/jacoco" target="_blank">Jacoco reports</a>
                             </div>
                         </div>
@@ -80,24 +82,27 @@
 <section id="promo" class="promo section offset-header">
     <div class="container text-center">
         <h2 class="title">J<span class="highlight">Coinbase</span></h2>
-        <p class="intro">The unofficial Java client for the Coinbase API</p>
+        <p class="intro">Java client for the Coinbase API</p>
         <div class="btns">
             <a class="btn btn-cta-secondary" href="https://github.com/Bad-Pop/JCoinbase" target="_blank">
                 <i class="fab fa-github"></i> View on Github
             </a>
-            <!--<a class="btn btn-cta-primary"-->
-            <!--href="https://search.maven.org/search?q=jcoinbase"-->
-            <!--target="_blank">View on Maven Central</a>-->
+            <a class="btn btn-cta-primary" href="https://search.maven.org/artifact/com.github.bad-pop/jcoinbase" target="_blank">
+                Maven central
+            </a>
         </div>
         <ul class="meta list-inline">
-            <!--<li class="list-inline-item">
-                <a href="https://sonarcloud.io/dashboard?id=JCoinbase" target="_blank">Sonar</a>
+            <li class="list-inline-item">
+                <img src="https://sonarcloud.io/api/project_badges/measure?project=JCoinbase&metric=coverage"
+                     alt="code coverage" title="code coverage"/>
             </li>
             <li class="list-inline-item">
-                <a href="./sites/javadoc" target="_blank">Javadoc</a></li>
+                <img src="https://sonarcloud.io/api/project_badges/measure?project=JCoinbase&metric=ncloc"
+                     alt="lines of code" title="lines of code"/>
             <li class="list-inline-item">
-                <a href="./sites/jacoco" target="_blank">Jacoco reports</a>
-            </li>-->
+                <img src="https://sonarcloud.io/api/project_badges/measure?project=JCoinbase&metric=alert_status"
+                     alt="Quality gates" title="Quality gates"/>
+            </li>
         </ul>
     </div>
     <div class="social-media">
@@ -175,90 +180,143 @@
     </div>
 </section>
 
-<!--<section class="features section">
+<section class="features section">
     <div class="container text-center"></div>
-</section>-->
+</section>
 
-<!--<section id="docs" class="docs section">
+<section id="docs" class="docs section">
     <div class="container">
         <div class="docs-inner">
             <h2 class="title text-center">Get Started</h2>
             <div class="block">
-                <h3 class="sub-title text-center">HTML</h3>
-                <p><a href="http://prismjs.com/" target="_blank">PrismJS</a> is used as the syntax highlighter here.</p>
-                <p>Below are the details of the custom PrismJS build used in this template. You can <a
-                        href="http://prismjs.com/download.html" target="_blank">build your own version</a> via their
-                    website should you need to.</p>
-                <ul class="list-unstyled">
-                    <li><strong>Compression level:</strong> Minified</li>
-                    <li><strong>Theme:</strong> Okaidia</li>
-                    <li><strong>Languages:</strong> Markup, CSS, C-like, JavaScript, PHP and Python</li>
-                </ul>
+                <h3 class="sub-title text-center">Maven</h3>
                 <div class="code-block">
-                    &lt;!&ndash;//Use Prismjs - http://prismjs.com/index.html#basic-usage &ndash;&gt;
-                    <pre><code class="language-markup">
-    &ltp class="my-style"&gt
-      Hello World!
-    &lt/p&gt
-                     </code></pre>
-                </div>&lt;!&ndash;//code-block&ndash;&gt;
-            </div>&lt;!&ndash;//block&ndash;&gt;
-
-            <div class="block">
-                <h3 class="sub-title text-center">CSS</h3>
-                <p>Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-                    nisi. Nam eget dui. Etiam rhoncus.</p>
-
-                <div class="code-block">
-                    &lt;!&ndash;//Use Prismjs - http://prismjs.com/index.html#basic-usage &ndash;&gt;
                     <pre>
-    <code class="language-css">
-    /*
-     * Template Name: devAid - Bootstrap 4 theme for developers
-     * Version: 2.0
-     * Author: Xiaoying Riley at 3rd Wave Media
-     * Website: https://themes.3rdwavemedia.com/
-     * Twitter: @3rdwave_themes
-    */
-    body {
-      font-family: 'Lato', arial, sans-serif;
-      color: #444444;
-      font-size: 16px;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    </code></pre>
-                </div>&lt;!&ndash;//code-block&ndash;&gt;
-            </div>&lt;!&ndash;//block&ndash;&gt;
-
+                        <code class="language-markup">
+    &ltdependency&gt
+        &ltgroupId&gtcom.github.bad-pop&lt/groupId&gt
+        &ltartifactId&gtjcoinbase&lt/artifactId&gt
+        &ltversion&gt0.0.1&lt/version&gt
+    &lt/dependency&gt
+                        </code>
+                    </pre>
+                </div>
+            </div>
             <div class="block">
-                <h3 class="sub-title text-center">JavaScript</h3>
-                <p>Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-                    nisi. Nam eget dui. Etiam rhoncus. Lorem ipsum dolor sit amet, consectetuer adipiscing elit ligula
-                    eget dolor.</p>
+                <h3 class="sub-title text-center">Gradle</h3>
                 <div class="code-block">
-                    <pre><code class="language-javascript">
-    if( awesome ){
-        console.log('This is Awesome');
-    }else{
-        $('body').addClass('give-me-awesome');
-    }
-                    </code></pre>
-                </div>&lt;!&ndash;//code-block&ndash;&gt;
-            </div>&lt;!&ndash;//block&ndash;&gt;
+                    <pre>
+                        <code class="language-markup">
+    compile 'com.github.bad-pop:jcoinbase:0.0.1'
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <hr class="my-4"/>
+            <div class="block">
+                <h3 class="sub-title text-center">Create a new client</h3>
+                <p class="text-center">You must instantiate a new JCoinbaseClient object using the
+                    JCoinbaseClientFactory class :</p>
+                <div class="code-block">
+                    <pre>
+                        <code class="language-java">
+    long timeout = 3;
+    boolean threadSafe = false;
+
+    JCoinbaseClient client = JCoinbaseClientFactory
+        .build(
+            "yourApiKey", // Your api key generated by Coinbase in your profile settings
+            "yourSecret", // Your secret generated by Coinbase in your profile settings
+            "apiVersion", // The Coinbase API version defined in your profile settings
+            timeout, // A long value that defines the timeout in seconds for all requests. Recommended value is 3
+            threadSafe // A boolean defining if the JCoinbaseClient should be build as a thread safe singleton
+        );
+                        </code>
+                    </pre>
+                    <p class="text-center">
+                        Notice that, if you pass <span class="badge badge-secondary"><strong>null</strong></span> for
+                        the api key, the secret and the api version, you won't be able to access non-public data : user,
+                        account, addresses, transactions, buy, sell, deposit, withdrawals and payment methods.
+                    </p>
+                </div>
+            </div>
+            <div class="block">
+                <h3 class="sub-title text-center">Request the Coinbase API</h3>
+                <p class="text-center">After building a JCoinbaseClient object, you can access the request services</p>
+                <div class="code-block">
+                    <pre>
+                        <code class="language-java">
+    // Get DataService that you can use to call Coinbase users data
+    UserService dataService = client.user();
+    CallResult&ltSeq&ltCoinbaseError&gt, ExchangeRates&gt result = dataservice.getExchangeRates("BTC");
+    // Or directly make a request by calling
+    CallResult&ltSeq&ltCoinbaseError&gt, ExchangeRates&gt result =  client.data().getExchangeRates("BTC");
+                        </code>
+                    </pre>
+                    <p class="text-center">
+                        Please note that, by default, returned values use Vavr data types for objects like
+                        <span class="badge badge-secondary"><strong>Collections</strong></span> or
+                        <span class="badge badge-secondary"><strong>Option</strong></span>. So if you don't want to use
+                        Vavr, you can always get java objects via the api. For example :
+                    </p>
+                    <pre>
+                        <code class="language-java">
+    CallResult&ltio.vavr.collection.Seq&ltCoinbaseError&gt, User&gt currentUser = client.user().getCurrentUser();
+    CallResult&ltjava.util.List&ltCoinbaseError&gt, User&gt currentUser = client.user().getCurrentUserAsJava();
+                        </code>
+                    </pre>
+                    <p class="text-center">
+                        For further information on Vavr, please take a look at :
+                        <a href="https://www.vavr.io/" target="_blank">www.vavr.io</a>
+                    </p>
+                </div>
+            </div>
             <div class="block">
                 <h3 class="sub-title text-center">Full Documentation</h3>
-                <p>If your documentation is very long you can host the full docs page (including FAQ etc) on GitHub and
-                    provide a Call to Action button below to direct users there.</p>
+                <p class="text-center">To see the full documentation, please check the github repository</p>
                 <p class="text-center">
-                    <a class="btn btn-cta-primary" href="https://github.com/xriley/devAid-Theme" target="_blank">More on
-                        GitHub</a>
+                    <a class="btn btn-cta-primary" href="https://github.com/Bad-Pop/jcoinbase" target="_blank">
+                        More on GitHub
+                    </a>
                 </p>
-            </div>&lt;!&ndash;//block&ndash;&gt;
+            </div>
+        </div>
+    </div>
+</section>
 
-        </div>&lt;!&ndash;//docs-inner&ndash;&gt;
-    </div>&lt;!&ndash;//container&ndash;&gt;
-</section>-->
+<section class="features section">
+    <div class="container text-center"></div>
+</section>
+
+<section id="downloads" class="docs section">
+    <div class="container">
+        <div class="docs-inner">
+            <h2 class="title text-center">Downloads</h2>
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-12 col-xl-12 text-center my-4">
+                    <a class="btn btn-dark text-center" href="https://search.maven.org/artifact/com.github.bad-pop/jcoinbase"
+                       target="_blank">
+                        <h3 class="text-white">
+                            <i class="fas fa-cloud-download-alt"></i> Binaries
+                        </h3>
+                    </a>
+                </div>
+                <div class="col-12 col-md-12 col-lg-12 col-xl-12 text-center my-4">
+                    <a class="btn btn-dark text-center" href="https://github.com/Bad-Pop/jcoinbase"
+                       target="_blank">
+                        <h3 class="sub-title text-center text-white">
+                            <i class="fab fa-github"></i> Source code
+                        </h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features section">
+    <div class="container text-center"></div>
+</section>
 
 <section id="license" class="license section">
     <div class="container">
@@ -288,6 +346,25 @@
                     </form>
                 </div>
                 <div class="icon-holder text-center"><i class="far fa-smile"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="javadoc" class="features section">
+    <div class="container text-center">
+        <div class="jumbotron">
+            <h1 class="title text-center">Read the javadoc</h1>
+
+            <div class="btns text-center">
+                <a class="btn btn-cta-secondary" href="./sites/javadoc/0.0.1" target="_blank">
+                    Go to the latest javadoc
+                </a>
+                <ul class="meta list-inline">
+                    <li class="list-inline-item">
+                        <a href="sites/javadoc/index.html" target="_blank">See all versions</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -345,7 +422,7 @@
     <div class="container text-center">
         <small class="copyright">
             © 2021 Alexis "Bad_Pop" Vachard. All Rights Reserved - Website design by
-            <a href="https://themes.3rdwavemedia.com" target="_blank">Xiaoying Riley</a>
+            <a href="https://github.com/xriley/devAid-Theme" target="_blank">xriley</a>
         </small>
     </div>
 </footer>
@@ -355,7 +432,7 @@
 <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-<script type="text/javascript" src="assets/plugins/prism/prism.js"></script>
+<script type="text/javascript" src="assets/plugins/prism/prism-new.js"></script>
 <script type="text/javascript" src="assets/js/main.js"></script>
 </body>
 </html> 
