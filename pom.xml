@@ -7,10 +7,11 @@
     <groupId>com.github.bad-pop</groupId>
     <artifactId>jcoinbase</artifactId>
     <version>0.0.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
     <name>JCoinbase</name>
-    <description>Java Client for the Coinbase API</description>
+    <description>
+        JCoinbase is a powerful open source client, written in java 15, for the Coinbase API. It allows you to make
+        queries to the Coinbase API in a quick and easy way.
+    </description>
     <url>https://bad-pop.github.io/jcoinbase/</url>
 
     <licenses>
@@ -47,144 +48,121 @@
         <sonar.projectKey>JCoinbase</sonar.projectKey>
         <sonar.organization>jcoinbase</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
-
-        <lombok.version>1.18.18</lombok.version>
-        <vavr.version>0.10.3</vavr.version>
-        <jackson.version>2.12.1</jackson.version>
-        <vavr-jackson.version>0.10.3</vavr-jackson.version>
-        <slf4j-api.version>1.7.30</slf4j-api.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
-        <apache-commons-codec.version>1.15</apache-commons-codec.version>
-
-        <junit.version>5.7.0</junit.version>
-        <mockito-core.version>3.7.7</mockito-core.version>
-        <mockito-junit-jupiter.version>3.7.7</mockito-junit-jupiter.version>
-        <assertj-core.version>3.19.0</assertj-core.version>
-        <assertj-vavr.version>0.4.0</assertj-vavr.version>
-        <archunit.version>0.16.0</archunit.version>
-        <mock-server.version>5.11.2</mock-server.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--DEPENDENCIES-->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
+                <version>1.18.18</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>io.vavr</groupId>
                 <artifactId>vavr</artifactId>
-                <version>${vavr.version}</version>
+                <version>0.10.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.12.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.12.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.12.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
+                <version>2.12.1</version>
             </dependency>
             <dependency>
                 <groupId>io.vavr</groupId>
                 <artifactId>vavr-jackson</artifactId>
-                <version>${vavr-jackson.version}</version>
+                <version>0.10.3</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-api.version}</version>
+                <version>1.7.30</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${logback-classic.version}</version>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>${apache-commons-codec.version}</version>
+                <version>1.15</version>
             </dependency>
-
+            <!--TEST DEPENDENCIES-->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>${junit.version}</version>
+                <version>5.7.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.version}</version>
+                <version>5.7.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit.version}</version>
+                <version>5.7.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito-core.version}</version>
+                <version>3.7.7</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito-junit-jupiter.version}</version>
+                <version>3.7.7</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>${assertj-core.version}</version>
+                <version>3.19.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-vavr</artifactId>
-                <version>${assertj-vavr.version}</version>
+                <version>0.4.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit-junit5</artifactId>
-                <version>${archunit.version}</version>
+                <version>0.16.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
-                <version>${mock-server.version}</version>
+                <version>5.11.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-client-java</artifactId>
-                <version>${mock-server.version}</version>
+                <version>5.11.2</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -290,7 +268,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
@@ -300,7 +278,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
+                <version>3.3.0</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -319,7 +297,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>${maven-shade-plugin.version}</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -339,12 +317,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven-failsafe-plugin.version}</version>
+                <version>2.22.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <version>2.22.2</version>
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                 </configuration>
@@ -352,7 +330,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
+                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
