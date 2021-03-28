@@ -32,4 +32,4 @@ mvn clean install
 
 
 ## Status
-This project is currently being maintained, and will be maintained. If you like this project and want this project to never exhaust, please consider helping or donating <3.
+This project is currently being maintained, and will be maintained. If you like this project and want this project to never exhaust, please consider helping or [donating](https://www.paypal.com/donate?hosted_button_id=2RD575X3ERSCY&source=url) <3.
