@@ -31,7 +31,7 @@ a {
 
 a:hover {
   text-decoration: underline;
-  color: #0e98c5;
+  color: #389f48;
 }
 
 .btn, a.btn {
@@ -196,7 +196,7 @@ pre code {
 }
 
 .header .main-nav .nav .nav-item .nav-link:hover {
-  color: #074f66;
+  color: #545454;
   background: none;
 }
 
@@ -648,7 +648,7 @@ pre code {
 /* ======= Footer ======= */
 .footer {
   padding: 15px 0;
-  background: #042a36;
+  background: #777777;
   color: #fff;
 }
 
