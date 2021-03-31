@@ -62,7 +62,6 @@ public interface JsonDeserializationService {
    * @return a new {@link CallResult} representing a success or a failure
    * @throws JsonProcessingException if not deserializable
    */
-  // TODO REFACTOR TO HAVE ONLY ONE DESERIALIZATION METHOD ?
   static <T> CallResult<Seq<CoinbaseError>, DataDto<T>> singleFailureDeserialize(
       final HttpResponse<String> response,
       final ObjectMapper jsonSerDes,

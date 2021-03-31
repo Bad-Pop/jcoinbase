@@ -7,12 +7,7 @@ import lombok.Builder;
 
 @Builder
 @AllArgsConstructor
-@JsonIgnoreProperties(
-    value = {
-      "upgrade_button_text",
-      "header",
-      "body"
-    }) // TODO SEE WHAT MEANS THESE FIELDS IN COINBASE DOC
+@JsonIgnoreProperties(value = {"upgrade_button_text", "header", "body"})
 public class TiersDto {
   private final String completedDescription;
 

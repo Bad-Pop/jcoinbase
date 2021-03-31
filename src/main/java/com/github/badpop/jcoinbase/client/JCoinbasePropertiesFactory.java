@@ -1,11 +1,16 @@
 package com.github.badpop.jcoinbase.client;
 
+import lombok.NoArgsConstructor;
+
+import static lombok.AccessLevel.PROTECTED;
+
 /**
  * A class factory to use to build {@link JCoinbaseProperties} objects
  *
  * <p>This class allows you to build new JCoinbaseProperties instances by calling the {@link
  * #build(String, String, String, boolean)} method
  */
+@NoArgsConstructor(access = PROTECTED)
 public abstract class JCoinbasePropertiesFactory {
 
   private static JCoinbaseProperties instance = null;

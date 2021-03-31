@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
+import com.github.badpop.jcoinbase.exception.InvalidApiKeyAndSecretException;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.testutils.ReflectionUtils;
 import lombok.val;
@@ -72,7 +73,7 @@ class JCoinbaseClientTest {
     assertThatExceptionOfType(JCoinbaseException.class)
         .isThrownBy(client::user)
         .withMessage(
-            "com.github.badpop.jcoinbase.exception.JCoinbaseException: You must specify an Api key and a secret to access this resource.");
+            "com.github.badpop.jcoinbase.exception.InvalidApiKeyAndSecretException: You must specify an Api key and a secret to access this resource.");
   }
 
   @Test
