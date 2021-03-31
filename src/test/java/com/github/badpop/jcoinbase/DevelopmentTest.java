@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase;
 
 import com.github.badpop.jcoinbase.client.JCoinbaseClientFactory;
+import com.github.badpop.jcoinbase.model.data.Currency;
 import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -22,9 +23,11 @@ class DevelopmentTest {
         JCoinbaseClientFactory.build(
             "B4FyyXIxMbtAlAfe", "34ltm3h8KBzFC66YqWXhYfp4RVM80loQ", "", 3, false);
 
-    val actual = client.user().updateCurrentUser(UpdateCurrentUserRequest.builder().build());
+    val callResult = client.data().getCurrencies();
 
-    log.info("Data : {}", actual);
-    assertThat(actual).isNotNull();
+    val toto = callResult.map(currencies -> currencies.map(Currency::getId));
+
+    log.info("Data : {}", toto);
+    assertThat(toto).isNotNull();
   }
 }

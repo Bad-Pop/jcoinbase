@@ -6,7 +6,7 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 
-/** A class representing the Coinbase exchange rates model */
+/** Class representing the Coinbase exchange rates model */
 @Value
 @Builder
 public class ExchangeRates {

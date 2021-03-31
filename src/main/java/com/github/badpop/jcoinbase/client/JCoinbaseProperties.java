@@ -1,6 +1,7 @@
 package com.github.badpop.jcoinbase.client;
 
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.PropertiesNotFoundException;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -73,7 +74,9 @@ public class JCoinbaseProperties {
         .peek(
             inputStream -> {
               if (inputStream == null)
-                throw new JCoinbaseException("Unable to find JCoinbase properties file.");
+                ErrorManagerService.manageOnError(
+                    new PropertiesNotFoundException("Unable to find JCoinbase properties file."),
+                    "Unable to find JCoinbase properties file.");
             })
         .mapTry(
             inputStream -> {

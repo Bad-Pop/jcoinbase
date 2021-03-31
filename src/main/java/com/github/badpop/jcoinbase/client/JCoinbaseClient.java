@@ -8,7 +8,8 @@ import com.github.badpop.jcoinbase.client.service.data.CoinbaseDataService;
 import com.github.badpop.jcoinbase.client.service.data.DataService;
 import com.github.badpop.jcoinbase.client.service.user.CoinbaseUserService;
 import com.github.badpop.jcoinbase.client.service.user.UserService;
-import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.InvalidApiKeyAndSecretException;
+import com.github.badpop.jcoinbase.exception.UnauthorizedRequestException;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.jackson.datatype.VavrModule;
 import lombok.Getter;
@@ -67,8 +68,8 @@ public class JCoinbaseClient {
    * This method provides a {@link UserService} allowing you to request coinbase public data using
    * it's api
    *
-   * <p>Warning : this method throws a {@link JCoinbaseException} if you don't properly build your
-   * JCoinbaseClient by providing your api key and secret
+   * <p>Warning : this method throws a {@link InvalidApiKeyAndSecretException} if you don't properly
+   * build your JCoinbaseClient by providing your api key and secret
    *
    * @return a {@link UserService}
    */
@@ -166,7 +167,7 @@ public class JCoinbaseClient {
    */
   private void manageNotAllowed(final Throwable throwable) {
     ErrorManagerService.manageOnError(
-        new JCoinbaseException(throwable),
+        new UnauthorizedRequestException(throwable),
         "Unable to allow this request. Please make sure you correctly build your JCoinbaseClient with API KEY and SECRET",
         throwable);
   }

@@ -133,7 +133,6 @@ public class CoinbaseDataService {
                     .map(price -> price.toPrice(priceType)));
   }
 
-  // TODO : CHECK IF COINBASE GIVE ENDPOINT FOR SUPPORTED CURRENCIES PAIRS AND USE IT INSTEAD
   private URI buildPriceURI(
       final JCoinbaseProperties properties,
       final PriceType priceType,

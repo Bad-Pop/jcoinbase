@@ -3,7 +3,7 @@ package com.github.badpop.jcoinbase.client.service.auth;
 import com.github.badpop.jcoinbase.client.JCoinbaseClient;
 import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.client.service.utils.StringUtils;
-import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.InvalidApiKeyAndSecretException;
 import com.github.badpop.jcoinbase.service.ErrorManagerService;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -72,7 +72,7 @@ public class AuthenticationService {
 
     if (!isAllowed(apiKey, secret)) {
       val jcex =
-          new JCoinbaseException(
+          new InvalidApiKeyAndSecretException(
               "You must specify an Api key and a secret to access this resource.");
       ErrorManagerService.manageOnError(jcex, jcex.getMessage(), jcex);
     }
@@ -108,12 +108,12 @@ public class AuthenticationService {
    * @return an {@link Either} containing a Left projection if not allowed, a Right projection
    *     otherwise
    */
-  public Either<JCoinbaseException, Void> allow(final JCoinbaseClient client) {
+  public Either<InvalidApiKeyAndSecretException, Void> allow(final JCoinbaseClient client) {
     if (isAllowed(client.getProperties().getApiKey(), client.getProperties().getSecret())) {
       return Right(aVoid);
     } else {
       return Left(
-          new JCoinbaseException(
+          new InvalidApiKeyAndSecretException(
               "You must specify an Api key and a secret to access this resource."));
     }
   }

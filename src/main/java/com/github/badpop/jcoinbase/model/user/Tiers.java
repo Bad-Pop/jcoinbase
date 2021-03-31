@@ -3,7 +3,7 @@ package com.github.badpop.jcoinbase.model.user;
 import lombok.Builder;
 import lombok.Value;
 
-/** A class representing the Coinbase user's tiers model */
+/** Class representing the Coinbase user's tiers model */
 @Value
 @Builder
 public class Tiers {

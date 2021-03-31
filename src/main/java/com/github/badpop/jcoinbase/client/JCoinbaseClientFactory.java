@@ -24,7 +24,7 @@ public abstract class JCoinbaseClientFactory {
    * <p><b>You should always use this method to build new JCoinbaseClient objects.</b> <br>
    * <br>
    *
-   * <p>Also note that the 'apiKey' and 'secret' params are optional so you can set these params to
+   * <p>Also note that the 'apiKey', 'secret' and 'apiVersion' params are optional so you can set these params to
    * null. However, you will only be able to access the public data of coinbase in this case. So, if
    * you want to access protected data such as accounts or transactions, you should provide an api
    * key and a secret.

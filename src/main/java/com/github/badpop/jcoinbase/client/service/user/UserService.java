@@ -14,6 +14,11 @@ import io.vavr.collection.Seq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * This service allows you to request coinbase users and current user data. <strong>To properly use
+ * this service, you must provide an API Key and an API secret when building a JCoinbaseClient
+ * instance.</strong>
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
@@ -22,10 +27,24 @@ public class UserService {
   private final CoinbaseUserService service;
   private final AuthenticationService authentication;
 
+  /**
+   * Get the current user data based on the provided coinbase API Key.
+   *
+   * @return a {@link CallResult} containing a {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<java.util.List<CoinbaseError>, User> getCurrentUserAsJava() {
     return getCurrentUser().mapFailure(Seq::asJava);
   }
 
+  /**
+   * Get the current user data based on the provided coinbase API Key.
+   *
+   * @return a {@link CallResult} containing a {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<Seq<CoinbaseError>, User> getCurrentUser() {
     return service
         .fetchCurrentUser(client, authentication)
@@ -39,10 +58,24 @@ public class UserService {
         .get();
   }
 
+  /**
+   * Get current user’s authorization information including granted scopes
+   *
+   * @return a {@link CallResult} containing an {@link Authorizations} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<java.util.List<CoinbaseError>, Authorizations> getAuthorizationsAsJava() {
     return getAuthorizations().mapFailure(Seq::asJava);
   }
 
+  /**
+   * Get current user’s authorization information including granted scopes
+   *
+   * @return a {@link CallResult} containing an {@link Authorizations} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<Seq<CoinbaseError>, Authorizations> getAuthorizations() {
     return service
         .fetchAuthorizations(client, authentication)
@@ -56,10 +89,24 @@ public class UserService {
         .get();
   }
 
+  /**
+   * Get any user’s public information with their ID.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<java.util.List<CoinbaseError>, User> getUserByIdAsJava(final String userId) {
     return getUserById(userId).mapFailure(Seq::asJava);
   }
 
+  /**
+   * Get any user’s public information with their ID.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<Seq<CoinbaseError>, User> getUserById(final String userId) {
     return service
         .fetchUserById(client, authentication, userId)
@@ -74,11 +121,25 @@ public class UserService {
         .get();
   }
 
+  /**
+   * Modify current user and their preferences.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<java.util.List<CoinbaseError>, User> updateCurrentUserAsJava(
       final UpdateCurrentUserRequest request) {
     return updateCurrentUser(request).mapFailure(Seq::asJava);
   }
 
+  /**
+   * Modify current user and their preferences.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
   public CallResult<Seq<CoinbaseError>, User> updateCurrentUser(
       final UpdateCurrentUserRequest request) {
 

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static io.vavr.API.None;
 
-/** A class representing the Coinbase user model */
+/** Class representing the Coinbase user model */
 @Value
 @Builder
 public class User {
