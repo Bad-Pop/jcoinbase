@@ -14,16 +14,19 @@ import static io.vavr.API.List;
 public enum AccountType {
   WALLET("wallet"),
   FIAT("fiat"),
-  VAULT("vault");
+  VAULT("vault"),
+  UNKNOWN("unknown");
 
   private static final Seq<AccountType> values = List(values());
   private final String type;
 
-  public Optional<AccountType> fromStringAsJava(final String type) {
+  // TODO TEST
+  public static Optional<AccountType> fromStringAsJava(final String type) {
     return fromString(type).toJavaOptional();
   }
 
-  public Option<AccountType> fromString(final String type) {
+  // TODO TEST
+  public static Option<AccountType> fromString(final String type) {
     return values.find(at -> at.getType().equalsIgnoreCase(type));
   }
 }

@@ -13,10 +13,12 @@ public class Account {
   String name;
   boolean primary;
   AccountType type;
-  String currency;
+  AccountCurrency currency;
   AccountBalance balance;
   LocalDateTime creationDate;
   LocalDateTime lastUpdateDate;
   ResourceType resourceType;
   String resourcePath;
+  boolean allowDeposits;
+  boolean allowWithdrawals;
 }

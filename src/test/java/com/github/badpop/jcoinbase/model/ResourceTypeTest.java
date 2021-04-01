@@ -1,6 +1,5 @@
 package com.github.badpop.jcoinbase.model;
 
-import com.github.badpop.jcoinbase.model.ResourceType;
 import lombok.val;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
