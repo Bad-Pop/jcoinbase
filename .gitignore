@@ -1,3 +1,7 @@
 .DS_STORE
 .idea
 *.iml
+src
+.mvn
+target
+>>>>>>> e9208587a9d8b7435954dbfbcf32aa8ab8a93919
