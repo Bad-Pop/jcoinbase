@@ -1,12 +1,13 @@
-package com.github.badpop.jcoinbase.model.user;
+package com.github.badpop.jcoinbase.model;
 
-import io.vavr.API;
 import io.vavr.collection.Seq;
 import io.vavr.control.Option;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Optional;
+
+import static io.vavr.API.List;
 
 /**
  * Coinbase return some resources with a field named resource. This enum represents the possible
@@ -16,9 +17,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public enum ResourceType {
   USER("user"),
+  ACCOUNT("account"),
   UNKNOWN("unknown");
 
-  private static final Seq<ResourceType> values = API.List(values());
+  private static final Seq<ResourceType> values = List(values());
   private final String resource;
 
   /**

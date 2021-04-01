@@ -21,7 +21,7 @@ import org.mockserver.socket.PortFactory;
 import java.io.IOException;
 import java.time.Instant;
 
-import static com.github.badpop.jcoinbase.model.user.ResourceType.USER;
+import static com.github.badpop.jcoinbase.model.ResourceType.USER;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
 import static io.vavr.API.*;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;

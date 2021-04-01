@@ -2,14 +2,14 @@ package com.github.badpop.jcoinbase.client.service.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
-import com.github.badpop.jcoinbase.model.user.ResourceType;
+import com.github.badpop.jcoinbase.model.ResourceType;
 import com.github.badpop.jcoinbase.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.time.Instant;
 
-import static com.github.badpop.jcoinbase.model.user.ResourceType.UNKNOWN;
+import static com.github.badpop.jcoinbase.model.ResourceType.UNKNOWN;
 import static io.vavr.API.Option;
 
 @Builder

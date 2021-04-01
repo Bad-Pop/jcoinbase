@@ -1,5 +1,6 @@
 package com.github.badpop.jcoinbase.model.user;
 
+import com.github.badpop.jcoinbase.model.ResourceType;
 import io.vavr.control.Option;
 import lombok.Builder;
 import lombok.Builder.Default;

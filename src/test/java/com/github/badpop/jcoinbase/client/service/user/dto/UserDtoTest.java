@@ -1,13 +1,14 @@
 package com.github.badpop.jcoinbase.client.service.user.dto;
 
 import com.github.badpop.jcoinbase.client.service.utils.DateAndTimeUtils;
+import com.github.badpop.jcoinbase.model.ResourceType;
 import com.github.badpop.jcoinbase.model.user.*;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static com.github.badpop.jcoinbase.model.user.ResourceType.UNKNOWN;
+import static com.github.badpop.jcoinbase.model.ResourceType.UNKNOWN;
 import static io.vavr.API.Option;
 import static org.assertj.core.api.Assertions.assertThat;
 
