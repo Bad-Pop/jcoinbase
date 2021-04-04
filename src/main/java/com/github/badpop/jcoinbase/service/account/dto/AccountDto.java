@@ -22,8 +22,10 @@ public class AccountDto {
   private final Instant updatedAt;
   private final String resource;
   private final String resourcePath;
-  boolean allowDeposits;
-  boolean allowWithdrawals;
+  private final boolean allowDeposits;
+  private final boolean allowWithdrawals;
+  private final String rewardsApy;
+  private final RewardsDto rewards;
 
   public Account toAccount() {
     return Account.builder()
@@ -39,6 +41,8 @@ public class AccountDto {
         .resourcePath(resourcePath)
         .allowDeposits(allowDeposits)
         .allowWithdrawals(allowWithdrawals)
+        .rewardsApy(rewardsApy)
+        .rewards(Option(rewards).map(RewardsDto::toRewards).getOrNull())
         .build();
   }
 }

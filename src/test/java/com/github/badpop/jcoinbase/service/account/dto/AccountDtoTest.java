@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.service.account.dto;
 import com.github.badpop.jcoinbase.model.ResourceType;
 import com.github.badpop.jcoinbase.model.account.Account;
 import com.github.badpop.jcoinbase.model.account.AccountType;
+import com.github.badpop.jcoinbase.model.account.Rewards;
 import com.github.badpop.jcoinbase.service.utils.DateAndTimeUtils;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,9 @@ class AccountDtoTest {
             "resource",
             "resourcePath",
             true,
-            true);
+            true,
+            "2.00%",
+            new RewardsDto("0.02", "2,00%", "2,00% APY"));
 
     val actual = dto.toAccount();
 
@@ -68,6 +71,9 @@ class AccountDtoTest {
                 .resourcePath("resourcePath")
                 .allowDeposits(true)
                 .allowWithdrawals(true)
+                .rewardsApy("2.00%")
+                .rewards(
+                    Rewards.builder().apy("0.02").formattedApy("2,00%").label("2,00% APY").build())
                 .build());
   }
 }

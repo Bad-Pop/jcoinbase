@@ -65,12 +65,6 @@ class AuthenticationServiceTest {
               "Accept",
               "application/json");
 
-      /*
-       We are not testing timestamp and signature
-       due to incapacity to mock private long getCurrentTime().
-       TODO find a better implementation and refactor
-       POTENTIAL SOLUTION 1 : USE JAVA REFLECTION
-      */
       assertThat(actualWrapper)
           .isNotEmpty()
           .isInstanceOf(String[].class)
@@ -129,11 +123,6 @@ class AuthenticationServiceTest {
               "Accept",
               "application/json");
 
-      /*
-       We are not testing timestamp and signature
-       due to incapacity to mock private long getCurrentTime().
-       TODO find a better implementation and refactor
-      */
       assertThat(actualWrapper)
           .isNotEmpty()
           .isInstanceOf(String[].class)

@@ -163,7 +163,9 @@ class JsonDeserializationServiceTest {
               "account",
               "resourcePath",
               true,
-              true);
+              true,
+              null,
+              null);
 
       val warning =
           WarningDto.builder()

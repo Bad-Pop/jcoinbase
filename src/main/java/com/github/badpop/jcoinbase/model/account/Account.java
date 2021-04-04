@@ -21,4 +21,6 @@ public class Account {
   String resourcePath;
   boolean allowDeposits;
   boolean allowWithdrawals;
+  String rewardsApy;
+  Rewards rewards;
 }

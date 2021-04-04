@@ -39,8 +39,31 @@ public class CoinbaseAccountService {
             client.getJsonSerDes(),
             new TypeReference<PaginatedResponseDto<AccountDto>>() {})
         .mapTry(
-            callResult ->
-                callResult.map(
+            call ->
+                call.map(
+                    page -> page.toPaginatedResponse(page.getData().map(AccountDto::toAccount))));
+  }
+
+  protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountListByUri(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final String nextUri) {
+
+    val request =
+        HttpRequest.newBuilder()
+            .GET()
+            .uri(URI.create(client.getProperties().getApiUrl() + nextUri))
+            .headers(AuthenticationUtils.getHeaders(authentication, client, "GET", nextUri, ""))
+            .build();
+
+    return HttpRequestSender.paginatedSend(
+            client.getHttpClient(),
+            request,
+            client.getJsonSerDes(),
+            new TypeReference<PaginatedResponseDto<AccountDto>>() {})
+        .mapTry(
+            call ->
+                call.map(
                     page -> page.toPaginatedResponse(page.getData().map(AccountDto::toAccount))));
   }
 }

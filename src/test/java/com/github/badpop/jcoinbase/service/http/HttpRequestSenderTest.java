@@ -199,7 +199,9 @@ class HttpRequestSenderTest {
               "account",
               "resourcePath",
               true,
-              true);
+              true,
+              null,
+              null);
 
       val warning =
           WarningDto.builder()
