@@ -17,7 +17,6 @@ public class AccountCurrencyDto {
   private final String destinationTagName;
   private final String destinationTagRegex;
 
-  // TODO TEST
   public AccountCurrency toAccountCurrency() {
     return AccountCurrency.builder()
         .code(code)

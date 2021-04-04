@@ -15,7 +15,6 @@ public class PaginatedResponseDto<T> {
   private final Seq<T> data;
   private final Seq<WarningDto> warnings;
 
-  // TODO TEST
   public <U> PaginatedResponse<U> toPaginatedResponse(Seq<U> data) {
     WarningManagerService.alertIfCoinbaseHasReturnedWarnings(this);
     return PaginatedResponse.<U>builder()

@@ -25,7 +25,6 @@ public class AccountDto {
   boolean allowDeposits;
   boolean allowWithdrawals;
 
-  // TODO TEST
   public Account toAccount() {
     return Account.builder()
         .id(id)

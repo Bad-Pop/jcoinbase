@@ -20,7 +20,6 @@ import java.net.http.HttpRequest;
 
 public class CoinbaseAccountService {
 
-  // TODO TEST
   protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountsList(
       final JCoinbaseClient client, final AuthenticationService authentication) {
     val request =

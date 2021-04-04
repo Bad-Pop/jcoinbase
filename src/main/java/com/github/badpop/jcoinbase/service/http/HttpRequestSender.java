@@ -31,7 +31,6 @@ public interface HttpRequestSender {
                     .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings));
   }
 
-  // TODO TEST
   static <T> Try<CallResult<Seq<CoinbaseError>, PaginatedResponseDto<T>>> paginatedSend(
       final HttpClient httpClient,
       final HttpRequest request,

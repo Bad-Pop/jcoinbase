@@ -2,224 +2,33 @@ package com.github.badpop.jcoinbase.service.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.service.account.dto.AccountBalanceDto;
+import com.github.badpop.jcoinbase.service.account.dto.AccountCurrencyDto;
+import com.github.badpop.jcoinbase.service.account.dto.AccountDto;
 import com.github.badpop.jcoinbase.service.data.dto.TimeDto;
 import com.github.badpop.jcoinbase.service.dto.DataDto;
+import com.github.badpop.jcoinbase.service.dto.PaginatedResponseDto;
+import com.github.badpop.jcoinbase.service.dto.PaginationDto;
 import com.github.badpop.jcoinbase.service.dto.WarningDto;
 import com.github.badpop.jcoinbase.service.user.dto.*;
 import com.github.badpop.jcoinbase.testutils.CoinbaseErrorSampleProvider;
-import com.github.badpop.jcoinbase.testutils.JsonUtils;
 import io.vavr.API;
-import io.vavr.jackson.datatype.VavrModule;
-import lombok.SneakyThrows;
 import lombok.val;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import javax.net.ssl.SSLSession;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Optional;
-import java.util.TimeZone;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static com.github.badpop.jcoinbase.testutils.HttpResponsesSamples.*;
+import static com.github.badpop.jcoinbase.testutils.JsonSerDesSample.JSON_SER_DES;
+import static io.vavr.API.Seq;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class JsonDeserializationServiceTest {
-
-  private static final ObjectMapper JSON_SER_DES =
-      new ObjectMapper()
-          .findAndRegisterModules()
-          .registerModule(new VavrModule())
-          .registerModule(new JavaTimeModule())
-          .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-          .setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()))
-          .configure(WRITE_DATES_AS_TIMESTAMPS, false);
-
-  private static final HttpResponse<String> CURRENT_USER_HTTP_RESPONSE_OK =
-      new HttpResponse<>() {
-        @Override
-        public int statusCode() {
-          return 200;
-        }
-
-        @Override
-        public HttpRequest request() {
-          return null;
-        }
-
-        @Override
-        public Optional<HttpResponse<String>> previousResponse() {
-          return Optional.empty();
-        }
-
-        @Override
-        public HttpHeaders headers() {
-          return null;
-        }
-
-        @SneakyThrows
-        @Override
-        public String body() {
-          return JsonUtils.readResource("/json/coinbaseUserService/current_user.json");
-        }
-
-        @Override
-        public Optional<SSLSession> sslSession() {
-          return Optional.empty();
-        }
-
-        @Override
-        public URI uri() {
-          return null;
-        }
-
-        @Override
-        public HttpClient.Version version() {
-          return null;
-        }
-      };
-
-  private static final HttpResponse<String> CURRENT_USER_HTTP_RESPONSE_KO =
-      new HttpResponse<>() {
-        @Override
-        public int statusCode() {
-          return 400;
-        }
-
-        @Override
-        public HttpRequest request() {
-          return null;
-        }
-
-        @Override
-        public Optional<HttpResponse<String>> previousResponse() {
-          return Optional.empty();
-        }
-
-        @Override
-        public HttpHeaders headers() {
-          return null;
-        }
-
-        @SneakyThrows
-        @Override
-        public String body() {
-          return JsonUtils.readResource("/json/errors.json");
-        }
-
-        @Override
-        public Optional<SSLSession> sslSession() {
-          return Optional.empty();
-        }
-
-        @Override
-        public URI uri() {
-          return null;
-        }
-
-        @Override
-        public HttpClient.Version version() {
-          return null;
-        }
-      };
-
-  private static final HttpResponse<String> TIME_HTTP_RESPONSE_OK =
-      new HttpResponse<>() {
-        @Override
-        public int statusCode() {
-          return 200;
-        }
-
-        @Override
-        public HttpRequest request() {
-          return null;
-        }
-
-        @Override
-        public Optional<HttpResponse<String>> previousResponse() {
-          return Optional.empty();
-        }
-
-        @Override
-        public HttpHeaders headers() {
-          return null;
-        }
-
-        @SneakyThrows
-        @Override
-        public String body() {
-          return JsonUtils.readResource("/json/coinbaseDataService/time.json");
-        }
-
-        @Override
-        public Optional<SSLSession> sslSession() {
-          return Optional.empty();
-        }
-
-        @Override
-        public URI uri() {
-          return null;
-        }
-
-        @Override
-        public HttpClient.Version version() {
-          return null;
-        }
-      };
-
-  private static final HttpResponse<String> TIME_HTTP_RESPONSE_KO =
-      new HttpResponse<>() {
-        @Override
-        public int statusCode() {
-          return 400;
-        }
-
-        @Override
-        public HttpRequest request() {
-          return null;
-        }
-
-        @Override
-        public Optional<HttpResponse<String>> previousResponse() {
-          return Optional.empty();
-        }
-
-        @Override
-        public HttpHeaders headers() {
-          return null;
-        }
-
-        @SneakyThrows
-        @Override
-        public String body() {
-          return JsonUtils.readResource("/json/error.json");
-        }
-
-        @Override
-        public Optional<SSLSession> sslSession() {
-          return Optional.empty();
-        }
-
-        @Override
-        public URI uri() {
-          return null;
-        }
-
-        @Override
-        public HttpClient.Version version() {
-          return null;
-        }
-      };
 
   @Nested
   class Deserialize {
@@ -305,6 +114,90 @@ class JsonDeserializationServiceTest {
           .isThrownBy(
               () ->
                   JsonDeserializationService.deserialize(
+                      CURRENT_USER_HTTP_RESPONSE_OK, JSON_SER_DES, typeRef));
+    }
+  }
+
+  @Nested
+  class PaginatedDeserialize {
+    @Test
+    void should_properly_deserialize_and_return_success() throws JsonProcessingException {
+      val typeRef = new TypeReference<PaginatedResponseDto<AccountDto>>() {};
+
+      val actual =
+          JsonDeserializationService.paginatedDeserialize(
+              ACCOUNTS_HTTP_RESPONSE_OK, JSON_SER_DES, typeRef);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isNotNull().isNotEmpty();
+      assertThat(actual.isSuccess()).isTrue();
+
+      val pagination =
+          new PaginationDto(
+              25, "desc", null, null, null, "nsa", null, "/v2/accounts?starting_after=nsa");
+      val currency =
+          new AccountCurrencyDto(
+              "code",
+              "name",
+              "color",
+              140,
+              8,
+              "crypto",
+              "addrRegex",
+              "assetId",
+              "slug",
+              "destTagName",
+              "destTagRegex");
+
+      val balance = new AccountBalanceDto(BigDecimal.valueOf(0.0), "currency");
+
+      val account =
+          new AccountDto(
+              "id",
+              "name",
+              true,
+              "wallet",
+              currency,
+              balance,
+              Instant.parse("2021-01-20T14:34:30Z"),
+              Instant.parse("2021-03-29T20:17:15Z"),
+              "account",
+              "resourcePath",
+              true,
+              true);
+
+      val warning =
+          WarningDto.builder()
+              .id("invalid_version")
+              .message("Please supply a valid API version in YYYY-MM-DD format")
+              .url("https://developers.coinbase.com/api#versioning")
+              .build();
+
+      val dto = new PaginatedResponseDto<>(pagination, Seq(account), Seq(warning));
+
+      Assertions.assertThat(actual.get()).usingRecursiveComparison().isEqualTo(dto);
+    }
+
+    @Test
+    void should_properly_deserialize_and_return_failure() throws JsonProcessingException {
+      val typeRef = new TypeReference<PaginatedResponseDto<AccountDto>>() {};
+
+      val actual =
+          JsonDeserializationService.paginatedDeserialize(
+              ACCOUNTS_HTTP_RESPONSE_KO, JSON_SER_DES, typeRef);
+
+      assertThat(actual).isInstanceOf(CallResult.class).isNotNull().isEmpty();
+      assertThat(actual.isFailure()).isTrue();
+      assertThat(actual.getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
+    }
+
+    @Test
+    void should_throw_JsonProcessingException() {
+      val typeRef = new TypeReference<PaginatedResponseDto<TimeDto>>() {};
+
+      assertThatExceptionOfType(JsonProcessingException.class)
+          .isThrownBy(
+              () ->
+                  JsonDeserializationService.paginatedDeserialize(
                       CURRENT_USER_HTTP_RESPONSE_OK, JSON_SER_DES, typeRef));
     }
   }

@@ -20,12 +20,10 @@ public enum AccountType {
   private static final Seq<AccountType> values = List(values());
   private final String type;
 
-  // TODO TEST
   public static Optional<AccountType> fromStringAsJava(final String type) {
     return fromString(type).toJavaOptional();
   }
 
-  // TODO TEST
   public static Option<AccountType> fromString(final String type) {
     return values.find(at -> at.getType().equalsIgnoreCase(type));
   }

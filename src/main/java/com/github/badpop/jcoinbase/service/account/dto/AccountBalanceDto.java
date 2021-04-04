@@ -10,7 +10,6 @@ public class AccountBalanceDto {
   private final BigDecimal amount;
   private final String currency;
 
-  // TODO TEST
   public AccountBalance toAccountBalance() {
     return AccountBalance.builder().amount(amount).currency(currency).build();
   }

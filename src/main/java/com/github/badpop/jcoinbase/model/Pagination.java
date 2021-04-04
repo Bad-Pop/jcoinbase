@@ -30,16 +30,14 @@ public class Pagination {
     ASC("asc");
 
     private static final Seq<Order> values = List(values());
-    private final String order;
+    private final String value;
 
-    // TODO TEST
     public static Optional<Order> fromStringAsJava(final String str) {
       return fromString(str).toJavaOptional();
     }
 
-    // TODO TEST
     public static Option<Order> fromString(final String str) {
-      return values.find(order -> order.getOrder().equalsIgnoreCase(str));
+      return values.find(order -> order.getValue().equalsIgnoreCase(str));
     }
   }
 }

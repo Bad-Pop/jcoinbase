@@ -43,7 +43,6 @@ public interface JsonDeserializationService {
     }
   }
 
-  // TODO TEST
   static <T> CallResult<Seq<CoinbaseError>, PaginatedResponseDto<T>> paginatedDeserialize(
       final HttpResponse<String> response,
       final ObjectMapper jsonSerDes,
@@ -112,7 +111,6 @@ public interface JsonDeserializationService {
     return CallResult.success(jsonSerDes.readValue(response.body(), typeReference));
   }
 
-  // TODO TEST
   private static <T> CallResult<Seq<CoinbaseError>, PaginatedResponseDto<T>> buildPaginatedSuccess(
       final HttpResponse<String> response,
       final ObjectMapper jsonSerDes,
@@ -140,7 +138,6 @@ public interface JsonDeserializationService {
             .toCoinbaseErrors());
   }
 
-  // TODO TEST
   private static <T> CallResult<Seq<CoinbaseError>, PaginatedResponseDto<T>> buildPaginatedFailure(
       final HttpResponse<String> response, final ObjectMapper jsonSerDes)
       throws JsonProcessingException {
