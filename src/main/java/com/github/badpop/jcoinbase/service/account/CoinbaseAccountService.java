@@ -23,13 +23,13 @@ public class CoinbaseAccountService {
   protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountPageByUri(
       final JCoinbaseClient client,
       final AuthenticationService authentication,
-      final String nextUri) {
+      final String uri) {
 
     val request =
         HttpRequest.newBuilder()
             .GET()
-            .uri(URI.create(client.getProperties().getApiUrl() + nextUri))
-            .headers(AuthenticationUtils.getHeaders(authentication, client, "GET", nextUri, ""))
+            .uri(URI.create(client.getProperties().getApiUrl() + uri))
+            .headers(AuthenticationUtils.getHeaders(authentication, client, "GET", uri, ""))
             .build();
 
     return HttpRequestSender.paginatedSend(

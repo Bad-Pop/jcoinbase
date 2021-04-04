@@ -5,6 +5,7 @@ import com.github.badpop.jcoinbase.JCoinbaseProperties;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.exception.NoNextPageException;
+import com.github.badpop.jcoinbase.exception.NoPreviousPageException;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import com.github.badpop.jcoinbase.model.PaginatedResponse;
 import com.github.badpop.jcoinbase.model.Pagination;
@@ -12,7 +13,6 @@ import com.github.badpop.jcoinbase.model.account.Account;
 import com.github.badpop.jcoinbase.model.account.AccountsPage;
 import com.github.badpop.jcoinbase.service.auth.AuthenticationService;
 import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,7 @@ class AccountServiceTest {
   @Mock private AuthenticationService authenticationService;
 
   @Nested
-  class GetPaginatedAccountsList {
+  class GetAccountsPage {
     @Test
     void should_return_as_java() {
       val paginatedResponse = PaginatedResponse.<Account>builder().build();
@@ -168,7 +168,7 @@ class AccountServiceTest {
   }
 
   @Nested
-  class GetNextPaginatedAccountsList {
+  class GetNextAccountsPage {
     @Test
     void should_return_as_java() {
       val paginatedResponse =
@@ -199,15 +199,13 @@ class AccountServiceTest {
     @Test
     void should_throws_JCoinbaseException_if_CoinbaseAccountService_return_a_failure_as_java() {
       val jcex = new JCoinbaseException("error message");
+      val pagination = Pagination.builder().nextUri("").build();
 
       when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
           .thenReturn(failure(jcex));
 
       assertThatExceptionOfType(JCoinbaseException.class)
-          .isThrownBy(
-              () ->
-                  accountService.getNextAccountsPageAsJava(
-                      Pagination.builder().nextUri("").build()))
+          .isThrownBy(() -> accountService.getNextAccountsPageAsJava(pagination))
           .withMessage("com.github.badpop.jcoinbase.exception.JCoinbaseException: error message");
 
       verifyNoInteractions(client);
@@ -216,7 +214,7 @@ class AccountServiceTest {
     }
 
     @Test
-    void should_return_acounts() {
+    void should_return_accounts() {
       val paginatedResponse = PaginatedResponse.<Account>builder().build();
 
       when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
@@ -239,13 +237,13 @@ class AccountServiceTest {
     @Test
     void should_throws_JCoinbaseException_if_CoinbaseAccountService_return_a_failure() {
       val jcex = new JCoinbaseException("error message");
+      val pagination = Pagination.builder().nextUri("").build();
 
       when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
           .thenReturn(failure(jcex));
 
       assertThatExceptionOfType(JCoinbaseException.class)
-          .isThrownBy(
-              () -> accountService.getNextAccountsPage(Pagination.builder().nextUri("").build()))
+          .isThrownBy(() -> accountService.getNextAccountsPage(pagination))
           .withMessage("com.github.badpop.jcoinbase.exception.JCoinbaseException: error message");
 
       verifyNoInteractions(client);
@@ -292,14 +290,155 @@ class AccountServiceTest {
 
     @Test
     void should_throws_NoNextPageException_when_as_java() {
+      val pagination = Pagination.builder().build();
       assertThatExceptionOfType(NoNextPageException.class)
-          .isThrownBy(() -> accountService.getNextAccountsPageAsJava(Pagination.builder().build()));
+          .isThrownBy(() -> accountService.getNextAccountsPageAsJava(pagination));
     }
 
     @Test
     void should_throws_NoNextPageException() {
+      val pagination = Pagination.builder().build();
       assertThatExceptionOfType(NoNextPageException.class)
-          .isThrownBy(() -> accountService.getNextAccountsPage(Pagination.builder().build()));
+          .isThrownBy(() -> accountService.getNextAccountsPage(pagination));
+    }
+  }
+
+  @Nested
+  class GetPreviousAccountsPage {
+    @Test
+    void should_return_as_java() {
+      val paginatedResponse =
+          PaginatedResponse.<Account>builder()
+              .pagination(Pagination.builder().previousUri("prevUri").build())
+              .build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(
+              client, authenticationService, paginatedResponse.getPagination().getPreviousUri()))
+          .thenReturn(success(CallResult.success(paginatedResponse)));
+
+      val actual = accountService.getPreviousAccountsPageAsJava(paginatedResponse.getPagination());
+
+      assertThat(actual)
+          .usingRecursiveComparison()
+          .isEqualTo(
+              CallResult.success(
+                  new AccountsPage(
+                      paginatedResponse.getPagination(), paginatedResponse.getData())));
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService)
+          .fetchAccountPageByUri(
+              client, authenticationService, paginatedResponse.getPagination().getPreviousUri());
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_throws_JCoinbaseException_if_CoinbaseAccountService_return_a_failure_as_java() {
+      val jcex = new JCoinbaseException("error message");
+      val pagination = Pagination.builder().previousUri("").build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
+          .thenReturn(failure(jcex));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> accountService.getPreviousAccountsPageAsJava(pagination))
+          .withMessage("com.github.badpop.jcoinbase.exception.JCoinbaseException: error message");
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService).fetchAccountPageByUri(client, authenticationService, "");
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_return_accounts() {
+      val paginatedResponse = PaginatedResponse.<Account>builder().build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
+          .thenReturn(success(CallResult.success(paginatedResponse)));
+
+      val actual =
+          accountService.getPreviousAccountsPage(Pagination.builder().previousUri("").build());
+
+      assertThat(actual)
+          .usingRecursiveComparison()
+          .isEqualTo(
+              CallResult.success(
+                  new AccountsPage(
+                      paginatedResponse.getPagination(), paginatedResponse.getData())));
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService).fetchAccountPageByUri(client, authenticationService, "");
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_throws_JCoinbaseException_if_CoinbaseAccountService_return_a_failure() {
+      val jcex = new JCoinbaseException("error message");
+      val pagination = Pagination.builder().previousUri("").build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
+          .thenReturn(failure(jcex));
+
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> accountService.getPreviousAccountsPage(pagination))
+          .withMessage("com.github.badpop.jcoinbase.exception.JCoinbaseException: error message");
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService).fetchAccountPageByUri(client, authenticationService, "");
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_return_CallResult_failure_as_java() {
+      val error = CoinbaseError.builder().build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
+          .thenReturn(success(CallResult.failure(Seq(error))));
+
+      val actual =
+          accountService.getPreviousAccountsPageAsJava(
+              Pagination.builder().previousUri("").build());
+
+      assertThat(actual.isFailure()).isTrue();
+      assertThat(actual).isEqualTo(CallResult.failure(java.util.List.of(error)));
+      assertThat(actual.getFailure()).containsExactly(error);
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService).fetchAccountPageByUri(client, authenticationService, "");
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_return_CallResult_failure() {
+      val error = CoinbaseError.builder().build();
+
+      when(coinbaseAccountService.fetchAccountPageByUri(client, authenticationService, ""))
+          .thenReturn(success(CallResult.failure(Seq(error))));
+
+      val actual =
+          accountService.getPreviousAccountsPage(Pagination.builder().previousUri("").build());
+
+      assertThat(actual.isFailure()).isTrue();
+      assertThat(actual).isEqualTo(CallResult.failure(Seq(error)));
+      assertThat(actual.getFailure()).containsExactly(error);
+
+      verifyNoInteractions(client);
+      verify(coinbaseAccountService).fetchAccountPageByUri(client, authenticationService, "");
+      verifyNoMoreInteractions(coinbaseAccountService);
+    }
+
+    @Test
+    void should_throws_NoPreviousPageException_when_as_java() {
+      val pagination = Pagination.builder().build();
+      assertThatExceptionOfType(NoPreviousPageException.class)
+          .isThrownBy(() -> accountService.getPreviousAccountsPageAsJava(pagination));
+    }
+
+    @Test
+    void should_throws_NoPreviousPageException() {
+      val pagination = Pagination.builder().build();
+      assertThatExceptionOfType(NoPreviousPageException.class)
+          .isThrownBy(() -> accountService.getPreviousAccountsPage(pagination));
     }
   }
 }

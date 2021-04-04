@@ -4,6 +4,7 @@ import com.github.badpop.jcoinbase.JCoinbaseClient;
 import com.github.badpop.jcoinbase.control.CallResult;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.exception.NoNextPageException;
+import com.github.badpop.jcoinbase.exception.NoPreviousPageException;
 import com.github.badpop.jcoinbase.model.CoinbaseError;
 import com.github.badpop.jcoinbase.model.PaginatedResponse;
 import com.github.badpop.jcoinbase.model.Pagination;
@@ -79,4 +80,39 @@ public class AccountService {
         .get()
         .map(this::toAccountsPage);
   }
+
+  public CallResult<List<CoinbaseError>, AccountsPage> getPreviousAccountsPageAsJava(
+      final Pagination pagination) {
+    return getPreviousAccountsPage(pagination).mapFailure(Seq::asJava);
+  }
+
+  public CallResult<Seq<CoinbaseError>, AccountsPage> getPreviousAccountsPage(
+      final Pagination pagination) {
+
+    val previousUri =
+        Option(pagination.getPreviousUri())
+            .onEmpty(
+                () ->
+                    ErrorManagerService.manageOnError(
+                        new NoPreviousPageException(
+                            "There is no previous page available for your request"),
+                        "There is no previous page available for your request"))
+            .get();
+
+    return service
+        .fetchAccountPageByUri(client, authentication, previousUri)
+        .onSuccess(paginatedResponses -> log.info("Successfully fetch previous accounts page"))
+        .onFailure(
+            throwable ->
+                ErrorManagerService.manageOnError(
+                    new JCoinbaseException(throwable),
+                    "An error occurred while fetching previous accounts page",
+                    throwable))
+        .get()
+        .map(this::toAccountsPage);
+  }
+
+  // TODO GET ACCOUNT BY ID
+  // TODO UPDATE ACCOUNT BY ID
+  // TODO DELETE ACCOUNT BY ID
 }
