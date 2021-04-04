@@ -20,31 +20,7 @@ import java.net.http.HttpRequest;
 
 public class CoinbaseAccountService {
 
-  protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountsList(
-      final JCoinbaseClient client, final AuthenticationService authentication) {
-    val request =
-        HttpRequest.newBuilder()
-            .GET()
-            .uri(
-                URI.create(
-                    client.getProperties().getApiUrl() + client.getProperties().getAccountsPath()))
-            .headers(
-                AuthenticationUtils.getHeaders(
-                    authentication, client, "GET", client.getProperties().getAccountsPath(), ""))
-            .build();
-
-    return HttpRequestSender.paginatedSend(
-            client.getHttpClient(),
-            request,
-            client.getJsonSerDes(),
-            new TypeReference<PaginatedResponseDto<AccountDto>>() {})
-        .mapTry(
-            call ->
-                call.map(
-                    page -> page.toPaginatedResponse(page.getData().map(AccountDto::toAccount))));
-  }
-
-  protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountListByUri(
+  protected Try<CallResult<Seq<CoinbaseError>, PaginatedResponse<Account>>> fetchAccountPageByUri(
       final JCoinbaseClient client,
       final AuthenticationService authentication,
       final String nextUri) {

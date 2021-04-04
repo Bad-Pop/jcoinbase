@@ -57,112 +57,7 @@ class CoinbaseAccountServiceTest {
   }
 
   @Nested
-  class FetchAccountsList {
-    @Test
-    void should_return_CallResult_success() throws IOException {
-      mockServer
-          .when(request().withMethod("GET").withPath("/v2/accounts"))
-          .respond(
-              response()
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(
-                      JsonUtils.readResource("/json/coinbaseAccountService/account_list.json")));
-
-      val actual = service.fetchAccountsList(client, client.getAuthService());
-
-      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
-      Assertions.assertThat(actual.get())
-          .usingRecursiveComparison()
-          .isEqualTo(
-              CallResult.success(
-                  PaginatedResponse.<Account>builder()
-                      .pagination(
-                          Pagination.builder()
-                              .endingBefore(null)
-                              .startingAfter(null)
-                              .previousEndingBefore(null)
-                              .nextStartingAfter("nsa")
-                              .limit(25)
-                              .order(DESC)
-                              .previousUri(null)
-                              .nextUri("/v2/accounts?starting_after=nsa")
-                              .build())
-                      .data(
-                          Seq(
-                              Account.builder()
-                                  .id("id")
-                                  .name("name")
-                                  .primary(true)
-                                  .type(WALLET)
-                                  .creationDate(
-                                      DateAndTimeUtils.fromInstant(
-                                              Instant.parse("2021-01-20T14:34:30Z"))
-                                          .getOrNull())
-                                  .lastUpdateDate(
-                                      DateAndTimeUtils.fromInstant(
-                                              Instant.parse("2021-03-29T20:17:15Z"))
-                                          .getOrNull())
-                                  .resourceType(ACCOUNT)
-                                  .resourcePath("resourcePath")
-                                  .allowDeposits(true)
-                                  .allowWithdrawals(true)
-                                  .balance(
-                                      AccountBalance.builder()
-                                          .amount(BigDecimal.valueOf(0.0))
-                                          .currency("currency")
-                                          .build())
-                                  .currency(
-                                      AccountCurrency.builder()
-                                          .code("code")
-                                          .name("name")
-                                          .color("color")
-                                          .sortIndex(140)
-                                          .exponent(8)
-                                          .type("crypto")
-                                          .addressRegex("addrRegex")
-                                          .assetId("assetId")
-                                          .slug("slug")
-                                          .destinationTagName("destTagName")
-                                          .destinationTagRegex("destTagRegex")
-                                          .build())
-                                  .build()))
-                      .build()));
-    }
-
-    @Test
-    void should_return_CallResult_failure() throws IOException {
-      mockServer
-          .when(request().withMethod("GET").withPath("/v2/accounts"))
-          .respond(
-              response()
-                  .withStatusCode(400)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(JsonUtils.readResource("/json/errors.json")));
-
-      val actual = service.fetchAccountsList(client, client.getAuthService());
-
-      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
-      Assertions.assertThat(actual.get().isFailure()).isTrue();
-      assertThat(actual.get().getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
-    }
-
-    @Test
-    void should_return_failure() throws IOException {
-      mockServer
-          .when(request().withMethod("GET").withPath("/v2/accounts"))
-          .respond(
-              response()
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(JsonUtils.readResource("/json/error.json")));
-
-      val actual = service.fetchAccountsList(client, client.getAuthService());
-
-      assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
-    }
-  }
-
-  @Nested
-  class FetchNextAccountsList {
+  class FetchAccountsPageByUri {
     @Test
     void should_return_CallResult_success() throws IOException {
       mockServer
@@ -179,7 +74,7 @@ class CoinbaseAccountServiceTest {
                           "/json/coinbaseAccountService/next_account_list.json")));
 
       val actual =
-          service.fetchAccountListByUri(
+          service.fetchAccountPageByUri(
               client, client.getAuthService(), "/v2/accounts?starting_after=nsa");
 
       assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
@@ -264,7 +159,7 @@ class CoinbaseAccountServiceTest {
                   .withBody(JsonUtils.readResource("/json/errors.json")));
 
       val actual =
-          service.fetchAccountListByUri(
+          service.fetchAccountPageByUri(
               client, client.getAuthService(), "/v2/accounts?starting_after=nsa");
 
       assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
@@ -286,7 +181,7 @@ class CoinbaseAccountServiceTest {
                   .withBody(JsonUtils.readResource("/json/error.json")));
 
       val actual =
-          service.fetchAccountListByUri(
+          service.fetchAccountPageByUri(
               client, client.getAuthService(), "/v2/accounts?starting_after=nsa");
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);

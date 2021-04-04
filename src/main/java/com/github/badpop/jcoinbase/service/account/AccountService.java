@@ -38,8 +38,8 @@ public class AccountService {
 
   public CallResult<Seq<CoinbaseError>, AccountsPage> getAccountsPage() {
     return service
-        .fetchAccountsList(client, authentication)
-        .onSuccess(paginatedResponses -> log.info("Successfully get accounts list"))
+        .fetchAccountPageByUri(client, authentication, client.getProperties().getAccountsPath())
+        .onSuccess(paginatedResponses -> log.info("Successfully get accounts page"))
         .onFailure(
             throwable ->
                 ErrorManagerService.manageOnError(
@@ -68,7 +68,7 @@ public class AccountService {
             .get();
 
     return service
-        .fetchAccountListByUri(client, authentication, nextUri)
+        .fetchAccountPageByUri(client, authentication, nextUri)
         .onSuccess(paginatedResponses -> log.info("Successfully fetch next accounts page"))
         .onFailure(
             throwable ->
