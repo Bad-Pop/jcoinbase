@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HttpRequestSender.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.http</a> &gt; <span class="el_source">HttpRequestSender.java</span></div><h1>HttpRequestSender.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.http;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.service.WarningManagerService;
+import com.github.badpop.jcoinbase.service.dto.DataDto;
+import com.github.badpop.jcoinbase.service.dto.PaginatedResponseDto;
+import io.vavr.collection.Seq;
+import io.vavr.control.Try;
+
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse.BodyHandlers;
+
+import static com.github.badpop.jcoinbase.service.http.JsonDeserializationService.*;
+
+/** Utility interface to centralize all http requests made to the Coinbase API */
+public interface HttpRequestSender {
+
+  static &lt;T&gt; Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, DataDto&lt;T&gt;&gt;&gt; send(
+      final HttpClient httpClient,
+      final HttpRequest request,
+      final ObjectMapper jsonSerDes,
+      final TypeReference&lt;DataDto&lt;T&gt;&gt; typeReference) {
+
+<span class="fc" id="L28">    return Try.of(() -&gt; httpClient.send(request, BodyHandlers.ofString()))</span>
+<span class="fc" id="L29">        .mapTry(</span>
+            response -&gt;
+<span class="fc" id="L31">                deserialize(response, jsonSerDes, typeReference)</span>
+<span class="fc" id="L32">                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings));</span>
+  }
+
+  static &lt;T&gt; Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, PaginatedResponseDto&lt;T&gt;&gt;&gt; paginatedSend(
+      final HttpClient httpClient,
+      final HttpRequest request,
+      final ObjectMapper jsonSerDes,
+      final TypeReference&lt;PaginatedResponseDto&lt;T&gt;&gt; typeReference) {
+
+<span class="fc" id="L41">    return Try.of(() -&gt; httpClient.send(request, BodyHandlers.ofString()))</span>
+<span class="fc" id="L42">        .mapTry(</span>
+            response -&gt;
+<span class="fc" id="L44">                paginatedDeserialize(response, jsonSerDes, typeReference)</span>
+<span class="fc" id="L45">                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings));</span>
+  }
+
+  static &lt;T&gt; Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, DataDto&lt;T&gt;&gt;&gt; singleFailureSend(
+      final HttpClient httpClient,
+      final HttpRequest request,
+      final ObjectMapper jsonSerDes,
+      final TypeReference&lt;DataDto&lt;T&gt;&gt; typeReference) {
+
+<span class="fc" id="L54">    return Try.of(() -&gt; httpClient.send(request, BodyHandlers.ofString()))</span>
+<span class="fc" id="L55">        .mapTry(</span>
+            response -&gt;
+<span class="fc" id="L57">                singleFailureDeserialize(response, jsonSerDes, typeReference)</span>
+<span class="fc" id="L58">                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

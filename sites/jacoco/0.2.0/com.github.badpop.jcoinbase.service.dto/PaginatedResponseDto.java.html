@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaginatedResponseDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.dto</a> &gt; <span class="el_source">PaginatedResponseDto.java</span></div><h1>PaginatedResponseDto.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.dto;
+
+import com.github.badpop.jcoinbase.model.PaginatedResponse;
+import com.github.badpop.jcoinbase.service.WarningManagerService;
+import io.vavr.collection.Seq;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import static io.vavr.API.Option;
+
+@Getter
+@AllArgsConstructor
+public class PaginatedResponseDto&lt;T&gt; {
+  private final PaginationDto pagination;
+  private final Seq&lt;T&gt; data;
+  private final Seq&lt;WarningDto&gt; warnings;
+
+  public &lt;U&gt; PaginatedResponse&lt;U&gt; toPaginatedResponse(Seq&lt;U&gt; data) {
+<span class="fc" id="L19">    WarningManagerService.alertIfCoinbaseHasReturnedWarnings(this);</span>
+<span class="fc" id="L20">    return PaginatedResponse.&lt;U&gt;builder()</span>
+<span class="fc" id="L21">        .pagination(Option(pagination).map(PaginationDto::toPagination).getOrNull())</span>
+<span class="fc" id="L22">        .data(data)</span>
+<span class="fc" id="L23">        .build();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,136 @@
+/Users/bad_pop/.sdkman/candidates/java/current/bin/javadoc
+@options
+@packages
+-classpath
+'/Users/bad_pop/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar:/Users/bad_pop/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/Users/bad_pop/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/Users/bad_pop/.m2/repository/org/projectlombok/lombok/1.18.18/lombok-1.18.18.jar:/Users/bad_pop/.m2/repository/io/vavr/vavr/0.10.3/vavr-0.10.3.jar:/Users/bad_pop/.m2/repository/io/vavr/vavr-match/0.10.3/vavr-match-0.10.3.jar:/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.12.1/jackson-core-2.12.1.jar:/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.12.1/jackson-databind-2.12.1.jar:/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.12.1/jackson-annotations-2.12.1.jar:/Users/bad_pop/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.12.1/jackson-datatype-jsr310-2.12.1.jar:/Users/bad_pop/.m2/repository/io/vavr/vavr-jackson/0.10.3/vavr-jackson-0.10.3.jar:/Users/bad_pop/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar'
+-encoding
+'UTF-8'
+-protected
+--release
+15
+-sourcepath
+'/Users/bad_pop/development/jcoinbase/jcoinbase/src/main/java:/Users/bad_pop/development/jcoinbase/jcoinbase/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2021. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs'
+-docencoding
+'UTF-8'
+-Xdoclint:none
+-doctitle
+'JCoinbase 0.2.0 API'
+-use
+-version
+-windowtitle
+'JCoinbase 0.2.0 API'
+com.github.badpop.jcoinbase
+com.github.badpop.jcoinbase.model
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model.user
+com.github.badpop.jcoinbase.model
+com.github.badpop.jcoinbase.model
+com.github.badpop.jcoinbase.model.request
+com.github.badpop.jcoinbase.model.request
+com.github.badpop.jcoinbase.model
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.account
+com.github.badpop.jcoinbase.model.data
+com.github.badpop.jcoinbase.model.data
+com.github.badpop.jcoinbase.model.data
+com.github.badpop.jcoinbase.model.data
+com.github.badpop.jcoinbase
+com.github.badpop.jcoinbase
+com.github.badpop.jcoinbase
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.dto
+com.github.badpop.jcoinbase.service.auth
+com.github.badpop.jcoinbase.service
+com.github.badpop.jcoinbase.service.utils
+com.github.badpop.jcoinbase.service.utils
+com.github.badpop.jcoinbase.service.utils
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user.dto
+com.github.badpop.jcoinbase.service.user
+com.github.badpop.jcoinbase.service.user
+com.github.badpop.jcoinbase.service.http
+com.github.badpop.jcoinbase.service.http
+com.github.badpop.jcoinbase.service.http
+com.github.badpop.jcoinbase.service.account.dto
+com.github.badpop.jcoinbase.service.account.dto
+com.github.badpop.jcoinbase.service.account.dto
+com.github.badpop.jcoinbase.service.account.dto
+com.github.badpop.jcoinbase.service.account
+com.github.badpop.jcoinbase.service.account
+com.github.badpop.jcoinbase.service.data.dto
+com.github.badpop.jcoinbase.service.data.dto
+com.github.badpop.jcoinbase.service.data.dto
+com.github.badpop.jcoinbase.service.data.dto
+com.github.badpop.jcoinbase.service.data
+com.github.badpop.jcoinbase.service.data
+com.github.badpop.jcoinbase.service
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.exception
+com.github.badpop.jcoinbase.control
+com.github.badpop.jcoinbase.control
+/Users/bad_pop/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar = 1589924091238
+/Users/bad_pop/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar = 1589924090701
+/Users/bad_pop/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar = 1589924090926
+/Users/bad_pop/.m2/repository/org/projectlombok/lombok/1.18.18/lombok-1.18.18.jar = 1612366474379
+/Users/bad_pop/.m2/repository/io/vavr/vavr/0.10.3/vavr-0.10.3.jar = 1603314647650
+/Users/bad_pop/.m2/repository/io/vavr/vavr-match/0.10.3/vavr-match-0.10.3.jar = 1603314647538
+/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.12.1/jackson-core-2.12.1.jar = 1612388619315
+/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.12.1/jackson-databind-2.12.1.jar = 1612388619328
+/Users/bad_pop/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.12.1/jackson-annotations-2.12.1.jar = 1612388582431
+/Users/bad_pop/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.12.1/jackson-datatype-jsr310-2.12.1.jar = 1612472203913
+/Users/bad_pop/.m2/repository/io/vavr/vavr-jackson/0.10.3/vavr-jackson-0.10.3.jar = 1611312515558
+/Users/bad_pop/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar = 1607590327549
+/Users/bad_pop/development/jcoinbase/jcoinbase/src/main/java/.DS_Store = 1616017426375
+/Users/bad_pop/development/jcoinbase/jcoinbase/src/main/java = 1616017426374
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/generated-sources/annotations = 1617641174727
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/constant-values.html = 1617641269042
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/tag-search-index.js = 1617641269305
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/overview-tree.html = 1617641269232
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/module-search-index.js = 1617641269303
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/index.html = 1617641269240
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/package-search-index.js = 1617641269304
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/jquery-ui.overrides.css = 1617641269327
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/serialized-form.html = 1617641269050
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/index-all.html = 1617641269308
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/allpackages-index.html = 1617641269315
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/deprecated-list.html = 1617641269236
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/member-search-index.js = 1617641269305
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/script.js = 1617641269320
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/stylesheet.css = 1617641269320
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/overview-summary.html = 1617641269316
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/help-doc.html = 1617641269318
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/element-list = 1617641268962
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/allclasses-index.html = 1617641269314
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/type-search-index.js = 1617641269304
+/Users/bad_pop/development/jcoinbase/jcoinbase/target/apidocs/search.js = 1617641269321

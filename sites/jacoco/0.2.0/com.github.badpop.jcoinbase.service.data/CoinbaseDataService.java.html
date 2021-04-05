@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoinbaseDataService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.data</a> &gt; <span class="el_source">CoinbaseDataService.java</span></div><h1>CoinbaseDataService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.data;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.badpop.jcoinbase.JCoinbaseClient;
+import com.github.badpop.jcoinbase.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.data.Currency;
+import com.github.badpop.jcoinbase.model.data.ExchangeRates;
+import com.github.badpop.jcoinbase.model.data.Price;
+import com.github.badpop.jcoinbase.model.data.Price.PriceType;
+import com.github.badpop.jcoinbase.model.data.Time;
+import com.github.badpop.jcoinbase.service.data.dto.CurrencyDto;
+import com.github.badpop.jcoinbase.service.data.dto.ExchangeRatesDto;
+import com.github.badpop.jcoinbase.service.data.dto.PriceDto;
+import com.github.badpop.jcoinbase.service.data.dto.TimeDto;
+import com.github.badpop.jcoinbase.service.dto.DataDto;
+import com.github.badpop.jcoinbase.service.http.HttpRequestSender;
+import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.control.Try;
+import lombok.val;
+
+import java.net.URI;
+import java.net.http.HttpRequest;
+
+import static com.github.badpop.jcoinbase.service.http.Headers.ACCEPT;
+import static com.github.badpop.jcoinbase.service.http.Headers.ACCEPT_VALUE;
+
+<span class="fc" id="L30">public class CoinbaseDataService {</span>
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, Time&gt;&gt; fetchTime(final JCoinbaseClient client) {
+    val request =
+<span class="fc" id="L34">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L35">            .GET()</span>
+<span class="fc" id="L36">            .uri(</span>
+<span class="fc" id="L37">                URI.create(</span>
+<span class="fc" id="L38">                    client.getProperties().getApiUrl() + client.getProperties().getTimePath()))</span>
+<span class="fc" id="L39">            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())</span>
+<span class="fc" id="L40">            .build();</span>
+
+<span class="fc" id="L42">    return HttpRequestSender.singleFailureSend(</span>
+<span class="fc" id="L43">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L45">            client.getJsonSerDes(),</span>
+<span class="fc" id="L46">            new TypeReference&lt;DataDto&lt;TimeDto&gt;&gt;() {})</span>
+<span class="fc" id="L47">        .mapTry(callResult -&gt; callResult.map(data -&gt; data.getData().toTime()));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, Seq&lt;Currency&gt;&gt;&gt; fetchCurrencies(
+      final JCoinbaseClient client) {
+
+    val request =
+<span class="fc" id="L54">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L55">            .GET()</span>
+<span class="fc" id="L56">            .uri(</span>
+<span class="fc" id="L57">                URI.create(</span>
+<span class="fc" id="L58">                    client.getProperties().getApiUrl()</span>
+<span class="fc" id="L59">                        + client.getProperties().getCurrenciesPath()))</span>
+<span class="fc" id="L60">            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())</span>
+<span class="fc" id="L61">            .build();</span>
+
+<span class="fc" id="L63">    return HttpRequestSender.singleFailureSend(</span>
+<span class="fc" id="L64">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L66">            client.getJsonSerDes(),</span>
+<span class="fc" id="L67">            new TypeReference&lt;DataDto&lt;List&lt;CurrencyDto&gt;&gt;&gt;() {})</span>
+<span class="fc" id="L68">        .mapTry(</span>
+            callResult -&gt;
+<span class="fc" id="L70">                callResult</span>
+<span class="fc" id="L71">                    .map(DataDto::getData)</span>
+<span class="fc" id="L72">                    .map(currencies -&gt; currencies.map(CurrencyDto::toCurrency)));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, ExchangeRates&gt;&gt; fetchExchangeRates(
+      final JCoinbaseClient client, final String currency) {
+
+    val request =
+<span class="fc" id="L79">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L80">            .GET()</span>
+<span class="fc" id="L81">            .uri(</span>
+<span class="fc" id="L82">                URI.create(</span>
+<span class="fc" id="L83">                    client.getProperties().getApiUrl()</span>
+<span class="fc" id="L84">                        + client.getProperties().getExchangeRatesPath()</span>
+                        + currency))
+<span class="fc" id="L86">            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())</span>
+<span class="fc" id="L87">            .build();</span>
+
+<span class="fc" id="L89">    return HttpRequestSender.singleFailureSend(</span>
+<span class="fc" id="L90">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L92">            client.getJsonSerDes(),</span>
+<span class="fc" id="L93">            new TypeReference&lt;DataDto&lt;ExchangeRatesDto&gt;&gt;() {})</span>
+<span class="fc" id="L94">        .mapTry(</span>
+<span class="fc" id="L95">            callResult -&gt; callResult.map(DataDto::getData).map(ExchangeRatesDto::toExchangeRates));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, Price&gt;&gt; fetchPriceByType(
+      JCoinbaseClient client, PriceType priceType, String baseCurrency, String targetCurrency) {
+
+    val request =
+<span class="fc" id="L102">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L103">            .GET()</span>
+<span class="fc" id="L104">            .uri(buildPriceURI(client.getProperties(), priceType, baseCurrency, targetCurrency))</span>
+<span class="fc" id="L105">            .header(ACCEPT.getValue(), ACCEPT_VALUE.getValue())</span>
+<span class="fc" id="L106">            .build();</span>
+
+<span class="fc" id="L108">    return HttpRequestSender.singleFailureSend(</span>
+<span class="fc" id="L109">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L111">            client.getJsonSerDes(),</span>
+<span class="fc" id="L112">            new TypeReference&lt;DataDto&lt;PriceDto&gt;&gt;() {})</span>
+<span class="fc" id="L113">        .mapTry(</span>
+<span class="fc" id="L114">            callResult -&gt; callResult.map(DataDto::getData).map(price -&gt; price.toPrice(priceType)));</span>
+  }
+
+  private URI buildPriceURI(
+      final JCoinbaseProperties properties,
+      final PriceType priceType,
+      final String baseCurrency,
+      final String targetCurrency) {
+<span class="fc" id="L122">    return URI.create(</span>
+<span class="fc" id="L123">        String.format(</span>
+            &quot;%s%s/%s/%s&quot;,
+<span class="fc" id="L125">            properties.getApiUrl(),</span>
+<span class="fc" id="L126">            properties.getPricesPath(),</span>
+            baseCurrency + &quot;-&quot; + targetCurrency,
+<span class="fc" id="L128">            priceType.getType()));</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

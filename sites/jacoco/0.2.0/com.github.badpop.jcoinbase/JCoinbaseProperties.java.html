@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JCoinbaseProperties.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase</a> &gt; <span class="el_source">JCoinbaseProperties.java</span></div><h1>JCoinbaseProperties.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase;
+
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.PropertiesNotFoundException;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.util.Properties;
+
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
+/**
+ * This class is used to get properties from the jcoinbase.properties file and to wrap them with
+ * user parameters (api key, secret, api version, ...). Thus the data are centralized in this class.
+ */
+<span class="fc" id="L23">@Slf4j</span>
+@Getter
+@FieldDefaults(level = PRIVATE)
+@NoArgsConstructor(access = PROTECTED)
+public class JCoinbaseProperties {
+
+  final Properties properties = new Properties();
+
+  Option&lt;String&gt; apiKey;
+  Option&lt;String&gt; secret;
+  Option&lt;String&gt; apiVersion;
+
+  // With authentication
+  String apiUrl;
+  String currentUserPath;
+  String currentUserAuthorizationsPath;
+  String userPath;
+  String usersPath;
+  String accountsPath;
+  String paymentMethodPath;
+
+  // Without authentication
+  String currenciesPath;
+  String exchangeRatesPath;
+  String pricesPath;
+  String timePath;
+
+  /**
+   * Call this method to build a properly configured JCoinbaseProperties.
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   * @return a new configured {@link JCoinbaseProperties}
+   */
+  protected JCoinbaseProperties build(
+      final String apiKey, final String secret, final String apiVersion) {
+
+<span class="fc" id="L61">    log.info(&quot;Start building JCoinbase properties !&quot;);</span>
+<span class="fc" id="L62">    val inputStreamProperties =</span>
+<span class="fc" id="L63">        Try.of(() -&gt; this.getClass().getClassLoader().getResourceAsStream(&quot;jcoinbase.properties&quot;))</span>
+<span class="fc" id="L64">            .onFailure(</span>
+                throwable -&gt;
+<span class="nc" id="L66">                    ErrorManagerService.manageOnError(</span>
+                        new JCoinbaseException(
+                            &quot;Unable to build inputStream for JCoinbase properties file.&quot;,
+                            throwable),
+                        &quot;Unable to build inputStream for JCoinbase properties file&quot;,
+                        throwable));
+
+<span class="fc" id="L73">    inputStreamProperties</span>
+<span class="fc" id="L74">        .peek(</span>
+            inputStream -&gt; {
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">              if (inputStream == null)</span>
+<span class="nc" id="L77">                ErrorManagerService.manageOnError(</span>
+                    new PropertiesNotFoundException(&quot;Unable to find JCoinbase properties file.&quot;),
+                    &quot;Unable to find JCoinbase properties file.&quot;);
+<span class="fc" id="L80">            })</span>
+<span class="fc" id="L81">        .mapTry(</span>
+            inputStream -&gt; {
+<span class="fc" id="L83">              properties.load(inputStream);</span>
+<span class="fc" id="L84">              extractProperties(apiKey, secret, apiVersion);</span>
+<span class="fc" id="L85">              return properties;</span>
+            })
+<span class="fc" id="L87">        .onFailure(</span>
+            JCoinbaseException.class,
+            jCoinbaseException -&gt;
+<span class="nc" id="L90">                ErrorManagerService.manageOnError(</span>
+<span class="nc" id="L91">                    jCoinbaseException, jCoinbaseException.getMessage()))</span>
+<span class="fc" id="L92">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L94">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(
+                        &quot;An unknown error occurred while building JCoinbase properties.&quot;,
+                        throwable),
+                    &quot;An unknown error occurred while building JCoinbase properties.&quot;,
+                    throwable));
+<span class="fc" id="L100">    log.info(&quot;JCoinbase properties successfully built !&quot;);</span>
+<span class="fc" id="L101">    return this;</span>
+  }
+
+  /**
+   * A simple method used to extract properties from properties file and put them in the class'
+   * fields
+   *
+   * @param apiKey the coinbase api key
+   * @param secret the coinbase api secret
+   * @param apiVersion the coinbase api version
+   */
+  private void extractProperties(
+      final String apiKey, final String secret, final String apiVersion) {
+
+<span class="fc" id="L115">    this.apiKey = Option.of(apiKey);</span>
+<span class="fc" id="L116">    this.secret = Option.of(secret);</span>
+<span class="fc" id="L117">    this.apiVersion = Option.of(apiVersion);</span>
+
+<span class="fc" id="L119">    this.apiUrl = properties.getProperty(&quot;coinbase.api.url&quot;);</span>
+<span class="fc" id="L120">    this.currentUserPath = properties.getProperty(&quot;coinbase.api.path.resource.currentUser&quot;);</span>
+<span class="fc" id="L121">    this.currentUserAuthorizationsPath =</span>
+<span class="fc" id="L122">        properties.getProperty(&quot;coinbase.api.path.resource.currentUserAuthorizations&quot;);</span>
+<span class="fc" id="L123">    this.userPath = properties.getProperty(&quot;coinbase.api.path.resource.user&quot;);</span>
+<span class="fc" id="L124">    this.usersPath = properties.getProperty(&quot;coinbase.api.path.resource.users&quot;);</span>
+<span class="fc" id="L125">    this.accountsPath = properties.getProperty(&quot;coinbase.api.path.resource.accounts&quot;);</span>
+<span class="fc" id="L126">    this.paymentMethodPath = properties.getProperty(&quot;coinbase.api.path.resource.paymentMethods&quot;);</span>
+
+<span class="fc" id="L128">    this.currenciesPath = properties.getProperty(&quot;coinbase.api.path.resource.currencies&quot;);</span>
+<span class="fc" id="L129">    this.exchangeRatesPath = properties.getProperty(&quot;coinbase.api.path.resource.exchangeRates&quot;);</span>
+<span class="fc" id="L130">    this.pricesPath = properties.getProperty(&quot;coinbase.api.path.resource.prices&quot;);</span>
+<span class="fc" id="L131">    this.timePath = properties.getProperty(&quot;coinbase.api.path.resource.time&quot;);</span>
+<span class="fc" id="L132">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

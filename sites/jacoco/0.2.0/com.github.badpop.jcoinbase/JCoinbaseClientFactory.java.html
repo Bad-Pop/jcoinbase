@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JCoinbaseClientFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase</a> &gt; <span class="el_source">JCoinbaseClientFactory.java</span></div><h1>JCoinbaseClientFactory.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase;
+
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import static lombok.AccessLevel.PRIVATE;
+
+/**
+ * A class factory to use to build {@link JCoinbaseClient} objects
+ *
+ * &lt;p&gt;This class allows you to build new JCoinbaseClient instances by calling the {@link
+ * #build(String, String, String, long, boolean)} method
+ */
+<span class="fc" id="L14">@Slf4j</span>
+@NoArgsConstructor(access = PRIVATE)
+public abstract class JCoinbaseClientFactory {
+
+<span class="fc" id="L18">  private static JCoinbaseClient instance = null;</span>
+
+  /**
+   * Return a new {@link JCoinbaseClient} instance configured with the given parameters. &lt;br&gt;
+   * &lt;br&gt;
+   *
+   * &lt;p&gt;&lt;b&gt;You should always use this method to build new JCoinbaseClient objects.&lt;/b&gt; &lt;br&gt;
+   * &lt;br&gt;
+   *
+   * &lt;p&gt;Also note that the 'apiKey', 'secret' and 'apiVersion' params are optional so you can set
+   * these params to null. However, you will only be able to access the public data of coinbase in
+   * this case. So, if you want to access protected data such as accounts or transactions, you
+   * should provide an api key and a secret.
+   *
+   * &lt;p&gt;If you do not already have an api key, please follow this &lt;a
+   * href=&quot;https://www.coinbase.com/settings/api&quot;&gt;link&lt;/a&gt; to create a new one
+   *
+   * &lt;p&gt;Note that you can create a JCoinbaseClient object as a safe thread singleton by passing true
+   * for the 'threadSafe' param. This will keep the same instance for each call of this method with
+   * 'threadSafe = true', but it is also more resource intensive. If you do not want the
+   * JCoinbaseClient to be a thread safe singleton, simply set the 'threadSafe' parameter to false
+   * for each call. This will return a new instance each time you call this method
+   *
+   * @param apiKey your coinbase api key defined in your coinbase account
+   * @param secret your coinbase api secret given by coinbase when creating your api key in your
+   *     account settings
+   * @param apiVersion the api version defined in your coinbase setting. For mor information please
+   *     take a look at &lt;a href=&quot;https://www.coinbase.com/settings/api&quot;&gt;your coinbase api
+   *     settings&lt;/a&gt;
+   * @param timeout the desired timeout for each http request made to the coinbase api in seconds.
+   *     The minimum value is 1 second.
+   * @param threadSafe define if the returned instance should be a thread safe singleton or not. In
+   *     most cases, you can set it to false.
+   * @return a new {@link JCoinbaseClient} configured with the given parameters
+   */
+  public static JCoinbaseClient build(
+      final String apiKey,
+      final String secret,
+      final String apiVersion,
+      long timeout,
+      final boolean threadSafe) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">    if (timeout &lt; 1) {</span>
+<span class="fc" id="L60">      timeout = 3;</span>
+<span class="fc" id="L61">      log.warn(</span>
+          &quot;The minimum value for timeout is 1 second. The client will use the default timeout defined at 3 seconds instead.&quot;);
+    }
+<span class="fc bfc" id="L64" title="All 2 branches covered.">    return threadSafe</span>
+<span class="fc" id="L65">        ? buildThreadSafeSingleton(apiKey, secret, apiVersion, timeout)</span>
+<span class="fc" id="L66">        : buildWithoutThreadSafeSingleton(apiKey, secret, apiVersion, timeout);</span>
+  }
+
+  private static JCoinbaseClient buildWithoutThreadSafeSingleton(
+      final String apiKey, final String secret, final String apiVersion, long timeout) {
+<span class="fc" id="L71">    return new JCoinbaseClient().build(apiKey, secret, apiVersion, timeout, false);</span>
+  }
+
+  private static synchronized JCoinbaseClient buildThreadSafeSingleton(
+      final String apiKey, final String secret, final String apiVersion, long timeout) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">    if (instance == null) {</span>
+<span class="fc" id="L77">      instance = new JCoinbaseClient().build(apiKey, secret, apiVersion, timeout, true);</span>
+    }
+<span class="fc" id="L79">    return instance;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

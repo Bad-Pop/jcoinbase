@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoinbaseAccountService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.account</a> &gt; <span class="el_source">CoinbaseAccountService.java</span></div><h1>CoinbaseAccountService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.account;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.badpop.jcoinbase.JCoinbaseClient;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.PaginatedResponse;
+import com.github.badpop.jcoinbase.model.account.Account;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.account.dto.AccountDto;
+import com.github.badpop.jcoinbase.service.auth.AuthenticationService;
+import com.github.badpop.jcoinbase.service.dto.DataDto;
+import com.github.badpop.jcoinbase.service.dto.PaginatedResponseDto;
+import com.github.badpop.jcoinbase.service.http.HttpRequestSender;
+import com.github.badpop.jcoinbase.service.utils.AuthenticationUtils;
+import com.github.badpop.jcoinbase.service.utils.StringUtils;
+import io.vavr.collection.Seq;
+import io.vavr.control.Try;
+import lombok.val;
+
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+
+import static io.vavr.API.*;
+
+<span class="fc" id="L28">public class CoinbaseAccountService {</span>
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, PaginatedResponse&lt;Account&gt;&gt;&gt; fetchAccountPageByUri(
+      final JCoinbaseClient client, final AuthenticationService authentication, final String uri) {
+
+    val request =
+<span class="fc" id="L34">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L35">            .GET()</span>
+<span class="fc" id="L36">            .uri(URI.create(client.getProperties().getApiUrl() + uri))</span>
+<span class="fc" id="L37">            .headers(AuthenticationUtils.getHeaders(authentication, client, &quot;GET&quot;, uri, &quot;&quot;))</span>
+<span class="fc" id="L38">            .build();</span>
+
+<span class="fc" id="L40">    return HttpRequestSender.paginatedSend(</span>
+<span class="fc" id="L41">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L43">            client.getJsonSerDes(),</span>
+<span class="fc" id="L44">            new TypeReference&lt;PaginatedResponseDto&lt;AccountDto&gt;&gt;() {})</span>
+<span class="fc" id="L45">        .mapTry(</span>
+            call -&gt;
+<span class="fc" id="L47">                call.map(</span>
+<span class="fc" id="L48">                    page -&gt; page.toPaginatedResponse(page.getData().map(AccountDto::toAccount))));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, Account&gt;&gt; send(
+      JCoinbaseClient client,
+      AuthenticationService authentication,
+      final String uri,
+      final String httpMethod,
+      final String httpBody) {
+
+<span class="fc" id="L58">    val request =</span>
+<span class="fc" id="L59">        defineHttpMethod(</span>
+<span class="fc" id="L60">            HttpRequest.newBuilder()</span>
+<span class="fc" id="L61">                .uri(URI.create(client.getProperties().getApiUrl() + uri))</span>
+<span class="fc" id="L62">                .headers(</span>
+<span class="fc" id="L63">                    AuthenticationUtils.getHeaders(</span>
+<span class="fc" id="L64">                        authentication, client, httpMethod.toUpperCase(), uri, httpBody)),</span>
+            httpMethod,
+            httpBody);
+
+<span class="fc" id="L68">    return HttpRequestSender.send(</span>
+<span class="fc" id="L69">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L71">            client.getJsonSerDes(),</span>
+<span class="fc" id="L72">            new TypeReference&lt;DataDto&lt;AccountDto&gt;&gt;() {})</span>
+<span class="fc" id="L73">        .mapTry(result -&gt; result.map(data -&gt; data.getData().toAccount()));</span>
+  }
+
+  private HttpRequest defineHttpMethod(
+      HttpRequest.Builder builder, final String httpMethod, final String httpBody) {
+<span class="fc" id="L78">    val method =</span>
+<span class="fc" id="L79">        Match(httpMethod.toUpperCase())</span>
+<span class="fc" id="L80">            .of(Case($(&quot;GET&quot;), &quot;GET&quot;), Case($(&quot;PUT&quot;), &quot;PUT&quot;), Case($(), &quot;&quot;));</span>
+
+<span class="fc bfc" id="L82" title="All 2 branches covered.">    if (StringUtils.isBlank(method)) {</span>
+<span class="nc" id="L83">      ErrorManagerService.manageOnError(</span>
+          new JCoinbaseException(&quot;Internal error : invalid http method&quot;),
+          &quot;Internal error : invalid http method&quot;);
+    }
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">    if (StringUtils.isBlank(httpBody)) {</span>
+<span class="fc" id="L89">      return builder.method(method, BodyPublishers.noBody()).build();</span>
+    }
+<span class="fc" id="L91">    return builder.method(method, BodyPublishers.ofString(httpBody)).build();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.account</a> &gt; <span class="el_source">AccountService.java</span></div><h1>AccountService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.account;
+
+import com.github.badpop.jcoinbase.JCoinbaseClient;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.exception.InvalidRequestException;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.NoNextPageException;
+import com.github.badpop.jcoinbase.exception.NoPreviousPageException;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.PaginatedResponse;
+import com.github.badpop.jcoinbase.model.Pagination;
+import com.github.badpop.jcoinbase.model.account.Account;
+import com.github.badpop.jcoinbase.model.account.AccountsPage;
+import com.github.badpop.jcoinbase.model.request.UpdateAccountRequest;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.auth.AuthenticationService;
+import com.github.badpop.jcoinbase.service.utils.StringUtils;
+import io.vavr.collection.Seq;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.util.List;
+import java.util.Objects;
+
+import static io.vavr.API.Option;
+import static io.vavr.API.Try;
+
+/**
+ * This service allows you to request coinbase accounts data. &lt;strong&gt;To properly use this service,
+ * you must provide an API Key and an API secret when building a JCoinbaseClient instance.&lt;/strong&gt;
+ */
+<span class="fc" id="L33">@Slf4j</span>
+@RequiredArgsConstructor
+public class AccountService {
+
+  private static final String INVALID_ID_MESSAGE =
+      &quot;Please provide a non blank id to get an account by id&quot;;
+
+  private final JCoinbaseClient client;
+  private final CoinbaseAccountService service;
+  private final AuthenticationService authentication;
+
+  /**
+   * Get the first accounts page
+   *
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a List of
+   *     {@link CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;List&lt;CoinbaseError&gt;, AccountsPage&gt; getAccountsPageAsJava() {
+<span class="fc" id="L52">    return getAccountsPage().mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get the first accounts page
+   *
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a Seq of
+   *     {@link CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, AccountsPage&gt; getAccountsPage() {
+<span class="fc" id="L63">    return service</span>
+<span class="fc" id="L64">        .fetchAccountPageByUri(client, authentication, client.getProperties().getAccountsPath())</span>
+<span class="fc" id="L65">        .onSuccess(paginatedResponses -&gt; log.info(&quot;Successfully get accounts page&quot;))</span>
+<span class="fc" id="L66">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L68">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching accounts list&quot;,
+                    throwable))
+<span class="fc" id="L72">        .get()</span>
+<span class="fc" id="L73">        .map(this::toAccountsPage);</span>
+  }
+
+  /**
+   * Get the next accounts page
+   *
+   * @param pagination a pagination object that will allow JCoinbase to request the next accounts
+   *     page
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a List of
+   *     {@link CoinbaseError} otherwise.
+   * @throws NullPointerException if the pagination is null
+   * @throws NoNextPageException if there is no next page
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;List&lt;CoinbaseError&gt;, AccountsPage&gt; getNextAccountsPageAsJava(
+      final Pagination pagination) {
+<span class="fc" id="L89">    return getNextAccountsPage(pagination).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get the next accounts page
+   *
+   * @param pagination a pagination object that will allow JCoinbase to request the next accounts
+   *     page
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a Seq of
+   *     {@link CoinbaseError} otherwise.
+   * @throws NullPointerException if the pagination is null
+   * @throws NoNextPageException if there is no next page
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, AccountsPage&gt; getNextAccountsPage(
+      final Pagination pagination) {
+<span class="fc" id="L105">    Objects.requireNonNull(pagination, &quot;Pagination is null&quot;);</span>
+<span class="fc" id="L106">    val nextUri =</span>
+<span class="fc" id="L107">        Option(pagination.getNextUri())</span>
+<span class="fc" id="L108">            .onEmpty(</span>
+                () -&gt;
+<span class="nc" id="L110">                    ErrorManagerService.manageOnError(</span>
+                        new NoNextPageException(&quot;There is no next page available for your request&quot;),
+                        &quot;There is no next page available for your request&quot;))
+<span class="fc" id="L113">            .get();</span>
+
+<span class="fc" id="L115">    return service</span>
+<span class="fc" id="L116">        .fetchAccountPageByUri(client, authentication, nextUri)</span>
+<span class="fc" id="L117">        .onSuccess(paginatedResponses -&gt; log.info(&quot;Successfully fetch next accounts page&quot;))</span>
+<span class="fc" id="L118">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L120">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching next accounts page&quot;,
+                    throwable))
+<span class="fc" id="L124">        .get()</span>
+<span class="fc" id="L125">        .map(this::toAccountsPage);</span>
+  }
+
+  /**
+   * Get the previous accounts page
+   *
+   * @param pagination a pagination object that will allow JCoinbase to request the next accounts
+   *     page
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a List of
+   *     {@link CoinbaseError} otherwise.
+   * @throws NullPointerException if the pagination is null
+   * @throws NoPreviousPageException if there is no previous page
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;List&lt;CoinbaseError&gt;, AccountsPage&gt; getPreviousAccountsPageAsJava(
+      final Pagination pagination) {
+<span class="fc" id="L141">    return getPreviousAccountsPage(pagination).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get the previous accounts page
+   *
+   * @param pagination a pagination object that will allow JCoinbase to request the next accounts
+   *     page
+   * @return a {@link CallResult} containing an {@link AccountsPage} object if it's ok, a Seq of
+   *     {@link CoinbaseError} otherwise.
+   * @throws NullPointerException if the pagination is null
+   * @throws NoPreviousPageException if there is no previous page
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, AccountsPage&gt; getPreviousAccountsPage(
+      final Pagination pagination) {
+<span class="fc" id="L157">    Objects.requireNonNull(pagination, &quot;Pagination is null&quot;);</span>
+<span class="fc" id="L158">    val previousUri =</span>
+<span class="fc" id="L159">        Option(pagination.getPreviousUri())</span>
+<span class="fc" id="L160">            .onEmpty(</span>
+                () -&gt;
+<span class="nc" id="L162">                    ErrorManagerService.manageOnError(</span>
+                        new NoPreviousPageException(
+                            &quot;There is no previous page available for your request&quot;),
+                        &quot;There is no previous page available for your request&quot;))
+<span class="fc" id="L166">            .get();</span>
+
+<span class="fc" id="L168">    return service</span>
+<span class="fc" id="L169">        .fetchAccountPageByUri(client, authentication, previousUri)</span>
+<span class="fc" id="L170">        .onSuccess(paginatedResponses -&gt; log.info(&quot;Successfully fetch previous accounts page&quot;))</span>
+<span class="fc" id="L171">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L173">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching previous accounts page&quot;,
+                    throwable))
+<span class="fc" id="L177">        .get()</span>
+<span class="fc" id="L178">        .map(this::toAccountsPage);</span>
+  }
+
+  /**
+   * Get an account by its id
+   *
+   * @param id the account's id
+   * @return a {@link CallResult} containing an {@link Account} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws InvalidRequestException if the given id is not valid
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;List&lt;CoinbaseError&gt;, Account&gt; getAccountAsJava(final String id) {
+<span class="fc" id="L191">    return getAccount(id).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get an account by its id
+   *
+   * @param id the account's id
+   * @return a {@link CallResult} containing an {@link Account} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws InvalidRequestException if the given id is not valid
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, Account&gt; getAccount(final String id) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    if (StringUtils.isBlank(id)) {</span>
+<span class="nc" id="L205">      ErrorManagerService.manageOnError(</span>
+          new InvalidRequestException(INVALID_ID_MESSAGE), INVALID_ID_MESSAGE);
+    }
+
+<span class="fc" id="L209">    val uri = client.getProperties().getAccountsPath() + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L211">    return service</span>
+<span class="fc" id="L212">        .send(client, authentication, uri, &quot;GET&quot;, &quot;&quot;)</span>
+<span class="fc" id="L213">        .onSuccess(paginatedResponses -&gt; log.info(&quot;Successfully fetch account by id&quot;))</span>
+<span class="fc" id="L214">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L216">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching account by id&quot;,
+                    throwable))
+<span class="fc" id="L220">        .get();</span>
+  }
+
+  /**
+   * Update an account by its id
+   *
+   * @param id the account's id
+   * @param request a valid {@link UpdateAccountRequest} containing the changes you want to apply on
+   *     this account
+   * @return a {@link CallResult} containing the updated {@link Account} if it's ok, a List of
+   *     {@link CoinbaseError} otherwise.
+   * @throws NullPointerException if the given request is null
+   * @throws InvalidRequestException if the given id is not valid
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;List&lt;CoinbaseError&gt;, Account&gt; updateAccountAsJava(
+      final String id, final UpdateAccountRequest request) {
+<span class="fc" id="L237">    return updateAccount(id, request).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Update an account by its id
+   *
+   * @param id the account's id
+   * @param request a valid {@link UpdateAccountRequest} containing the changes you want to apply on
+   *     this account
+   * @return a {@link CallResult} containing the updated {@link Account} if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws NullPointerException if the given request is null
+   * @throws InvalidRequestException if the given id is not valid
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, Account&gt; updateAccount(
+      final String id, final UpdateAccountRequest request) {
+<span class="fc" id="L254">    Objects.requireNonNull(request, &quot;request is null&quot;);</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">    if (StringUtils.isBlank(id)) {</span>
+<span class="nc" id="L256">      ErrorManagerService.manageOnError(</span>
+          new InvalidRequestException(INVALID_ID_MESSAGE), INVALID_ID_MESSAGE);
+    }
+
+<span class="fc" id="L260">    val uri = client.getProperties().getAccountsPath() + &quot;/&quot; + id;</span>
+
+<span class="fc" id="L262">    return Try(() -&gt; client.getJsonSerDes().writeValueAsString(request))</span>
+<span class="fc" id="L263">        .flatMapTry(body -&gt; service.send(client, authentication, uri, &quot;PUT&quot;, body))</span>
+<span class="fc" id="L264">        .onSuccess(account -&gt; log.info(&quot;Successfully update account&quot;))</span>
+<span class="fc" id="L265">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L267">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while updating account with id&quot;,
+                    throwable,
+                    id))
+<span class="fc" id="L272">        .get();</span>
+  }
+
+  private AccountsPage toAccountsPage(final PaginatedResponse&lt;Account&gt; response) {
+<span class="fc" id="L276">    return new AccountsPage(response.getPagination(), response.getData());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,1258 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.control</a> &gt; <span class="el_source">CallResult.java</span></div><h1>CallResult.java</h1><pre class="source lang-java linenums">/*
+ * Original work Copyright 2020 Vavr, http://vavr.io
+ * Original licence :
+ * Copyright 2020 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, callResult express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *
+ * Modified work in 2021 by Alexis &quot;Bad_Pop&quot; Vachard
+ * CallResult is a simplified version of the vavr Either adapted for JCoinbase's needs.
+ * For more information, please take a look at the https://www.vavr.io/
+ */
+package com.github.badpop.jcoinbase.control;
+
+import io.vavr.collection.Iterator;
+import io.vavr.collection.Seq;
+import io.vavr.control.Either;
+import io.vavr.control.Option;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import static lombok.AccessLevel.PRIVATE;
+
+/**
+ * Call result is a simplified version of the vavr {@link Either} adapted to the JCoinbase needs.
+ * For more information, please take a look at the &lt;a href=&quot;https://www.vavr.io/&quot;&gt;vavr site&lt;/a&gt;
+ *
+ * &lt;p&gt;CallResult represents a value of two possible types. A CallResult is callResult a {@link
+ * Failure} or a {@link Success}.
+ *
+ * &lt;p&gt;If the given CallResult is a Success and projected to a Failure, the Failure operations have
+ * no effect on the Success value.&lt;br&gt;
+ * If the given CallResult is a Failure and projected to a Success, the Success operations have no
+ * effect on the Failure value.&lt;br&gt;
+ * If a Failure is projected to a Failure or a Success is projected to a Success, the operations
+ * have an effect.
+ *
+ * &lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt; A compute() function, which results callResult in an Integer value
+ * (in the case of success) or in an error message of type String (in the case of failure). By
+ * convention the success case is Success and the failure is Failure.
+ *
+ * &lt;pre&gt;
+ * &lt;code&gt;
+ * CallResult&amp;lt;String,Integer&amp;gt; value = compute().success().map(i -&amp;gt; i * 2).toCallResult();
+ * &lt;/code&gt;
+ * &lt;/pre&gt;
+ *
+ * If the result of compute() is Success(1), the value is Success(2).&lt;br&gt;
+ * If the result of compute() is Failure(&quot;error&quot;), the value is Failure(&quot;error&quot;).
+ *
+ * @param &lt;L&gt; The type of the Failure value of an CallResult.
+ * @param &lt;R&gt; The type of the Success value of an CallResult.
+ */
+@ToString
+@NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings({&quot;java:S1948&quot;, &quot;java:S1905&quot;, &quot;unchecked&quot;})
+public abstract class CallResult&lt;L, R&gt; implements Iterable&lt;R&gt;, FunctionalValue&lt;R&gt;, Serializable {
+
+  @Serial private static final long serialVersionUID = 1L;
+
+  private static final String FAILURE_MAPPER_IS_NULL = &quot;failureMapper is null&quot;;
+  private static final String FUNCTION_IS_NULL = &quot;function is null&quot;;
+  private static final String OTHER_IS_NULL = &quot;function is null&quot;;
+  private static final String ACTION_IS_NULL = &quot;function is null&quot;;
+  private static final String EXCEPTION_FUNCTION_IS_NULL = &quot;exceptionFunction is null&quot;;
+  private static final String MAPPER_IS_NULL = &quot;mapper is null&quot;;
+  private static final String PREDICATE_IS_NULL = &quot;predicate is null&quot;;
+  private static final String SUPPLIER_IS_NULL = &quot;supplier is null&quot;;
+
+  /**
+   * Constructs a {@link Success}
+   *
+   * &lt;pre&gt;{@code
+   * // Creates CallResult instance initiated with success value 1
+   * CallResult&lt;?, Integer&gt; callResult = CallResult.success(1);
+   * }&lt;/pre&gt;
+   *
+   * @param success The value.
+   * @param &lt;L&gt; Type of failure value.
+   * @param &lt;R&gt; Type of success value.
+   * @return A new {@code Success} instance.
+   */
+  public static &lt;L, R&gt; CallResult&lt;L, R&gt; success(R success) {
+<span class="fc" id="L103">    return new Success&lt;&gt;(success);</span>
+  }
+
+  /**
+   * Constructs a {@link Failure}
+   *
+   * &lt;pre&gt;{@code
+   * // Creates CallResult instance initiated with failure value &quot;error message&quot;
+   * CallResult&lt;String, ?&gt; callResult = CallResult.failure(&quot;error message&quot;);
+   * }&lt;/pre&gt;
+   *
+   * @param failure The value.
+   * @param &lt;L&gt; Type of failure value.
+   * @param &lt;R&gt; Type of success value.
+   * @return A new {@code Failure} instance.
+   */
+  public static &lt;L, R&gt; CallResult&lt;L, R&gt; failure(L failure) {
+<span class="fc" id="L120">    return new Failure&lt;&gt;(failure);</span>
+  }
+
+  /**
+   * Narrows a widened {@code CallResult&lt;? extends L, ? extends R&gt;} to {@code CallResult&lt;L, R&gt;} by
+   * performing a type-safe cast. This is eligible because immutable/read-only collections are
+   * covariant.
+   *
+   * &lt;pre&gt;{@code
+   * // It's ok, Integer inherits from Number
+   * CallResult&lt;?, Number&gt; answer = CallResult.success(42);
+   *
+   * // RuntimeException is an Exception
+   * CallResult&lt;Exception, ?&gt; failed = CallResult.failure(new RuntimeException(&quot;poetry recital&quot;));
+   * }&lt;/pre&gt;
+   *
+   * @param callResult A {@code CallResult}.
+   * @param &lt;L&gt; Type of failure value.
+   * @param &lt;R&gt; Type of success value.
+   * @return the given {@code callResult} instance as narrowed type {@code CallResult&lt;L, R&gt;}.
+   */
+  public static &lt;L, R&gt; CallResult&lt;L, R&gt; narrow(CallResult&lt;? extends L, ? extends R&gt; callResult) {
+<span class="fc" id="L142">    return (CallResult&lt;L, R&gt;) callResult;</span>
+  }
+
+  /**
+   * Reduces many {@code CallResult}s into a single {@code CallResult} by transforming an {@code
+   * Iterable&lt;CallResult&lt;L, R&gt;&gt;} into a {@code CallResult&lt;Seq&lt;L&gt;, Seq&lt;R&gt;&gt;}.
+   *
+   * &lt;p&gt;If any of the given {@code CallResult}s is a {@link Failure} then {@code sequence} returns a
+   * {@link Failure} containing a non-empty {@link Seq} of all failure values.
+   *
+   * &lt;p&gt;If none of the given {@code CallResult}s is a {@link Failure} then {@code sequence} returns
+   * a {@link Success} containing a (possibly empty) {@link Seq} of all success values.
+   *
+   * &lt;pre&gt;{@code
+   * // = Success(Seq())
+   * CallResult.sequence(List.empty())
+   *
+   * // = Success(Seq(1, 2))
+   * CallResult.sequence(List.of(CallResult.success(1), CallResult.success(2)))
+   *
+   * // = Failure(Seq(&quot;x&quot;))
+   * CallResult.sequence(List.of(CallResult.success(1), CallResult.failure(&quot;x&quot;)))
+   * }&lt;/pre&gt;
+   *
+   * @param callResults An {@link Iterable} of {@code CallResult}s
+   * @param &lt;L&gt; closure of all failure types of the given {@code CallResult}s
+   * @param &lt;R&gt; closure of all success types of the given {@code CallResult}s
+   * @return An {@code CallResult} of a {@link Seq} of failure or success values
+   * @throws NullPointerException if {@code callResults} is null
+   */
+  public static &lt;L, R&gt; CallResult&lt;Seq&lt;L&gt;, Seq&lt;R&gt;&gt; sequence(
+      Iterable&lt;? extends CallResult&lt;? extends L, ? extends R&gt;&gt; callResults) {
+<span class="fc" id="L174">    Objects.requireNonNull(callResults, &quot;callResults is null&quot;);</span>
+<span class="fc" id="L175">    return Iterator.ofAll((Iterable&lt;CallResult&lt;L, R&gt;&gt;) callResults)</span>
+<span class="fc" id="L176">        .partition(CallResult::isFailure)</span>
+<span class="fc" id="L177">        .apply(</span>
+            (failurePartition, successPartition) -&gt;
+<span class="fc bfc" id="L179" title="All 2 branches covered.">                failurePartition.hasNext()</span>
+<span class="fc" id="L180">                    ? CallResult.failure(failurePartition.map(CallResult::getFailure).toVector())</span>
+<span class="fc" id="L181">                    : CallResult.success(successPartition.map(CallResult::get).toVector()));</span>
+  }
+
+  /**
+   * Returns the failure value.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;error&quot;
+   * System.out.println(CallResult.failure(&quot;error&quot;).getFailure());
+   *
+   * // throws NoSuchElementException
+   * System.out.println(CallResult.success(42).getFailure());
+   * }&lt;/pre&gt;
+   *
+   * @return The failure value.
+   * @throws NoSuchElementException if this is a {@code Success}.
+   */
+  public abstract L getFailure();
+
+  /**
+   * Returns whether this CallResult is a Failure.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;true&quot;
+   * System.out.println(CallResult.failure(&quot;error&quot;).isFailure());
+   *
+   * // prints &quot;false&quot;
+   * System.out.println(CallResult.success(42).isFailure());
+   * }&lt;/pre&gt;
+   *
+   * @return true, if this is a Failure, false otherwise
+   */
+  public abstract boolean isFailure();
+
+  /**
+   * Returns whether this CallResult is a Success.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;true&quot;
+   * System.out.println(CallResult.success(42).isSuccess());
+   *
+   * // prints &quot;false&quot;
+   * System.out.println(CallResult.failure(&quot;error&quot;).isSuccess());
+   * }&lt;/pre&gt;
+   *
+   * @return true, if this is a Success, false otherwise
+   */
+  public abstract boolean isSuccess();
+
+  /**
+   * Returns a FailureProjection of this CallResult.
+   *
+   * @return a new FailureProjection of this
+   */
+  public final CallResult.FailureProjection&lt;L, R&gt; failure() {
+<span class="fc" id="L236">    return new CallResult.FailureProjection&lt;&gt;(this);</span>
+  }
+
+  /**
+   * Returns a SuccessProjection of this CallResult.
+   *
+   * @return a new SuccessProjection of this
+   */
+  public final CallResult.SuccessProjection&lt;L, R&gt; success() {
+<span class="fc" id="L245">    return new CallResult.SuccessProjection&lt;&gt;(this);</span>
+  }
+
+  /**
+   * Maps callResult the failure or the success side of this disjunction.
+   *
+   * &lt;pre&gt;{@code
+   * CallResult&lt;?, AtomicInteger&gt; success = CallResult.success(new AtomicInteger(42));
+   *
+   * // prints &quot;Success(42)&quot;
+   * System.out.println(success.bimap(Function1.identity(), AtomicInteger::get));
+   *
+   * CallResult&lt;Exception, ?&gt; failure = CallResult.failure(new Exception(&quot;error&quot;));
+   *
+   * // prints &quot;Failure(error)&quot;
+   * System.out.println(failure.bimap(Exception::getMessage, Function1.identity()));
+   * }&lt;/pre&gt;
+   *
+   * @param failureMapper maps the failure value if this is a Failure
+   * @param successMapper maps the success value if this is a Success
+   * @param &lt;X&gt; The new failure type of the resulting CallResult
+   * @param &lt;Y&gt; The new success type of the resulting CallResult
+   * @return A new CallResult instance
+   */
+  public final &lt;X, Y&gt; CallResult&lt;X, Y&gt; bimap(
+      Function&lt;? super L, ? extends X&gt; failureMapper,
+      Function&lt;? super R, ? extends Y&gt; successMapper) {
+<span class="fc" id="L272">    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);</span>
+<span class="fc" id="L273">    Objects.requireNonNull(successMapper, &quot;successMapper is null&quot;);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L275">      return new Success&lt;&gt;(successMapper.apply(get()));</span>
+    } else {
+<span class="fc" id="L277">      return new Failure&lt;&gt;(failureMapper.apply(getFailure()));</span>
+    }
+  }
+
+  /**
+   * Folds callResult the failure or the success side of this disjunction.
+   *
+   * &lt;pre&gt;{@code
+   * CallResult&lt;Exception, Integer&gt; success = CallResult.success(3);
+   *
+   * // prints &quot;Users updated: 3&quot;
+   * System.out.println(success.fold(Exception::getMessage, count -&gt; &quot;Users updated: &quot; + count));
+   *
+   * CallResult&lt;Exception, Integer&gt; failure = CallResult.failure(new Exception(&quot;Failed to update users&quot;));
+   *
+   * // prints &quot;Failed to update users&quot;
+   * System.out.println(failure.fold(Exception::getMessage, count -&gt; &quot;Users updated: &quot; + count));
+   * }&lt;/pre&gt;
+   *
+   * @param failureMapper maps the failure value if this is a Failure
+   * @param successMapper maps the success value if this is a Success
+   * @param &lt;U&gt; type of the folded value
+   * @return A value of type U
+   */
+  public final &lt;U&gt; U fold(
+      Function&lt;? super L, ? extends U&gt; failureMapper,
+      Function&lt;? super R, ? extends U&gt; successMapper) {
+<span class="fc" id="L304">    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);</span>
+<span class="fc" id="L305">    Objects.requireNonNull(successMapper, &quot;successMapper is null&quot;);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L307">      return successMapper.apply(get());</span>
+    } else {
+<span class="fc" id="L309">      return failureMapper.apply(getFailure());</span>
+    }
+  }
+
+  /**
+   * Transforms this {@code CallResult}.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;Answer is 42&quot;
+   * System.out.println(CallResult.success(42).&lt;String&gt; transform(e -&gt; &quot;Answer is &quot; + e.get()));
+   * }&lt;/pre&gt;
+   *
+   * @param f A transformation
+   * @param &lt;U&gt; Type of transformation result
+   * @return An instance of type {@code U}
+   * @throws NullPointerException if {@code f} is null
+   */
+  public final &lt;U&gt; U transform(Function&lt;? super CallResult&lt;L, R&gt;, ? extends U&gt; f) {
+<span class="fc" id="L327">    Objects.requireNonNull(f, FUNCTION_IS_NULL);</span>
+<span class="fc" id="L328">    return f.apply(this);</span>
+  }
+
+  /**
+   * Gets the Success value or an alternate value, if the projected CallResult is a Failure.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;42&quot;
+   * System.out.println(CallResult.success(42).getOrElseGet(l -&gt; -1));
+   *
+   * // prints &quot;13&quot;
+   * System.out.println(CallResult.failure(&quot;error message&quot;).getOrElseGet(String::length));
+   * }&lt;/pre&gt;
+   *
+   * @param other a function which converts a Failure value to an alternative Success value
+   * @return the success value, if the underlying CallResult is a Success or else the alternative
+   *     Success value provided by {@code other} by applying the Failure value.
+   */
+  public final R getOrElseGet(Function&lt;? super L, ? extends R&gt; other) {
+<span class="fc" id="L347">    Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L349">      return get();</span>
+    } else {
+<span class="fc" id="L351">      return other.apply(getFailure());</span>
+    }
+  }
+
+  /**
+   * Runs an action in the case this is a projection on a Failure value.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;no value found&quot;
+   * CallResult.failure(&quot;no value found&quot;).orElseRun(System.out::println);
+   * }&lt;/pre&gt;
+   *
+   * @param action an action which consumes a Failure value
+   */
+  public final void orElseRun(Consumer&lt;? super L&gt; action) {
+<span class="fc" id="L366">    Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L368">      action.accept(getFailure());</span>
+    }
+<span class="fc" id="L370">  }</span>
+
+  /**
+   * Gets the Success value or throws, if the projected CallResult is a Failure.
+   *
+   * &lt;pre&gt;{@code
+   * Function&lt;String, RuntimeException&gt; exceptionFunction = RuntimeException::new;
+   * // prints &quot;42&quot;
+   * System.out.println(CallResult.&lt;String, Integer&gt;success(42).getOrElseThrow(exceptionFunction));
+   *
+   * // throws RuntimeException(&quot;no value found&quot;)
+   * CallResult.failure(&quot;no value found&quot;).getOrElseThrow(exceptionFunction);
+   * }&lt;/pre&gt;
+   *
+   * @param &lt;X&gt; a throwable type
+   * @param exceptionFunction a function which creates an exception based on a Failure value
+   * @return the success value, if the underlying CallResult is a Success or else throws the
+   *     exception provided by {@code exceptionFunction} by applying the Failure value.
+   * @throws X if the projected CallResult is a Failure
+   */
+  public final &lt;X extends Throwable&gt; R getOrElseThrow(Function&lt;? super L, X&gt; exceptionFunction)
+      throws X {
+<span class="fc" id="L392">    Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L394">      return get();</span>
+    } else {
+<span class="fc" id="L396">      throw exceptionFunction.apply(getFailure());</span>
+    }
+  }
+
+  /**
+   * Converts a {@code Failure} to a {@code Success} vice versa by wrapping the value in a new type.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;Success(42)&quot;
+   * System.out.println(CallResult.failure(42).swap());
+   *
+   * // prints &quot;Failure(message)&quot;
+   * System.out.println(CallResult.success(&quot;message&quot;).swap());
+   * }&lt;/pre&gt;
+   *
+   * @return a new {@code CallResult}
+   */
+  public final CallResult&lt;R, L&gt; swap() {
+<span class="fc bfc" id="L414" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L415">      return new Failure&lt;&gt;(get());</span>
+    } else {
+<span class="fc" id="L417">      return new Success&lt;&gt;(getFailure());</span>
+    }
+  }
+
+  /**
+   * Calls recoveryFunction if the projected CallResult is a Failure, performs no operation if this
+   * is a Success. This is similar to {@code getOrElseGet}, but where the fallback method also
+   * returns an CallResult.
+   *
+   * &lt;pre&gt;{@code
+   * CallResult&lt;Integer, String&gt; tryGetString() { return CallResult.failure(1); }
+   *
+   * CallResult&lt;Integer, String&gt; tryGetStringAnotherWay(Integer lvalue) { return CallResult.success(&quot;yo &quot; + lvalue); }
+   *
+   * = Success(&quot;yo 1&quot;)
+   * tryGetString().recover(this::tryGetStringAnotherWay);
+   * }&lt;/pre&gt;
+   *
+   * @param recoveryFunction a function which accepts a Failure value and returns an CallResult
+   * @return an {@code CallResult&lt;L, R&gt;} instance
+   * @throws NullPointerException if the given {@code recoveryFunction} is null
+   */
+  public final CallResult&lt;L, R&gt; recoverWith(
+      Function&lt;? super L, ? extends CallResult&lt;? extends L, ? extends R&gt;&gt; recoveryFunction) {
+<span class="fc" id="L441">    Objects.requireNonNull(recoveryFunction, &quot;recoveryFunction is null&quot;);</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L443">      return (CallResult&lt;L, R&gt;) recoveryFunction.apply(getFailure());</span>
+    } else {
+<span class="fc" id="L445">      return this;</span>
+    }
+  }
+
+  /**
+   * Calls {@code recoveryFunction} if the projected CallResult is a Failure, or returns {@code
+   * this} if Success. The result of {@code recoveryFunction} will be projected as a Success.
+   *
+   * &lt;pre&gt;{@code
+   * CallResult&lt;Integer, String&gt; tryGetString() { return CallResult.failure(1); }
+   *
+   * String getStringAnotherWay() { return &quot;yo&quot;; }
+   *
+   * = Success(&quot;yo&quot;)
+   * tryGetString().recover(this::getStringAnotherWay);
+   * }&lt;/pre&gt;
+   *
+   * @param recoveryFunction a function which accepts a Failure value and returns a Success value
+   * @return an {@code CallResult&lt;L, R&gt;} instance
+   * @throws NullPointerException if the given {@code recoveryFunction} is null
+   */
+  public final CallResult&lt;L, R&gt; recover(Function&lt;? super L, ? extends R&gt; recoveryFunction) {
+<span class="fc" id="L467">    Objects.requireNonNull(recoveryFunction, &quot;recoveryFunction is null&quot;);</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L469">      return CallResult.success(recoveryFunction.apply(getFailure()));</span>
+    } else {
+<span class="fc" id="L471">      return this;</span>
+    }
+  }
+
+  /**
+   * FlatMaps this success-biased CallResult.
+   *
+   * &lt;pre&gt;{@code
+   * // prints &quot;Success(42)&quot;
+   * System.out.println(CallResult.success(21).flatMap(v -&gt; CallResult.success(v * 2)));
+   *
+   * // prints &quot;Failure(error message)&quot;
+   * System.out.println(CallResult.failure(&quot;error message&quot;).flatMap(CallResult::success));
+   * }&lt;/pre&gt;
+   *
+   * @param mapper A mapper
+   * @param &lt;U&gt; Component type of the mapped success value
+   * @return this as {@code CallResult&lt;L, U&gt;} if this is a Failure, otherwise the success mapping
+   *     result
+   * @throws NullPointerException if {@code mapper} is null
+   */
+  public final &lt;U&gt; CallResult&lt;L, U&gt; flatMap(
+      Function&lt;? super R, ? extends CallResult&lt;L, ? extends U&gt;&gt; mapper) {
+<span class="fc" id="L494">    Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L496">      return (CallResult&lt;L, U&gt;) mapper.apply(get());</span>
+    } else {
+<span class="fc" id="L498">      return (CallResult&lt;L, U&gt;) this;</span>
+    }
+  }
+
+  /**
+   * Maps the value of this CallResult if it is a Success, performs no operation if this is a
+   * Failure.
+   *
+   * &lt;pre&gt;{@code
+   * // = Success(&quot;A&quot;)
+   * CallResult.success(&quot;a&quot;).map(String::toUpperCase);
+   *
+   * // = Failure(1)
+   * CallResult.failure(1).map(String::toUpperCase);
+   * }&lt;/pre&gt;
+   *
+   * @param mapper A mapper
+   * @param &lt;U&gt; Component type of the mapped success value
+   * @return a mapped {@code Monad}
+   * @throws NullPointerException if {@code mapper} is null
+   */
+  @Override
+  public final &lt;U&gt; CallResult&lt;L, U&gt; map(Function&lt;? super R, ? extends U&gt; mapper) {
+<span class="fc" id="L521">    Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L523">      return CallResult.success(mapper.apply(get()));</span>
+    } else {
+<span class="fc" id="L525">      return (CallResult&lt;L, U&gt;) this;</span>
+    }
+  }
+
+  /**
+   * Maps the value of this CallResult if it is a Failure, performs no operation if this is a
+   * Success.
+   *
+   * &lt;pre&gt;{@code
+   * // = Failure(2)
+   * CallResult.failure(1).mapLeft(i -&gt; i + 1);
+   *
+   * // = Success(&quot;a&quot;)
+   * CallResult.success(&quot;a&quot;).mapLeft(i -&gt; i + 1);
+   * }&lt;/pre&gt;
+   *
+   * @param leftMapper A mapper
+   * @param &lt;U&gt; Component type of the mapped right value
+   * @return a mapped {@code Monad}
+   * @throws NullPointerException if {@code mapper} is null
+   */
+  public final &lt;U&gt; CallResult&lt;U, R&gt; mapLeft(Function&lt;? super L, ? extends U&gt; leftMapper) {
+<span class="fc" id="L547">    Objects.requireNonNull(leftMapper, &quot;leftMapper is null&quot;);</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L549">      return CallResult.failure(leftMapper.apply(getFailure()));</span>
+    } else {
+<span class="fc" id="L551">      return (CallResult&lt;U, R&gt;) this;</span>
+    }
+  }
+
+  /**
+   * Maps the value of this CallResult if it is a Failure, performs no operation if this is a
+   * Success.
+   *
+   * &lt;pre&gt;{@code
+   * // = Failure(2)
+   * CallResult.failure(1).mapFailure(i -&gt; i + 1);
+   *
+   * // = Success(&quot;a&quot;)
+   * CallResult.success(&quot;a&quot;).mapFailure(i -&gt; i + 1);
+   * }&lt;/pre&gt;
+   *
+   * @param failureMapper A mapper
+   * @param &lt;U&gt; Component type of the mapped success value
+   * @return a mapped {@code Monad}
+   * @throws NullPointerException if {@code mapper} is null
+   */
+  public final &lt;U&gt; CallResult&lt;U, R&gt; mapFailure(Function&lt;? super L, ? extends U&gt; failureMapper) {
+<span class="fc" id="L573">    Objects.requireNonNull(failureMapper, FAILURE_MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L574" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L575">      return CallResult.failure(failureMapper.apply(getFailure()));</span>
+    } else {
+<span class="fc" id="L577">      return (CallResult&lt;U, R&gt;) this;</span>
+    }
+  }
+
+  /**
+   * Filters this success-biased {@code CallResult} by testing a predicate.
+   *
+   * &lt;p&gt;
+   *
+   * @param predicate A predicate
+   * @return a new {@code Option} instance
+   * @throws NullPointerException if {@code predicate} is null
+   */
+  public final Option&lt;CallResult&lt;L, R&gt;&gt; filter(Predicate&lt;? super R&gt; predicate) {
+<span class="fc" id="L591">    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);</span>
+<span class="fc bfc" id="L592" title="All 4 branches covered.">    return isFailure() || predicate.test(get()) ? Option.some(this) : Option.none();</span>
+  }
+
+  /**
+   * Filters this success-biased {@code CallResult} by testing a predicate.
+   *
+   * @param predicate A predicate
+   * @return a new {@code CallResult}
+   * @throws NullPointerException if {@code predicate} is null
+   */
+  public final Option&lt;CallResult&lt;L, R&gt;&gt; filterNot(Predicate&lt;? super R&gt; predicate) {
+<span class="fc" id="L603">    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);</span>
+<span class="fc" id="L604">    return filter(predicate.negate());</span>
+  }
+
+  /**
+   * Filters this success-biased {@code CallResult} by testing a predicate. If the {@code
+   * CallResult} is a {@code Success} and the predicate doesn't match, the {@code CallResult} will
+   * be turned into a {@code Failure} with contents computed by applying the zero function to the
+   * {@code CallResult} value.
+   *
+   * &lt;pre&gt;{@code
+   * // = Failure(&quot;bad: a&quot;)
+   * CallResult.success(&quot;a&quot;).filterOrElse(i -&gt; false, val -&gt; &quot;bad: &quot; + val);
+   *
+   * // = Success(&quot;a&quot;)
+   * CallResult.success(&quot;a&quot;).filterOrElse(i -&gt; true, val -&gt; &quot;bad: &quot; + val);
+   * }&lt;/pre&gt;
+   *
+   * @param predicate A predicate
+   * @param zero A function that turns a success value into a failure value if the success value
+   *     does not make it through the filter.
+   * @return an {@code CallResult} instance
+   * @throws NullPointerException if {@code predicate} is null
+   */
+  public final CallResult&lt;L, R&gt; filterOrElse(
+      Predicate&lt;? super R&gt; predicate, Function&lt;? super R, ? extends L&gt; zero) {
+<span class="fc" id="L629">    Objects.requireNonNull(predicate, PREDICATE_IS_NULL);</span>
+<span class="fc" id="L630">    Objects.requireNonNull(zero, &quot;zero is null&quot;);</span>
+<span class="fc bfc" id="L631" title="All 4 branches covered.">    if (isFailure() || predicate.test(get())) {</span>
+<span class="fc" id="L632">      return this;</span>
+    } else {
+<span class="fc" id="L634">      return CallResult.failure(zero.apply(get()));</span>
+    }
+  }
+
+  @Override
+  public final boolean isEmpty() {
+<span class="fc" id="L640">    return isFailure();</span>
+  }
+
+  public final CallResult&lt;L, R&gt; orElse(CallResult&lt;? extends L, ? extends R&gt; other) {
+<span class="fc" id="L644">    Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc bfc" id="L645" title="All 2 branches covered.">    return isSuccess() ? this : (CallResult&lt;L, R&gt;) other;</span>
+  }
+
+  public final CallResult&lt;L, R&gt; orElse(
+      Supplier&lt;? extends CallResult&lt;? extends L, ? extends R&gt;&gt; supplier) {
+<span class="fc" id="L650">    Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);</span>
+<span class="fc bfc" id="L651" title="All 2 branches covered.">    return isSuccess() ? this : (CallResult&lt;L, R&gt;) supplier.get();</span>
+  }
+
+  @Override
+  public final Iterator&lt;R&gt; iterator() {
+<span class="fc bfc" id="L656" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L657">      return Iterator.of(get());</span>
+    } else {
+<span class="fc" id="L659">      return Iterator.empty();</span>
+    }
+  }
+
+  /**
+   * Performs the given {@code failureAction} on the failure element if this is Failure. Performs
+   * the given {@code successAction} on the success element if this is Success.
+   *
+   * @param failureAction The action that will be performed on the failure element
+   * @param successAction The action that will be performed on the success element
+   * @return this instance
+   */
+  public final CallResult&lt;L, R&gt; peek(
+      Consumer&lt;? super L&gt; failureAction, Consumer&lt;? super R&gt; successAction) {
+<span class="fc" id="L673">    Objects.requireNonNull(failureAction, &quot;failureAction is null&quot;);</span>
+<span class="fc" id="L674">    Objects.requireNonNull(successAction, &quot;successAction is null&quot;);</span>
+
+<span class="pc bpc" id="L676" title="1 of 2 branches missed.">    if (isFailure()) {</span>
+<span class="nc" id="L677">      failureAction.accept(getFailure());</span>
+    } else { // this isSuccess() by definition
+<span class="nc" id="L679">      successAction.accept(get());</span>
+    }
+
+<span class="nc" id="L682">    return this;</span>
+  }
+
+  @Override
+  public final CallResult&lt;L, R&gt; peek(Consumer&lt;? super R&gt; action) {
+<span class="fc" id="L687">    Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">    if (isSuccess()) {</span>
+<span class="fc" id="L689">      action.accept(get());</span>
+    }
+<span class="fc" id="L691">    return this;</span>
+  }
+
+  public final CallResult&lt;L, R&gt; peekFailure(Consumer&lt;? super L&gt; action) {
+<span class="fc" id="L695">    Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L696" title="All 2 branches covered.">    if (isFailure()) {</span>
+<span class="fc" id="L697">      action.accept(getFailure());</span>
+    }
+<span class="fc" id="L699">    return this;</span>
+  }
+
+  /**
+   * A failure projection of a CallResult.
+   *
+   * @param &lt;L&gt; The type of the Failure value of a CallResult.
+   * @param &lt;R&gt; The type of the Success value of a CallResult.
+   */
+  @ToString
+  public static final class FailureProjection&lt;L, R&gt; implements FunctionalValue&lt;L&gt; {
+
+    private final CallResult&lt;L, R&gt; callResult;
+
+<span class="fc" id="L713">    private FailureProjection(CallResult&lt;L, R&gt; callResult) {</span>
+<span class="fc" id="L714">      this.callResult = callResult;</span>
+<span class="fc" id="L715">    }</span>
+
+    @Override
+    public boolean isEmpty() {
+<span class="fc" id="L719">      return callResult.isSuccess();</span>
+    }
+
+    /**
+     * Gets the {@code Failure} value or throws.
+     *
+     * @return the failure value, if the underlying {@code CallResult} is a {@code Failure}
+     * @throws NoSuchElementException if the underlying {@code CallResult} of this {@code
+     *     FailureProjection} is a {@code Success}
+     */
+    @Override
+    public L get() {
+<span class="fc bfc" id="L731" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L732">        return callResult.getFailure();</span>
+      } else {
+<span class="fc" id="L734">        throw new NoSuchElementException(&quot;FailureProjection.get() on Success&quot;);</span>
+      }
+    }
+
+    public CallResult.FailureProjection&lt;L, R&gt; orElse(
+        CallResult.FailureProjection&lt;? extends L, ? extends R&gt; other) {
+<span class="fc" id="L740">      Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc bfc" id="L741" title="All 2 branches covered.">      return callResult.isFailure() ? this : (CallResult.FailureProjection&lt;L, R&gt;) other;</span>
+    }
+
+    public CallResult.FailureProjection&lt;L, R&gt; orElse(
+        Supplier&lt;? extends CallResult.FailureProjection&lt;? extends L, ? extends R&gt;&gt; supplier) {
+<span class="fc" id="L746">      Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);</span>
+<span class="fc bfc" id="L747" title="All 2 branches covered.">      return callResult.isFailure() ? this : (CallResult.FailureProjection&lt;L, R&gt;) supplier.get();</span>
+    }
+
+    /**
+     * Gets the Failure value or an alternate value, if the projected CallResult is a Success.
+     *
+     * @param other an alternative value
+     * @return the failure value, if the underlying CallResult is a Failure or else {@code other}
+     * @throws NoSuchElementException if the underlying callResult of this FailureProjection is a
+     *     Success
+     */
+    @Override
+    public L getOrElse(L other) {
+<span class="fc bfc" id="L760" title="All 2 branches covered.">      return callResult.isFailure() ? callResult.getFailure() : other;</span>
+    }
+
+    /**
+     * Gets the Failure value or an alternate value, if the projected CallResult is a Success.
+     *
+     * @param other a function which converts a Success value to an alternative Failure value
+     * @return the failure value, if the underlying CallResult is a Failure or else the alternative
+     *     Failure value provided by {@code other} by applying the Success value.
+     */
+    public L getOrElseGet(Function&lt;? super R, ? extends L&gt; other) {
+<span class="fc" id="L771">      Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc bfc" id="L772" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L773">        return callResult.getFailure();</span>
+      } else {
+<span class="fc" id="L775">        return other.apply(callResult.get());</span>
+      }
+    }
+
+    /**
+     * Runs an action in the case this is a projection on a Success value.
+     *
+     * @param action an action which consumes a Success value
+     */
+    public void orElseRun(Consumer&lt;? super R&gt; action) {
+<span class="fc" id="L785">      Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L786" title="All 2 branches covered.">      if (callResult.isSuccess()) {</span>
+<span class="fc" id="L787">        action.accept(callResult.get());</span>
+      }
+<span class="fc" id="L789">    }</span>
+
+    /**
+     * Gets the Failure value or throws, if the projected CallResult is a Success.
+     *
+     * @param &lt;X&gt; a throwable type
+     * @param exceptionFunction a function which creates an exception based on a Success value
+     * @return the failure value, if the underlying CallResult is a Failure or else throws the
+     *     exception provided by {@code exceptionFunction} by applying the Success value.
+     * @throws X if the projected CallResult is a Success
+     */
+    public &lt;X extends Throwable&gt; L getOrElseThrow(Function&lt;? super R, X&gt; exceptionFunction)
+        throws X {
+<span class="fc" id="L802">      Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L804">        return callResult.getFailure();</span>
+      } else {
+<span class="fc" id="L806">        throw exceptionFunction.apply(callResult.get());</span>
+      }
+    }
+
+    /**
+     * Returns the underlying callResult of this projection.
+     *
+     * @return the underlying callResult
+     */
+    public CallResult&lt;L, R&gt; toCallResult() {
+<span class="fc" id="L816">      return callResult;</span>
+    }
+
+    /**
+     * Returns {@code Some} value of type L if this is a failure projection of a Failure value and
+     * the predicate applies to the underlying value.
+     *
+     * @param predicate A predicate
+     * @return A new Option
+     */
+    public Option&lt;CallResult.FailureProjection&lt;L, R&gt;&gt; filter(Predicate&lt;? super L&gt; predicate) {
+<span class="fc" id="L827">      Objects.requireNonNull(predicate, PREDICATE_IS_NULL);</span>
+<span class="fc bfc" id="L828" title="All 4 branches covered.">      return callResult.isSuccess() || predicate.test(callResult.getFailure())</span>
+<span class="fc" id="L829">          ? Option.some(this)</span>
+<span class="fc" id="L830">          : Option.none();</span>
+    }
+
+    /**
+     * FlatMaps this FailureProjection.
+     *
+     * @param mapper A mapper
+     * @param &lt;U&gt; Component type of the mapped failure value
+     * @return this as {@code FailureProjection&lt;L, U&gt;} if a Success is underlying, otherwise a the
+     *     mapping result of the failure value.
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    public &lt;U&gt; CallResult.FailureProjection&lt;U, R&gt; flatMap(
+        Function&lt;? super L, ? extends CallResult.FailureProjection&lt;? extends U, R&gt;&gt; mapper) {
+<span class="fc" id="L844">      Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L845" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L846">        return (CallResult.FailureProjection&lt;U, R&gt;) mapper.apply(callResult.getFailure());</span>
+      } else {
+<span class="fc" id="L848">        return (CallResult.FailureProjection&lt;U, R&gt;) this;</span>
+      }
+    }
+
+    /**
+     * Maps the failure value if the projected CallResult is a Failure.
+     *
+     * @param mapper A mapper which takes a failure value and returns a value of type U
+     * @param &lt;U&gt; The new type of a Failure value
+     * @return A new FailureProjection
+     */
+    @Override
+    public &lt;U&gt; CallResult.FailureProjection&lt;U, R&gt; map(Function&lt;? super L, ? extends U&gt; mapper) {
+<span class="fc" id="L861">      Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L863">        return callResult.mapFailure((Function&lt;L, U&gt;) mapper).failure();</span>
+      } else {
+<span class="fc" id="L865">        return (CallResult.FailureProjection&lt;U, R&gt;) this;</span>
+      }
+    }
+
+    /**
+     * Applies the given action to the value if the projected callResult is a Failure. Otherwise
+     * nothing happens.
+     *
+     * @param action An action which takes a failure value
+     * @return this FailureProjection
+     */
+    @Override
+    public CallResult.FailureProjection&lt;L, R&gt; peek(Consumer&lt;? super L&gt; action) {
+<span class="fc" id="L878">      Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L880">        action.accept(callResult.getFailure());</span>
+      }
+<span class="fc" id="L882">      return this;</span>
+    }
+
+    /**
+     * Transforms this {@code FailureProjection}.
+     *
+     * @param f A transformation
+     * @param &lt;U&gt; Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public &lt;U&gt; U transform(Function&lt;? super CallResult.FailureProjection&lt;L, R&gt;, ? extends U&gt; f) {
+<span class="fc" id="L894">      Objects.requireNonNull(f, FUNCTION_IS_NULL);</span>
+<span class="fc" id="L895">      return f.apply(this);</span>
+    }
+
+    @Override
+    public Iterator&lt;L&gt; iterator() {
+<span class="fc bfc" id="L900" title="All 2 branches covered.">      if (callResult.isFailure()) {</span>
+<span class="fc" id="L901">        return Iterator.of(callResult.getFailure());</span>
+      } else {
+<span class="fc" id="L903">        return Iterator.empty();</span>
+      }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L909" title="All 4 branches covered.">      return (obj == this)</span>
+          || (obj instanceof CallResult.FailureProjection
+<span class="fc bfc" id="L911" title="All 2 branches covered.">              &amp;&amp; Objects.equals(callResult, ((CallResult.FailureProjection&lt;?, ?&gt;) obj).callResult));</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L916">      return callResult.hashCode();</span>
+    }
+  }
+
+  /**
+   * A success projection of a CallResult.
+   *
+   * @param &lt;L&gt; The type of the Failure value of a CallResult.
+   * @param &lt;R&gt; The type of the Success value of a CallResult.
+   */
+  @ToString
+  public static final class SuccessProjection&lt;L, R&gt; implements FunctionalValue&lt;R&gt; {
+
+    private final CallResult&lt;L, R&gt; callResult;
+
+<span class="fc" id="L931">    private SuccessProjection(CallResult&lt;L, R&gt; callResult) {</span>
+<span class="fc" id="L932">      this.callResult = callResult;</span>
+<span class="fc" id="L933">    }</span>
+
+    @Override
+    public boolean isEmpty() {
+<span class="fc" id="L937">      return callResult.isFailure();</span>
+    }
+
+    /**
+     * Gets the {@code Success} value or throws.
+     *
+     * @return the success value, if the underlying {@code CallResult} is a {@code Success}
+     * @throws NoSuchElementException if the underlying {@code CallResult} of this {@code
+     *     SuccessProjection} is a {@code Failure}
+     */
+    @Override
+    public R get() {
+<span class="fc bfc" id="L949" title="All 2 branches covered.">      if (callResult.isSuccess()) {</span>
+<span class="fc" id="L950">        return callResult.get();</span>
+      } else {
+<span class="fc" id="L952">        throw new NoSuchElementException(&quot;SuccessProjection.get() on Failure&quot;);</span>
+      }
+    }
+
+    public CallResult.SuccessProjection&lt;L, R&gt; orElse(
+        CallResult.SuccessProjection&lt;? extends L, ? extends R&gt; other) {
+<span class="fc" id="L958">      Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc bfc" id="L959" title="All 2 branches covered.">      return callResult.isSuccess() ? this : (CallResult.SuccessProjection&lt;L, R&gt;) other;</span>
+    }
+
+    public CallResult.SuccessProjection&lt;L, R&gt; orElse(
+        Supplier&lt;? extends CallResult.SuccessProjection&lt;? extends L, ? extends R&gt;&gt; supplier) {
+<span class="fc" id="L964">      Objects.requireNonNull(supplier, SUPPLIER_IS_NULL);</span>
+<span class="fc bfc" id="L965" title="All 2 branches covered.">      return callResult.isSuccess() ? this : (CallResult.SuccessProjection&lt;L, R&gt;) supplier.get();</span>
+    }
+
+    /**
+     * Gets the Success value or an alternate value, if the projected CallResult is a Failure.
+     *
+     * @param other an alternative value
+     * @return the success value, if the underlying CallResult is a Success or else {@code other}
+     * @throws NoSuchElementException if the underlying callResult of this SuccessProjection is a
+     *     Failure
+     */
+    @Override
+    public R getOrElse(R other) {
+<span class="fc" id="L978">      return callResult.getOrElse(other);</span>
+    }
+
+    /**
+     * Gets the Success value or an alternate value, if the projected CallResult is a Failure.
+     *
+     * &lt;pre&gt;{@code
+     * // prints 42
+     * System.out.println(CallResult.success(42).getOrElseGet(l -&gt; 2));
+     * // prints 0
+     * System.out.println(CallResult.failure(42).getOrElseGet(l -&gt; 0));
+     * }&lt;/pre&gt;
+     *
+     * @param other a function which converts a Failure value to an alternative Success value
+     * @return the success value, if the underlying CallResult is a Success or else the alternative
+     *     Success value provided by {@code other} by applying the Failure value.
+     */
+    public R getOrElseGet(Function&lt;? super L, ? extends R&gt; other) {
+<span class="fc" id="L996">      Objects.requireNonNull(other, OTHER_IS_NULL);</span>
+<span class="fc" id="L997">      return callResult.getOrElseGet(other);</span>
+    }
+
+    /**
+     * Runs an action in the case this is a projection on a Failure value.
+     *
+     * &lt;pre&gt;{@code
+     * // nothing is printed
+     * CallResult.success(42).orElseRun(System.out::println);
+     *
+     * // prints &quot;error message&quot;
+     * CallResult.failure(&quot;error message&quot;).orElseRun(System.out::println);
+     * }&lt;/pre&gt;
+     *
+     * @param action an action which consumes a Failure value
+     */
+    public void orElseRun(Consumer&lt;? super L&gt; action) {
+<span class="fc" id="L1014">      Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc" id="L1015">      callResult.orElseRun(action);</span>
+<span class="fc" id="L1016">    }</span>
+
+    /**
+     * Gets the Success value or throws, if the projected CallResult is a Failure.
+     *
+     * &lt;pre&gt;{@code
+     * // prints &quot;42&quot;
+     * System.out.println(CallResult.&lt;String, Integer&gt; success(42).getOrElseThrow(s -&gt; new RuntimeException(s)));
+     *
+     * // throws RuntimeException(&quot;error message&quot;)
+     * CallResult.failure(&quot;error message&quot;).getOrElseThrow(s -&gt; new RuntimeException(s));
+     * }&lt;/pre&gt;
+     *
+     * @param &lt;X&gt; a throwable type
+     * @param exceptionFunction a function which creates an exception based on a Failure value
+     * @return the success value, if the underlying CallResult is a Success or else throws the
+     *     exception provided by {@code exceptionFunction} by applying the Failure value.
+     * @throws X if the projected CallResult is a Failure
+     */
+    public &lt;X extends Throwable&gt; R getOrElseThrow(Function&lt;? super L, X&gt; exceptionFunction)
+        throws X {
+<span class="fc" id="L1037">      Objects.requireNonNull(exceptionFunction, EXCEPTION_FUNCTION_IS_NULL);</span>
+<span class="fc" id="L1038">      return callResult.getOrElseThrow(exceptionFunction);</span>
+    }
+
+    /**
+     * Returns the underlying callResult of this projection.
+     *
+     * @return the underlying callResult
+     */
+    public CallResult&lt;L, R&gt; toCallResult() {
+<span class="fc" id="L1047">      return callResult;</span>
+    }
+
+    /**
+     * Returns {@code Some} value of type R if this is a success projection of a Success value and
+     * the predicate applies to the underlying value.
+     *
+     * @param predicate A predicate
+     * @return A new Option
+     */
+    public Option&lt;CallResult.SuccessProjection&lt;L, R&gt;&gt; filter(Predicate&lt;? super R&gt; predicate) {
+<span class="fc" id="L1058">      Objects.requireNonNull(predicate, PREDICATE_IS_NULL);</span>
+<span class="fc bfc" id="L1059" title="All 4 branches covered.">      return callResult.isFailure() || predicate.test(callResult.get())</span>
+<span class="fc" id="L1060">          ? Option.some(this)</span>
+<span class="fc" id="L1061">          : Option.none();</span>
+    }
+
+    /**
+     * FlatMaps this SuccessProjection.
+     *
+     * @param mapper A mapper
+     * @param &lt;U&gt; Component type of the mapped success value
+     * @return this as {@code SuccessProjection&lt;L, U&gt;} if a Failure is underlying, otherwise a the
+     *     mapping result of the success value.
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    public &lt;U&gt; CallResult.SuccessProjection&lt;L, U&gt; flatMap(
+        Function&lt;? super R, ? extends CallResult.SuccessProjection&lt;L, ? extends U&gt;&gt; mapper) {
+<span class="fc" id="L1075">      Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L1076" title="All 2 branches covered.">      if (callResult.isSuccess()) {</span>
+<span class="fc" id="L1077">        return (CallResult.SuccessProjection&lt;L, U&gt;) mapper.apply(callResult.get());</span>
+      } else {
+<span class="fc" id="L1079">        return (CallResult.SuccessProjection&lt;L, U&gt;) this;</span>
+      }
+    }
+
+    /**
+     * Maps the success value if the projected CallResult is a Success.
+     *
+     * @param mapper A mapper which takes a success value and returns a value of type U
+     * @param &lt;U&gt; The new type of a Success value
+     * @return A new SuccessProjection
+     */
+    @Override
+    public &lt;U&gt; CallResult.SuccessProjection&lt;L, U&gt; map(Function&lt;? super R, ? extends U&gt; mapper) {
+<span class="fc" id="L1092">      Objects.requireNonNull(mapper, MAPPER_IS_NULL);</span>
+<span class="fc bfc" id="L1093" title="All 2 branches covered.">      if (callResult.isSuccess()) {</span>
+<span class="fc" id="L1094">        return callResult.map((Function&lt;R, U&gt;) mapper).success();</span>
+      } else {
+<span class="fc" id="L1096">        return (CallResult.SuccessProjection&lt;L, U&gt;) this;</span>
+      }
+    }
+
+    /**
+     * Applies the given action to the value if the projected callResult is a Success. Otherwise
+     * nothing happens.
+     *
+     * @param action An action which takes a success value
+     * @return this {@code CallResult} instance
+     */
+    @Override
+    public CallResult.SuccessProjection&lt;L, R&gt; peek(Consumer&lt;? super R&gt; action) {
+<span class="fc" id="L1109">      Objects.requireNonNull(action, ACTION_IS_NULL);</span>
+<span class="fc bfc" id="L1110" title="All 2 branches covered.">      if (callResult.isSuccess()) {</span>
+<span class="fc" id="L1111">        action.accept(callResult.get());</span>
+      }
+<span class="fc" id="L1113">      return this;</span>
+    }
+
+    /**
+     * Transforms this {@code SuccessProjection}.
+     *
+     * @param f A transformation
+     * @param &lt;U&gt; Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public &lt;U&gt; U transform(Function&lt;? super CallResult.SuccessProjection&lt;L, R&gt;, ? extends U&gt; f) {
+<span class="fc" id="L1125">      Objects.requireNonNull(f, FUNCTION_IS_NULL);</span>
+<span class="fc" id="L1126">      return f.apply(this);</span>
+    }
+
+    @Override
+    public Iterator&lt;R&gt; iterator() {
+<span class="fc" id="L1131">      return callResult.iterator();</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L1136" title="All 4 branches covered.">      return (obj == this)</span>
+          || (obj instanceof CallResult.SuccessProjection
+<span class="fc bfc" id="L1138" title="All 2 branches covered.">              &amp;&amp; Objects.equals(callResult, ((CallResult.SuccessProjection&lt;?, ?&gt;) obj).callResult));</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L1143">      return callResult.hashCode();</span>
+    }
+  }
+
+  /**
+   * The {@code Failure} version of a {@code CallResult}.
+   *
+   * @param &lt;L&gt; failure component type
+   * @param &lt;R&gt; success component type
+   */
+  @ToString
+  @SuppressWarnings(&quot;java:S1948&quot;)
+  public static final class Failure&lt;L, R&gt; extends CallResult&lt;L, R&gt; implements Serializable {
+
+    @Serial private static final long serialVersionUID = 1L;
+
+    private final L value;
+
+    /**
+     * Constructs a {@code Failure}.
+     *
+     * @param value a failure value
+     */
+<span class="fc" id="L1166">    private Failure(L value) {</span>
+<span class="fc" id="L1167">      this.value = value;</span>
+<span class="fc" id="L1168">    }</span>
+
+    @Override
+    public R get() {
+<span class="fc" id="L1172">      throw new NoSuchElementException(&quot;get() on Failure&quot;);</span>
+    }
+
+    @Override
+    public boolean isSuccess() {
+<span class="fc" id="L1177">      return false;</span>
+    }
+
+    @Override
+    public boolean isFailure() {
+<span class="fc" id="L1182">      return true;</span>
+    }
+
+    @Override
+    public L getFailure() {
+<span class="fc" id="L1187">      return value;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L1192" title="All 4 branches covered.">      return (obj == this)</span>
+          || (obj instanceof CallResult.Failure
+<span class="fc bfc" id="L1194" title="All 2 branches covered.">              &amp;&amp; Objects.equals(value, ((Failure&lt;?, ?&gt;) obj).value));</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L1199">      return Objects.hashCode(value);</span>
+    }
+  }
+
+  /**
+   * The {@code Success} version of a {@code CallResult}.
+   *
+   * @param &lt;L&gt; failure component type
+   * @param &lt;R&gt; success component type
+   */
+  @ToString
+  public static final class Success&lt;L, R&gt; extends CallResult&lt;L, R&gt; implements Serializable {
+
+    @Serial private static final long serialVersionUID = 1L;
+
+    private final R value;
+
+    /**
+     * Constructs a {@code Success}.
+     *
+     * @param value a success value
+     */
+<span class="fc" id="L1221">    private Success(R value) {</span>
+<span class="fc" id="L1222">      this.value = value;</span>
+<span class="fc" id="L1223">    }</span>
+
+    @Override
+    public R get() {
+<span class="fc" id="L1227">      return value;</span>
+    }
+
+    @Override
+    public L getFailure() {
+<span class="fc" id="L1232">      throw new NoSuchElementException(&quot;getFailure() on Success&quot;);</span>
+    }
+
+    @Override
+    public boolean isFailure() {
+<span class="fc" id="L1237">      return false;</span>
+    }
+
+    @Override
+    public boolean isSuccess() {
+<span class="fc" id="L1242">      return true;</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="fc bfc" id="L1247" title="All 4 branches covered.">      return (obj == this)</span>
+          || (obj instanceof CallResult.Success
+<span class="fc bfc" id="L1249" title="All 2 branches covered.">              &amp;&amp; Objects.equals(value, ((Success&lt;?, ?&gt;) obj).value));</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L1254">      return Objects.hashCode(value);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

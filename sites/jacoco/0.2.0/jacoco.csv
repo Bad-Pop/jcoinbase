@@ -1,0 +1,75 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JCoinbase,com.github.badpop.jcoinbase.model.account,AccountType,0,48,0,0,0,8,0,4,0,4
+JCoinbase,com.github.badpop.jcoinbase.model.account,AccountsPage,6,5,0,0,2,2,2,1,2,1
+JCoinbase,com.github.badpop.jcoinbase.service.utils,StringUtils,0,27,0,8,0,7,0,5,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.utils,DateAndTimeUtils,0,9,0,0,0,1,0,2,0,2
+JCoinbase,com.github.badpop.jcoinbase.service.utils,AuthenticationUtils,0,8,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.dto,PaginationDto,0,31,0,0,0,10,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.dto,PaginatedResponseDto,0,15,0,0,0,5,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.dto,ErrorDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.dto,DataErrorsDto,0,5,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.dto,SingleErrorDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data.dto,TimeDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data.dto,PriceDto,0,14,0,0,0,6,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data.dto,ExchangeRatesDto,0,9,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data.dto,CurrencyDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.model.user,User,0,24,0,0,0,6,0,6,0,6
+JCoinbase,com.github.badpop.jcoinbase.model.user,Authorizations,0,4,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,TiersDto,0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,NationalityDto,0,9,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,AuthorizationsDto,0,9,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,CountryDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,ReferralMoneyDto,0,15,0,0,0,6,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user.dto,UserDto,0,126,0,0,0,32,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user,CoinbaseUserService,0,239,0,0,0,61,0,19,0,19
+JCoinbase,com.github.badpop.jcoinbase.service.user,CoinbaseUserService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user,CoinbaseUserService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user,CoinbaseUserService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user,CoinbaseUserService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.user,UserService,64,108,0,0,5,26,5,13,5,13
+JCoinbase,com.github.badpop.jcoinbase.service.account,AccountService,88,217,0,4,9,50,7,21,7,19
+JCoinbase,com.github.badpop.jcoinbase.service.account,CoinbaseAccountService,8,135,0,4,1,30,0,10,0,8
+JCoinbase,com.github.badpop.jcoinbase.service.account,CoinbaseAccountService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.account,CoinbaseAccountService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,PropertiesNotFoundException,4,0,0,0,2,0,1,0,1,0
+JCoinbase,com.github.badpop.jcoinbase.exception,InvalidRequestException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,InvalidApiKeyAndSecretException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,NoPreviousPageException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,NoNextPageException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,UnauthorizedRequestException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,PriceTypeNotFoundException,0,4,0,0,0,2,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.exception,JCoinbaseException,0,13,0,0,0,6,0,3,0,3
+JCoinbase,com.github.badpop.jcoinbase.model.data,ExchangeRates,0,4,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.model.data,Price.PriceType,0,64,0,0,0,12,0,7,0,7
+JCoinbase,com.github.badpop.jcoinbase.service,WarningManagerService,0,32,0,0,0,9,0,5,0,5
+JCoinbase,com.github.badpop.jcoinbase.service,ErrorManagerService,0,17,0,0,0,5,0,3,0,3
+JCoinbase,com.github.badpop.jcoinbase.service.account.dto,RewardsDto,0,12,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.account.dto,AccountBalanceDto,0,9,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.account.dto,AccountCurrencyDto,0,36,0,0,0,13,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.account.dto,AccountDto,0,74,0,0,0,16,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data,CoinbaseDataService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data,CoinbaseDataService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data,CoinbaseDataService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data,CoinbaseDataService.new TypeReference() {...},0,6,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.data,CoinbaseDataService,0,191,0,0,0,55,0,13,0,13
+JCoinbase,com.github.badpop.jcoinbase.service.data,DataService,36,143,0,0,3,29,3,14,3,14
+JCoinbase,com.github.badpop.jcoinbase.model,ResourceType,0,41,0,0,0,7,0,4,0,4
+JCoinbase,com.github.badpop.jcoinbase.model,Pagination.Order,0,34,0,0,0,6,0,4,0,4
+JCoinbase,com.github.badpop.jcoinbase.model,PaginatedResponse,0,4,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.http,HttpRequestSender,0,63,0,0,0,12,0,9,0,9
+JCoinbase,com.github.badpop.jcoinbase.service.http,JsonDeserializationService,0,106,1,9,0,23,1,13,0,9
+JCoinbase,com.github.badpop.jcoinbase.service.http,Headers,0,45,0,0,0,7,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.http,JsonDeserializationService.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.http,JsonDeserializationService.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase.service.http,JsonDeserializationService.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+JCoinbase,com.github.badpop.jcoinbase,JCoinbaseProperties,37,133,1,1,5,33,4,6,3,6
+JCoinbase,com.github.badpop.jcoinbase,JCoinbaseClientFactory,0,53,0,6,0,12,0,7,0,4
+JCoinbase,com.github.badpop.jcoinbase,JCoinbaseClient,20,138,0,4,4,42,1,14,1,12
+JCoinbase,com.github.badpop.jcoinbase,JCoinbasePropertiesFactory,0,35,0,4,0,8,0,6,0,4
+JCoinbase,com.github.badpop.jcoinbase.control,CallResult,11,376,1,45,3,91,1,52,0,30
+JCoinbase,com.github.badpop.jcoinbase.control,CallResult.SuccessProjection,0,184,0,22,0,42,0,29,0,18
+JCoinbase,com.github.badpop.jcoinbase.control,CallResult.Failure,0,39,0,6,0,10,0,10,0,7
+JCoinbase,com.github.badpop.jcoinbase.control,CallResult.FailureProjection,0,220,0,32,0,49,0,34,0,18
+JCoinbase,com.github.badpop.jcoinbase.control,CallResult.Success,0,39,0,6,0,10,0,10,0,7
+JCoinbase,com.github.badpop.jcoinbase.control,FunctionalValue,8,182,3,29,1,35,3,32,0,19
+JCoinbase,com.github.badpop.jcoinbase.service.auth,AuthenticationService,9,140,4,10,1,25,4,8,0,5

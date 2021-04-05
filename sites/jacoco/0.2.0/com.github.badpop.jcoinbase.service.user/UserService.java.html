@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.user</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.user;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.badpop.jcoinbase.JCoinbaseClient;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
+import com.github.badpop.jcoinbase.model.user.Authorizations;
+import com.github.badpop.jcoinbase.model.user.User;
+import com.github.badpop.jcoinbase.service.ErrorManagerService;
+import com.github.badpop.jcoinbase.service.auth.AuthenticationService;
+import io.vavr.collection.Seq;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * This service allows you to request coinbase users and current user data. &lt;strong&gt;To properly use
+ * this service, you must provide an API Key and an API secret when building a JCoinbaseClient
+ * instance.&lt;/strong&gt;
+ */
+<span class="fc" id="L22">@Slf4j</span>
+@RequiredArgsConstructor
+public class UserService {
+
+  private final JCoinbaseClient client;
+  private final CoinbaseUserService service;
+  private final AuthenticationService authentication;
+
+  /**
+   * Get the current user data based on the provided coinbase API Key.
+   *
+   * @return a {@link CallResult} containing a {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;java.util.List&lt;CoinbaseError&gt;, User&gt; getCurrentUserAsJava() {
+<span class="fc" id="L38">    return getCurrentUser().mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get the current user data based on the provided coinbase API Key.
+   *
+   * @return a {@link CallResult} containing a {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt; getCurrentUser() {
+<span class="fc" id="L49">    return service</span>
+<span class="fc" id="L50">        .fetchCurrentUser(client, authentication)</span>
+<span class="fc" id="L51">        .onSuccess(user -&gt; log.info(&quot;Successfully fetch current user.&quot;))</span>
+<span class="fc" id="L52">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L54">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching current user&quot;,
+                    throwable))
+<span class="fc" id="L58">        .get();</span>
+  }
+
+  /**
+   * Get current user’s authorization information including granted scopes
+   *
+   * @return a {@link CallResult} containing an {@link Authorizations} object if it's ok, a List of
+   *     {@link CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;java.util.List&lt;CoinbaseError&gt;, Authorizations&gt; getAuthorizationsAsJava() {
+<span class="fc" id="L69">    return getAuthorizations().mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get current user’s authorization information including granted scopes
+   *
+   * @return a {@link CallResult} containing an {@link Authorizations} object if it's ok, a Seq of
+   *     {@link CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, Authorizations&gt; getAuthorizations() {
+<span class="fc" id="L80">    return service</span>
+<span class="fc" id="L81">        .fetchAuthorizations(client, authentication)</span>
+<span class="fc" id="L82">        .onSuccess(user -&gt; log.info(&quot;Successfully fetch current user.&quot;))</span>
+<span class="fc" id="L83">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L85">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching current user&quot;,
+                    throwable))
+<span class="fc" id="L89">        .get();</span>
+  }
+
+  /**
+   * Get any user’s public information with their ID.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;java.util.List&lt;CoinbaseError&gt;, User&gt; getUserByIdAsJava(final String userId) {
+<span class="fc" id="L100">    return getUserById(userId).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Get any user’s public information with their ID.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt; getUserById(final String userId) {
+<span class="fc" id="L111">    return service</span>
+<span class="fc" id="L112">        .fetchUserById(client, authentication, userId)</span>
+<span class="fc" id="L113">        .onSuccess(user -&gt; log.info(&quot;Successfully fetch user by id with id {}&quot;, userId))</span>
+<span class="fc" id="L114">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L116">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(throwable),
+                    &quot;An error occurred while fetching user by id with the given id {}&quot;,
+                    throwable,
+                    userId))
+<span class="fc" id="L121">        .get();</span>
+  }
+
+  /**
+   * Modify current user and their preferences.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a List of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;java.util.List&lt;CoinbaseError&gt;, User&gt; updateCurrentUserAsJava(
+      final UpdateCurrentUserRequest request) {
+<span class="fc" id="L133">    return updateCurrentUser(request).mapFailure(Seq::asJava);</span>
+  }
+
+  /**
+   * Modify current user and their preferences.
+   *
+   * @return a {@link CallResult} containing an {@link User} object if it's ok, a Seq of {@link
+   *     CoinbaseError} otherwise.
+   * @throws JCoinbaseException on unknown errors
+   */
+  public CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt; updateCurrentUser(
+      final UpdateCurrentUserRequest request) {
+
+<span class="fc" id="L146">    return service</span>
+<span class="fc" id="L147">        .updateCurrentUser(client, authentication, request)</span>
+<span class="fc" id="L148">        .onSuccess(user -&gt; log.info(&quot;Successfully updated the current user&quot;))</span>
+<span class="fc" id="L149">        .onFailure(</span>
+            JsonProcessingException.class,
+            jsonProcessingExc -&gt;
+<span class="nc" id="L152">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(
+                        &quot;An error occurred while serializing request to json&quot;, jsonProcessingExc),
+                    &quot;An error occurred while serializing the request to json for the given request {}&quot;,
+                    jsonProcessingExc,
+                    request))
+<span class="fc" id="L158">        .onFailure(</span>
+            throwable -&gt;
+<span class="nc" id="L160">                ErrorManagerService.manageOnError(</span>
+                    new JCoinbaseException(
+                        &quot;An error occurred while updating the current user&quot;, throwable),
+                    &quot;An error occurred while updating the current user with this request {}&quot;,
+                    throwable,
+                    request))
+<span class="fc" id="L166">        .get();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

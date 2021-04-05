@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoinbaseUserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JCoinbase</a> &gt; <a href="index.source.html" class="el_package">com.github.badpop.jcoinbase.service.user</a> &gt; <span class="el_source">CoinbaseUserService.java</span></div><h1>CoinbaseUserService.java</h1><pre class="source lang-java linenums">package com.github.badpop.jcoinbase.service.user;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.badpop.jcoinbase.JCoinbaseClient;
+import com.github.badpop.jcoinbase.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.model.CoinbaseError;
+import com.github.badpop.jcoinbase.model.request.UpdateCurrentUserRequest;
+import com.github.badpop.jcoinbase.model.user.Authorizations;
+import com.github.badpop.jcoinbase.model.user.User;
+import com.github.badpop.jcoinbase.service.auth.AuthenticationService;
+import com.github.badpop.jcoinbase.service.dto.DataDto;
+import com.github.badpop.jcoinbase.service.http.HttpRequestSender;
+import com.github.badpop.jcoinbase.service.user.dto.AuthorizationsDto;
+import com.github.badpop.jcoinbase.service.user.dto.UserDto;
+import io.vavr.Tuple2;
+import io.vavr.collection.Seq;
+import io.vavr.control.Try;
+import lombok.val;
+
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+
+import static io.vavr.API.Tuple;
+
+<span class="fc" id="L27">public class CoinbaseUserService {</span>
+
+  private static String[] getHeaders(
+      final AuthenticationService authenticationService,
+      final JCoinbaseClient client,
+      final String httpMethod,
+      final String httpPath,
+      final String httpBody) {
+<span class="fc" id="L35">    return authenticationService.getAuthenticationHeaders(</span>
+<span class="fc" id="L36">        client.getProperties(), httpMethod, httpPath, httpBody);</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt;&gt; fetchCurrentUser(
+      final JCoinbaseClient client, final AuthenticationService authentication) {
+    val request =
+<span class="fc" id="L42">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L43">            .GET()</span>
+<span class="fc" id="L44">            .uri(</span>
+<span class="fc" id="L45">                URI.create(</span>
+<span class="fc" id="L46">                    client.getProperties().getApiUrl() + client.getProperties().getUserPath()))</span>
+<span class="fc" id="L47">            .headers(</span>
+<span class="fc" id="L48">                getHeaders(authentication, client, &quot;GET&quot;, client.getProperties().getUserPath(), &quot;&quot;))</span>
+<span class="fc" id="L49">            .build();</span>
+
+<span class="fc" id="L51">    return HttpRequestSender.send(</span>
+<span class="fc" id="L52">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L54">            client.getJsonSerDes(),</span>
+<span class="fc" id="L55">            new TypeReference&lt;DataDto&lt;UserDto&gt;&gt;() {})</span>
+<span class="fc" id="L56">        .mapTry(callResult -&gt; callResult.map(data -&gt; data.getData().toUser()));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, Authorizations&gt;&gt; fetchAuthorizations(
+      final JCoinbaseClient client, final AuthenticationService authentication) {
+
+    val request =
+<span class="fc" id="L63">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L64">            .GET()</span>
+<span class="fc" id="L65">            .uri(</span>
+<span class="fc" id="L66">                URI.create(</span>
+<span class="fc" id="L67">                    client.getProperties().getApiUrl()</span>
+<span class="fc" id="L68">                        + client.getProperties().getCurrentUserAuthorizationsPath()))</span>
+<span class="fc" id="L69">            .headers(</span>
+<span class="fc" id="L70">                getHeaders(</span>
+                    authentication,
+                    client,
+                    &quot;GET&quot;,
+<span class="fc" id="L74">                    client.getProperties().getCurrentUserAuthorizationsPath(),</span>
+                    &quot;&quot;))
+<span class="fc" id="L76">            .build();</span>
+
+<span class="fc" id="L78">    return HttpRequestSender.send(</span>
+<span class="fc" id="L79">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L81">            client.getJsonSerDes(),</span>
+<span class="fc" id="L82">            new TypeReference&lt;DataDto&lt;AuthorizationsDto&gt;&gt;() {})</span>
+<span class="fc" id="L83">        .mapTry(callResult -&gt; callResult.map(data -&gt; data.getData().toAuthorizations()));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt;&gt; fetchUserById(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final String userId) {
+
+<span class="fc" id="L91">    val tupleUriPath = buildFetchUserByIdUriAndPath(client.getProperties(), userId);</span>
+
+    val request =
+<span class="fc" id="L94">        HttpRequest.newBuilder()</span>
+<span class="fc" id="L95">            .GET()</span>
+<span class="fc" id="L96">            .uri(tupleUriPath._1)</span>
+<span class="fc" id="L97">            .headers(getHeaders(authentication, client, &quot;GET&quot;, tupleUriPath._2, &quot;&quot;))</span>
+<span class="fc" id="L98">            .build();</span>
+
+<span class="fc" id="L100">    return HttpRequestSender.send(</span>
+<span class="fc" id="L101">            client.getHttpClient(),</span>
+            request,
+<span class="fc" id="L103">            client.getJsonSerDes(),</span>
+<span class="fc" id="L104">            new TypeReference&lt;DataDto&lt;UserDto&gt;&gt;() {})</span>
+<span class="fc" id="L105">        .mapTry(callResult -&gt; callResult.map(data -&gt; data.getData().toUser()));</span>
+  }
+
+  protected Try&lt;CallResult&lt;Seq&lt;CoinbaseError&gt;, User&gt;&gt; updateCurrentUser(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final UpdateCurrentUserRequest request) {
+
+<span class="fc" id="L113">    return buildUpdateCurrentUserHttpRequest(client, authentication, request)</span>
+<span class="fc" id="L114">        .flatMapTry(</span>
+            httpRequest -&gt;
+<span class="fc" id="L116">                HttpRequestSender.send(</span>
+<span class="fc" id="L117">                    client.getHttpClient(),</span>
+                    httpRequest,
+<span class="fc" id="L119">                    client.getJsonSerDes(),</span>
+<span class="fc" id="L120">                    new TypeReference&lt;DataDto&lt;UserDto&gt;&gt;() {}))</span>
+<span class="fc" id="L121">        .mapTry(callResult -&gt; callResult.map(data -&gt; data.getData().toUser()));</span>
+  }
+
+  private Tuple2&lt;URI, String&gt; buildFetchUserByIdUriAndPath(
+      final JCoinbaseProperties properties, final String userId) {
+<span class="fc" id="L126">    return Tuple(</span>
+<span class="fc" id="L127">        URI.create(</span>
+<span class="fc" id="L128">            String.format(&quot;%s%s/%s&quot;, properties.getApiUrl(), properties.getUsersPath(), userId)),</span>
+<span class="fc" id="L129">        properties.getUsersPath() + &quot;/&quot; + userId);</span>
+  }
+
+  private Try&lt;HttpRequest&gt; buildUpdateCurrentUserHttpRequest(
+      final JCoinbaseClient client,
+      final AuthenticationService authentication,
+      final UpdateCurrentUserRequest request) {
+
+<span class="fc" id="L137">    return Try.of(() -&gt; client.getJsonSerDes().writeValueAsString(request))</span>
+<span class="fc" id="L138">        .mapTry(</span>
+            bodyAsString -&gt;
+<span class="fc" id="L140">                HttpRequest.newBuilder()</span>
+<span class="fc" id="L141">                    .PUT(BodyPublishers.ofString(bodyAsString))</span>
+<span class="fc" id="L142">                    .uri(</span>
+<span class="fc" id="L143">                        URI.create(</span>
+<span class="fc" id="L144">                            client.getProperties().getApiUrl()</span>
+<span class="fc" id="L145">                                + client.getProperties().getUserPath()))</span>
+<span class="fc" id="L146">                    .headers(</span>
+<span class="fc" id="L147">                        getHeaders(</span>
+                            authentication,
+                            client,
+                            &quot;PUT&quot;,
+<span class="fc" id="L151">                            client.getProperties().getUserPath(),</span>
+                            bodyAsString))
+<span class="fc" id="L153">                    .build());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
