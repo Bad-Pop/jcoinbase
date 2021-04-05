@@ -25,7 +25,7 @@ public class Price {
   PriceType priceType;
 
   /**
-   * There is three types of prices in Coinbase : BUY, SELL & SPOT. This enum allow us to manage
+   * There is three types of prices in Coinbase : BUY, SELL and SPOT. This enum allow us to manage
    * these types in a more fluent way than simple strings representations.
    */
   @Getter

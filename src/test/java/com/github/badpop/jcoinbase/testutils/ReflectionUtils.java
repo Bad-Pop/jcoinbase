@@ -1,7 +1,7 @@
 package com.github.badpop.jcoinbase.testutils;
 
-import com.github.badpop.jcoinbase.client.JCoinbaseProperties;
-import com.github.badpop.jcoinbase.client.JCoinbasePropertiesFactory;
+import com.github.badpop.jcoinbase.JCoinbaseProperties;
+import com.github.badpop.jcoinbase.JCoinbasePropertiesFactory;
 import lombok.val;
 
 import java.lang.reflect.InvocationTargetException;
