@@ -2,6 +2,8 @@ package com.github.badpop.jcoinbase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.badpop.jcoinbase.exception.JCoinbaseException;
+import com.github.badpop.jcoinbase.exception.UnauthorizedRequestException;
+import com.github.badpop.jcoinbase.service.account.AccountService;
 import com.github.badpop.jcoinbase.service.data.DataService;
 import com.github.badpop.jcoinbase.service.user.UserService;
 import com.github.badpop.jcoinbase.testutils.ReflectionUtils;
@@ -63,6 +65,25 @@ class JCoinbaseClientTest {
         .isNotNull()
         .isInstanceOf(UserService.class)
         .isEqualTo(ReflectionUtils.getFieldForObject(client, "userService"));
+  }
+
+  @Test
+  void should_return_AccountService() throws NoSuchFieldException, IllegalAccessException {
+    val client = new JCoinbaseClient().build("loremIpsum", "dolorSitAmet", "2021-02-03", 3, false);
+
+    val actual = client.account();
+
+    assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(AccountService.class)
+        .isEqualTo(ReflectionUtils.getFieldForObject(client, "accountService"));
+  }
+
+  @Test
+  void should_not_be_allowed() {
+    val client = new JCoinbaseClient().build(null, null, null, 3, false);
+    assertThatExceptionOfType(UnauthorizedRequestException.class).isThrownBy(client::user);
+    assertThatExceptionOfType(UnauthorizedRequestException.class).isThrownBy(client::account);
   }
 
   @Test
