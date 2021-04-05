@@ -3,6 +3,7 @@ package com.github.badpop.jcoinbase.model.account;
 import lombok.Builder;
 import lombok.Value;
 
+/** Class representing the Coinbase account currency model */
 @Value
 @Builder
 public class AccountCurrency {

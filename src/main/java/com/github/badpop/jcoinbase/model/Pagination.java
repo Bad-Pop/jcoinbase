@@ -11,6 +11,10 @@ import java.util.Optional;
 
 import static io.vavr.API.List;
 
+/**
+ * In some cases, the Coinbase api returns paginated response, this class help JCoinbase to deal
+ * with it. This class allow JCoinbase and you to browse pages over the Coinbase API.
+ */
 @Value
 @Builder
 public class Pagination {
@@ -23,6 +27,10 @@ public class Pagination {
   String previousUri;
   String nextUri;
 
+  /**
+   * When Coinbase returns a paginated response, values are ordered. This Enum centralize the
+   * available ordering method.
+   */
   @Getter
   @AllArgsConstructor
   public enum Order {

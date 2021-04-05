@@ -16,6 +16,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 import static com.github.badpop.jcoinbase.service.http.JsonDeserializationService.*;
 
+/** Utility interface to centralize all http requests made to the Coinbase API */
 public interface HttpRequestSender {
 
   static <T> Try<CallResult<Seq<CoinbaseError>, DataDto<T>>> send(
@@ -38,7 +39,10 @@ public interface HttpRequestSender {
       final TypeReference<PaginatedResponseDto<T>> typeReference) {
 
     return Try.of(() -> httpClient.send(request, BodyHandlers.ofString()))
-        .mapTry(response -> paginatedDeserialize(response, jsonSerDes, typeReference));
+        .mapTry(
+            response ->
+                paginatedDeserialize(response, jsonSerDes, typeReference)
+                    .peek(WarningManagerService::alertIfCoinbaseHasReturnedWarnings));
   }
 
   static <T> Try<CallResult<Seq<CoinbaseError>, DataDto<T>>> singleFailureSend(

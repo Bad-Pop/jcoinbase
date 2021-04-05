@@ -6,7 +6,7 @@
 
     <groupId>com.github.bad-pop</groupId>
     <artifactId>jcoinbase</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.2.0</version>
     <name>JCoinbase</name>
     <description>
         JCoinbase is a powerful open source client, written in java 15, for the Coinbase API. It allows you to make

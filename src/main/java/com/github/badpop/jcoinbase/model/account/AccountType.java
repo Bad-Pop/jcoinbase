@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import static io.vavr.API.List;
 
+/** Enum representing the Coinbase account type model and centralize values*/
 @Getter
 @AllArgsConstructor
 public enum AccountType {
