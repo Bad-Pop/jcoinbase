@@ -5,6 +5,7 @@ import lombok.Value;
 
 import java.math.BigDecimal;
 
+/** Class representing the Coinbase account balance model */
 @Value
 @Builder
 public class AccountBalance {

@@ -6,6 +6,7 @@ import lombok.Value;
 
 import java.time.LocalDateTime;
 
+/** Class representing the Coinbase account model */
 @Value
 @Builder
 public class Account {

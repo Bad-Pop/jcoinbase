@@ -19,7 +19,7 @@ Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
 ## Steps to follow
 1. **Build project and change version**
 ```bash
-mvn clean install versions:set -DnewVersion=0.0.1
+mvn clean install versions:set -DnewVersion=<VERSION>
 ```
 2. **If the build is ok**
 ```bash
