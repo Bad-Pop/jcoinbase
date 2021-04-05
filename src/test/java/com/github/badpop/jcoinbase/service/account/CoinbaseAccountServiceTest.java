@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.badpop.jcoinbase.JCoinbaseClient;
 import com.github.badpop.jcoinbase.JCoinbaseClientFactory;
 import com.github.badpop.jcoinbase.control.CallResult;
+import com.github.badpop.jcoinbase.exception.JCoinbaseException;
 import com.github.badpop.jcoinbase.model.PaginatedResponse;
 import com.github.badpop.jcoinbase.model.Pagination;
 import com.github.badpop.jcoinbase.model.account.Account;
@@ -31,6 +32,7 @@ import static com.github.badpop.jcoinbase.model.ResourceType.ACCOUNT;
 import static com.github.badpop.jcoinbase.model.account.AccountType.WALLET;
 import static com.github.badpop.jcoinbase.testutils.ReflectionUtils.setFieldValueForObject;
 import static io.vavr.API.Seq;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -185,6 +187,156 @@ class CoinbaseAccountServiceTest {
               client, client.getAuthService(), "/v2/accounts?starting_after=nsa");
 
       assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
+    }
+  }
+
+  @Nested
+  class Send {
+    @Test
+    void should_return_CallResult_success_with_body() throws IOException {
+      val id = "id";
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/accounts/" + id).withBody("body"))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/coinbaseAccountService/account.json")));
+
+      val actual =
+          service.send(client, client.getAuthService(), "/v2/accounts/" + id, "GET", "body");
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+
+      Assertions.assertThat(actual.get())
+          .usingRecursiveComparison()
+          .isEqualTo(
+              CallResult.success(
+                  Account.builder()
+                      .id("id")
+                      .name("name")
+                      .primary(true)
+                      .type(WALLET)
+                      .creationDate(
+                          DateAndTimeUtils.fromInstant(Instant.parse("2017-12-11T12:38:24Z"))
+                              .getOrNull())
+                      .lastUpdateDate(
+                          DateAndTimeUtils.fromInstant(Instant.parse("2021-03-29T20:19:10Z"))
+                              .getOrNull())
+                      .resourceType(ACCOUNT)
+                      .resourcePath("resourcePath")
+                      .allowDeposits(true)
+                      .allowWithdrawals(true)
+                      .balance(
+                          AccountBalance.builder()
+                              .amount(BigDecimal.valueOf(0.0))
+                              .currency("currency")
+                              .build())
+                      .currency(
+                          AccountCurrency.builder()
+                              .code("code")
+                              .name("name")
+                              .color("color")
+                              .sortIndex(100)
+                              .exponent(8)
+                              .type("crypto")
+                              .addressRegex("addrRegex")
+                              .assetId("assetId")
+                              .slug("slug")
+                              .build())
+                      .build()));
+    }
+
+    @Test
+    void should_return_CallResult_success_without_body() throws IOException {
+      val id = "id";
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/accounts/" + id))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/coinbaseAccountService/account.json")));
+
+      val actual = service.send(client, client.getAuthService(), "/v2/accounts/" + id, "GET", "");
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+
+      Assertions.assertThat(actual.get())
+          .usingRecursiveComparison()
+          .isEqualTo(
+              CallResult.success(
+                  Account.builder()
+                      .id("id")
+                      .name("name")
+                      .primary(true)
+                      .type(WALLET)
+                      .creationDate(
+                          DateAndTimeUtils.fromInstant(Instant.parse("2017-12-11T12:38:24Z"))
+                              .getOrNull())
+                      .lastUpdateDate(
+                          DateAndTimeUtils.fromInstant(Instant.parse("2021-03-29T20:19:10Z"))
+                              .getOrNull())
+                      .resourceType(ACCOUNT)
+                      .resourcePath("resourcePath")
+                      .allowDeposits(true)
+                      .allowWithdrawals(true)
+                      .balance(
+                          AccountBalance.builder()
+                              .amount(BigDecimal.valueOf(0.0))
+                              .currency("currency")
+                              .build())
+                      .currency(
+                          AccountCurrency.builder()
+                              .code("code")
+                              .name("name")
+                              .color("color")
+                              .sortIndex(100)
+                              .exponent(8)
+                              .type("crypto")
+                              .addressRegex("addrRegex")
+                              .assetId("assetId")
+                              .slug("slug")
+                              .build())
+                      .build()));
+    }
+
+    @Test
+    void should_return_CallResult_failure() throws IOException {
+      val id = "id";
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/accounts" + id))
+          .respond(
+              response()
+                  .withStatusCode(400)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/errors.json")));
+
+      val actual = service.send(client, client.getAuthService(), "/v2/accounts" + id, "GET", "");
+
+      assertThat(actual).isSuccess().containsInstanceOf(CallResult.class);
+      Assertions.assertThat(actual.get().isFailure()).isTrue();
+      assertThat(actual.get().getFailure()).containsExactly(CoinbaseErrorSampleProvider.getError());
+    }
+
+    @Test
+    void should_return_failure() throws IOException {
+      val id = "id";
+      mockServer
+          .when(request().withMethod("GET").withPath("/v2/accounts" + id))
+          .respond(
+              response()
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(JsonUtils.readResource("/json/error.json")));
+
+      val actual = service.send(client, client.getAuthService(), "/v2/accounts" + id, "GET", "");
+
+      assertThat(actual).isFailure().failBecauseOf(JsonProcessingException.class);
+    }
+
+    @Test
+    void should_throws_when_method_is_blank() {
+      val auth = client.getAuthService();
+      assertThatExceptionOfType(JCoinbaseException.class)
+          .isThrownBy(() -> service.send(client, auth, "", "", ""));
     }
   }
 }
