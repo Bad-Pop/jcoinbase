@@ -1,7 +1,7 @@
 # JCoinbase
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Bad-Pop/JCoinbase/JCoinbase%20CI?style=plastic)
-![Sonar Coverage](https://img.shields.io/sonar/coverage/JCoinbase?server=https%3A%2F%2Fsonarcloud.io)
+![Sonar Coverage](https://img.shields.io/sonar/coverage/JCoinbase-archived?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Tech Debt](https://img.shields.io/sonar/tech_debt/JCoinbase-archived?server=https%3A%2F%2Fsonarcloud.io)
 ![Sonar Tests](https://img.shields.io/sonar/tests/JCoinbase-archived?compact_message&failed_label=failed&passed_label=passed&server=https%3A%2F%2Fsonarcloud.io&skipped_label=skipped)
 ![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/JCoinbase-archived?server=https%3A%2F%2Fsonarcloud.Io)
