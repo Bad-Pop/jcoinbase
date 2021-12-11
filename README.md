@@ -11,7 +11,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.bad-pop/jcoinbase.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.bad-pop%22%20AND%20a:%22jcoinbase%22)
 ___
 
-**This project is still under active development and is made with :heart:**
+**This project is currently no longer maintained, but works perfectly as it is. A new, improved and more scalable version is under development.**
 
 JCoinbase is an open source client for the Coinbase exchange platform API written in java 15. It allows you to make queries to the Coinbase API in a quick and easy way.
 
