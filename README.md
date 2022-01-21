@@ -1,6 +1,4 @@
-**This project is currently no longer maintained, but works perfectly as it is. A new, improved and more scalable version is under development.**
-**You can continue to use JCoinbase until the new versions arrive**
-**_[Follow the progress of the next JCoinbase](https://github.com/JCoinbase)_**
+**This project is currently no longer maintained, but works perfectly as it is.**
 
 # JCoinbase
 
@@ -34,4 +32,5 @@ mvn clean install
 
 
 ## Status
-This project is currently being maintained, and will be maintained. If you like this project and want this project to never exhaust, please consider helping or [donating](https://www.paypal.com/donate?hosted_button_id=2RD575X3ERSCY&source=url) <3.
+**This project is currently no longer maintained, but works perfectly as it is.** 
+If you like this project and want this project to never exhaust, please consider helping or [donating](https://www.paypal.com/donate?hosted_button_id=2RD575X3ERSCY&source=url) <3.
